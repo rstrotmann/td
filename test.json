@@ -1,0 +1,58 @@
+{
+	"periods": [
+		{
+			"caption": "period 1",
+			"length": 5,
+			"administrations": [
+				{
+					"caption": "tepotinib",
+					"days": [1, 2, 3]
+				}
+			],
+			"procedures": [
+				{
+					"caption": "PK sampling",
+					"days": [1],
+					"freq": "rich"
+				},
+				{
+					"caption": "PK sampling",
+					"days": [2, 3],
+					"freq": "QD"
+				},		
+				{
+					"caption": "ECG",
+					"days": [1, 5],
+					"freq": "QD"
+				}
+			]
+		},
+		{
+			"caption": "period 2",
+			"length": 7,
+			"administrations": [
+				{
+					"caption": "tepotinib",
+					"days": [1, 2, 3]
+				}
+			],
+			"procedures": [
+				{
+					"caption": "PK sampling",
+					"days": [1],
+					"freq": "rich"
+				},
+				{
+					"caption": "PK sampling",
+					"days": [2, 3],
+					"freq": "QD"
+				},		
+				{
+					"caption": "ECG",
+					"days": [1, 5],
+					"freq": "QD"
+				}
+			]
+		}
+	]
+}
