@@ -17,12 +17,12 @@
 				},
 				{
 					"caption": "PK sampling",
-					"days": [2, 3],
+					"days": [8, 13],
 					"freq": "QD"
 				},		
 				{
 					"caption": "ECG",
-					"days": [1, 5],
+					"days": [1, 8],
 					"freq": "QD"
 				}
 			]
@@ -39,17 +39,12 @@
 			"procedures": [
 				{
 					"caption": "PK sampling",
-					"days": [1],
-					"freq": "rich"
-				},
-				{
-					"caption": "PK sampling",
-					"days": [2, 3],
+					"days": [8, 13],
 					"freq": "QD"
 				},		
 				{
 					"caption": "ECG",
-					"days": [1, 5],
+					"days": [1],
 					"freq": "QD"
 				}
 			]

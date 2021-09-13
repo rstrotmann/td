@@ -2,7 +2,8 @@
 	"periods": [
 		{
 			"caption": "period 1",
-			"length": 3,
+			"length": 4,
+			"start": -1,
 			"administrations": [
 				{
 					"caption": "tepotinib",
@@ -10,6 +11,11 @@
 				}
 			],
 			"procedures": [
+				{
+					"caption": "ECG",
+					"days": [1],
+					"freq": "QD"
+				},
 				{
 					"caption": "PK sampling",
 					"days": [1],
@@ -19,12 +25,7 @@
 					"caption": "PK sampling",
 					"days": [2, 3],
 					"freq": "QD"
-				},		
-				{
-					"caption": "ECG",
-					"days": [1, 5],
-					"freq": "QD"
-				}
+				}	
 			]
 		},
 		{
@@ -32,13 +33,14 @@
 			"length": 7,
 			"administrations": [
 				{
-					"caption": "tepotinib",
-					"days": [5]
+					"caption": "itraconazole",
+					"days": [1, 2, 3, 4, 5, 6]
 				},
 				{
-					"caption": "itraconazole",
-					"days": [1, 2, 3, 4, 5, 6, 7]
-				}			],
+					"caption": "tepotinib",
+					"days": [5]
+				}
+			],
 			"procedures": [
 				{
 					"caption": "PK sampling",
