@@ -5,12 +5,13 @@ import json
 import random
 
 class Periodelement(object):
-	def __init__(self, period_dict=dict(), length=0, dayheight=20, daywidth=15, ypadding=7):
+	def __init__(self, period_dict=dict(), length=0, dayheight=20, daywidth=15):
 		self._period_dict = period_dict
 		self._dayheight = dayheight
 		self._daywidth = daywidth
-		self._ypadding = ypadding
+		# self._ypadding = ypadding
 		self._length = length
+		self._caption = period_dict["caption"]
 
 	def _metrics(self, canvas):
 		caption= self._period_dict["caption"].upper()
@@ -20,8 +21,8 @@ class Periodelement(object):
 		(x, y, cap_width, cap_height, dx, dy) = canvas.text_extents(caption)
 		return(caption, cap_width, cap_heightu)	
 
-	def height(self, canvas):
-		return self._metrics(canvas)[2] + 2 * self._ypadding
+	def height(self, canvas, ypadding):
+		return self._metrics(canvas)[2] + 2 * ypadding
 
 	def width(self):
 		return self._length * self._daywidth
@@ -38,9 +39,9 @@ class Periodelement(object):
 	def day_pm(self, day):
 		return self.day_start(day) + self._daywidth*4/6
 
-	def draw_dummy(self, canvas, x, y):
+	def draw_dummy(self, canvas, x, y, ypadding=7):
 		canvas.set_source_rgb(random.uniform(0.8, 1), random.uniform(0.8, 1), random.uniform(0.8, 1))
-		canvas.rectangle(x, y, self.width(), self.height(canvas))
+		canvas.rectangle(x, y, self.width(), self.height(canvas, ypadding=ypadding))
 		canvas.fill()
 
 	def draw_diamond(self, canvas, x, y, size=0.7):
@@ -55,23 +56,30 @@ class Periodelement(object):
 		canvas.stroke()
 		canvas.restore()
 
-	def draw_arrow(self, canvas, x, y, size=1):
+	def draw_arrow(self, canvas, x, y, ypadding=7, size=1.2):
 		canvas.save()
-		canvas.set_line_width(1.2)
+		canvas.set_line_width(1.4)
 		canvas.set_line_join(cairo.LINE_JOIN_ROUND)
 		canvas.set_source_rgb(0, 0, 0)
-		canvas.move_to(x, y-self.height(canvas)/2+self._ypadding)
-		canvas.line_to(x, y+self.height(canvas)/2-self._ypadding)
-		canvas.line_to(x-self._daywidth*1/10, y+self.height(canvas)*(1/2 -2/10)-self._ypadding)
-		canvas.move_to(x, y+self.height(canvas)/2-self._ypadding)
-		canvas.line_to(x+self._daywidth*1/10, y+self.height(canvas)*(1/2 - 2/10)-self._ypadding)
+		ybase = y - self.height(canvas, 0) * size / 2
+		yapex = y + self.height(canvas, 0) * size / 2
+		yarrow = yapex - (yapex - ybase) * .45
+		xarrow = (yapex - ybase) * .15
+		canvas.move_to(x, ybase)
+		canvas.line_to(x, yapex)
+		canvas.line_to(x - xarrow, yarrow)
+		canvas.move_to(x, yapex)
+		canvas.line_to(x + xarrow, yarrow)
 		canvas.stroke()
 		canvas.restore()		
 
-	def draw(self, canvas, x, y, debug=False):
+	def draw(self, canvas, x, y, ypadding=7, debug=False):
 		if debug:
-			self.draw_dummy(canvas, x, y)
+			self.draw_dummy(canvas, x, y, ypadding=ypadding)
 		pass
+
+	def dump(self):
+		print(json.dumps(self._period_dict, indent=2))
 
 
 
@@ -81,53 +89,57 @@ class Procedure(Periodelement):
 		Periodelement.__init__(self, **kwargs)
 		self._days = self._period_dict["days"]
 
-	def draw(self, canvas, x, y, periodspacing=0, debug=False):
+	@property
+	def caption(self):
+		return self._caption
+
+	def draw(self, canvas, x, y, ypadding=7, periodspacing=0, debug=False):
 		if debug:
-			self.draw_dummy(canvas, x, y)
+			self.draw_dummy(canvas, x, y, ypadding=ypadding)
+		yt = y + self.height(canvas, ypadding=ypadding) *1/2
 		for i in self._days:
 			xt = x + self.day_center(i)
-			yt = y + self.height(canvas) *1/2
 			# self.draw_diamond(canvas, xt, yt)
-			self.draw_arrow(canvas, xt, yt)
-
+			self.draw_arrow(canvas, xt, yt, ypadding=ypadding)
+		return y + self.height(canvas, ypadding=ypadding)
 
 
 class Periodcaption(Periodelement):
-	def __init__(self, ypadding=5, **kwargs):
-		Periodelement.__init__(self, ypadding=ypadding, **kwargs)
+	def __init__(self, **kwargs):
+		Periodelement.__init__(self, **kwargs)
 
-	def draw(self, canvas, x, y, debug=False):
-		Periodelement.draw(self, canvas, x, y, debug)
+	def draw(self, canvas, x, y, ypadding=7, debug=False):
+		Periodelement.draw(self, canvas, x, y, ypadding, debug)
 		(caption, cap_width, cap_height) = self._metrics(canvas)
 		canvas.set_source_rgb(0, 0, 0)
-		canvas.move_to(x + self.width()/2 - cap_width/2, y + cap_height + self._ypadding)
+		canvas.move_to(x + self.width()/2 - cap_width/2, y + cap_height + ypadding)
 		canvas.show_text(caption)		
 
 
 
 class Periodbox(Periodelement):
-	def __init__(self, ypadding=0, **kwargs):
-		Periodelement.__init__(self, ypadding=ypadding, **kwargs)
+	def __init__(self, **kwargs):
+		Periodelement.__init__(self, **kwargs)
 
-	def height(self, canvas):
-		return self._dayheight + 2 * self._ypadding
+	def height(self, canvas, ypadding):
+		return self._dayheight + 2 * ypadding
 
-	def draw_outline(self, canvas, x, y, periodspacing=0, dash=False):
+	def draw_outline(self, canvas, x, y, ypadding=7, periodspacing=0, dash=False):
 		canvas.set_line_width(1.2)
 		canvas.set_source_rgb(0, 0, 0)
-		canvas.rectangle(x, y + self._ypadding, self.width(), self._dayheight)
+		canvas.rectangle(x, y + ypadding, self.width(), self._dayheight)
 		canvas.stroke()
 		canvas.save()
 		if dash:
 			canvas.set_dash([1.5, 2.5], 1.5)
 		# print(periodspacing)
 		if periodspacing != 0:
-			canvas.move_to(x + self.width(), y + self._ypadding + self._dayheight/2)
-			canvas.line_to(x + self.width() + periodspacing, y + self._ypadding + self._dayheight/2)
+			canvas.move_to(x + self.width(), y + ypadding + self._dayheight/2)
+			canvas.line_to(x + self.width() + periodspacing, y + ypadding + self._dayheight/2)
 		canvas.stroke()
 		canvas.restore()
 
-	def draw_grid(self, canvas, x, y):
+	def draw_grid(self, canvas, x, y, ypadding=7):
 		tx = x
 		ty = y
 		for i in range(1, self._period_dict["length"]+1):
@@ -144,13 +156,13 @@ class Periodbox(Periodelement):
 			canvas.show_text(str(n))
 			#self.draw_diamond(canvas, x+self.day_center(n), y=y+self._dayheight*1/2)
 
-	def draw(self, canvas, x, y, periodspacing=0, draw_grid=True, dash=False, debug=False):
+	def draw(self, canvas, x, y, ypadding=7, periodspacing=0, draw_grid=True, dash=False, debug=False):
 		tx = x
-		ty = y + self._ypadding
-		Periodelement.draw(self, canvas, tx, ty, debug)
+		ty = y + ypadding
+		Periodelement.draw(self, canvas, tx, ty, ypadding, debug)
 		if draw_grid:
 			self.draw_grid(canvas, x, y)
-		self.draw_outline(canvas, x, y, periodspacing=periodspacing, dash=dash)
+		self.draw_outline(canvas, x, y, ypadding=ypadding, periodspacing=periodspacing, dash=dash)
 		canvas.stroke()
 		self.draw_daynumbers(canvas, x, y, numbers=[1])
 		return 
@@ -164,37 +176,32 @@ class Period(object):
 		self._dayheight = dayheight
 		self._periodspacing = periodspacing
 		self._length = period_dict["length"]
+		self._elements = []
 
-		self._periodcaption = Periodcaption(period_dict=period_dict, length=self._length, daywidth=daywidth, dayheight=dayheight, ypadding=7)
+		self._periodcaption = Periodcaption(period_dict=period_dict, length=self._length, daywidth=daywidth, dayheight=dayheight)
 
 		self._periodbox = Periodbox(period_dict=period_dict, length=self._length, daywidth=daywidth, dayheight=self._dayheight)
 
-		self._elements = []
-		# add further elements
 		for a in self._period_dict["administrations"]:
-			# print(a["caption"])
-			temp = Procedure(type="administration", period_dict=a, daywidth=self._daywidth, length=self._length, dayheight=self._dayheight, ypadding=7)
+			temp = Procedure(type="administration", period_dict=a, daywidth=self._daywidth, length=self._length, dayheight=self._dayheight)
 			self._elements.append(temp)
-			# print(temp.heigh(canvas))
-
-		# for p in self._period_dict["procedures"]:
-		# 	#print(p["caption"])
-		# 	self._elements.append(Procedure(type=p["caption"], period_dict=p, length=self._length, daywidth=self._daywidth, dayheight=self._dayheight, xoffset=self._xoffset, yoffset=self._yoffset, debug=self._debug))
 
 	def dump(self):
 		print(json.dumps(self._period_dict, indent=2))
 
-	def draw(self, canvas, x, y, debug=False):
+	def draw_structure(self, canvas, x, y, ypadding=7, debug=False):
 		yt = y
-		self._periodcaption.draw(canvas, x, y, debug=debug)
-		yt += self._periodcaption.height(canvas)
-		self._periodbox.draw(canvas, x, yt, periodspacing=self._periodspacing, draw_grid=True, debug=debug)
-		yt += self._periodbox.height(canvas)
+		self._periodcaption.draw(canvas, x, y, ypadding=ypadding, debug=debug)
+		yt += self._periodcaption.height(canvas, ypadding)
+		self._periodbox.draw(canvas, x, yt, ypadding=0, periodspacing=self._periodspacing, draw_grid=True, debug=debug)
+		yt += self._periodbox.height(canvas, ypadding=0)
+		return yt
 
-		for e in self._elements:
-			e.draw(canvas, x=x, y=yt, periodspacing=self._periodspacing, debug=debug)
-			print(e._period_dict["caption"], e.height(canvas))
-			yt += e.height(canvas)
+	def draw_element(self, caption, canvas, x, y, ypadding=7, debug=False):
+		e = filter(lambda i: i._caption == caption, self._elements)
+		for i in e:
+			y = i.draw(canvas, x, y, ypadding=ypadding, debug=debug)
+		return y
 
 	def width(self):
 		return self._periodbox.width()
@@ -205,14 +212,13 @@ class Cycle(Period):
 	def __init__(self, period_dict, **kwargs):
 		Period.__init__(self, period_dict=period_dict, daywidth=7, **kwargs)
 
-	def draw(self, canvas, x, y, debug=False):
-		# print(self._periodspacing)
+	def draw_structure(self, canvas, x, y, ypadding=7, debug=False):
 		yt = y
-		self._periodcaption.draw(canvas, x, yt, debug=debug)
-		yt += self._periodcaption.height(canvas)
-
-		self._periodbox.draw(canvas, x, yt, periodspacing=self._periodspacing, draw_grid=False, dash=True, debug=debug)
-		yt += self._periodbox.height(canvas)
+		self._periodcaption.draw(canvas, x, yt, ypadding=ypadding, debug=debug)
+		yt += self._periodcaption.height(canvas, ypadding)
+		self._periodbox.draw(canvas, x, yt, ypadding=0, periodspacing=self._periodspacing, draw_grid=False, dash=True, debug=debug)
+		yt += self._periodbox.height(canvas, ypadding=0)
+		return yt
 
 
 
@@ -237,24 +243,60 @@ class Trialdesign(object):
 			for p in pp:
 				self._periods.append(Cycle(period_dict=p, periodspacing=self._periodspacing * (p is pp[-1])))
 
+	def imps(self):
+		out = set()
+		if "periods" in self._period_dict:
+			for p in self._period_dict["periods"]:
+				for i in p["administrations"]:
+					out.add(i["caption"])
+		if "cycles" in self._period_dict:
+			for p in self._period_dict["cycles"]:
+				for i in p["administrations"]:
+					out.add(i["caption"])
+
+		# for i in out:
+		# 	for p in self._periods:
+		# 		temp = p.draw_element(i)
+		return(out)
+
 
 	def __str__(self):
 		return(json.dumps(self.structure, indent=2))
 
-	def draw(self, canvas, xoffset=10, yoffset=10):
+	def draw_structure(self, canvas, xoffset=10, yoffset=10, ypadding=7, debug=False):
 		xt = xoffset
 		for p in self._periods:
-			p.draw(canvas, x=xt, y=yoffset, debug=True)
+			y = p.draw_structure(canvas, x=xt, y=yoffset, ypadding=ypadding, debug=debug)
 			xt += p.width() + p._periodspacing
+		return y
 
+	def draw_administrations(self, canvas, x, y, ypadding=7, xcaption=10, debug=False):
+		yt = y
+		for imp in self.imps():
+			# print(imp, x, yt)
+			(xu, yu, cap_widthu, cap_heightu, dxu, dyu) = canvas.text_extents(imp.upper())
+			canvas.move_to(xcaption, yt + cap_heightu + ypadding)
+
+			# canvas.move_to(10, yt)
+			canvas.set_source_rgb(0, 0, 0)
+			canvas.show_text(imp)
+			canvas.stroke()
+			canvas.fill()	
+			xt = x
+			for p in self._periods:
+				temp = p.draw_element(imp, canvas, xt, yt, ypadding=ypadding, debug=debug)
+				xt += p.width() + p._periodspacing
+			yt = temp
+			# y = yt
+		return yt
 
 
 
 ##### Main #####
+ypadding= 7
+debug = False
 
 surface = cairo.SVGSurface("test1.svg", 700, 700)
-
-# surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, 700, 700)
 
 canvas = cairo.Context(surface)
 canvas.select_font_face("Arial", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
@@ -262,17 +304,28 @@ canvas.set_font_size(12)
 
 f = open("/Users/rainerstrotmann/Documents/Programming/Python3/trialdesign/test.json")
 td = Trialdesign(js=json.load(f))
-td.draw(canvas, xoffset=100, yoffset=10)
+yt = td.draw_structure(canvas, xoffset=100, ypadding=ypadding, yoffset=10, debug=debug)
+# print(td.imps())
+td.draw_administrations(canvas, x=100, y=yt, ypadding=ypadding, debug=debug)
+
+
+
+
+
+
 
 f = open("/Users/rainerstrotmann/Documents/Programming/Python3/trialdesign/onco.json")
 td1 = Trialdesign(js=json.load(f))
-td1.draw(canvas, xoffset=100, yoffset=200)
+yt = td1.draw_structure(canvas, xoffset=100, yoffset=200, debug=debug)
+td1.draw_administrations(canvas, x=100, y=yt, ypadding=ypadding, debug=debug)
 
+# print(td1.imps())
 # svg = rsvg.Handle(file="out.svg")
 # svg.render_cairo(canvas)
 
 # surface.write_to_png("test.png")
 surface.finish()
+
 
 	#canvas.saveSvg('example.svg')
 	#canvas.stroke()
