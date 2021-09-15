@@ -1,0 +1,76 @@
+{
+	"periods": [
+		{
+			"caption": "period 1",
+			"length": 9,
+			"start": -1,
+			"daylabels": [-1, 1, 4, 8],
+			"intervals": [
+				{
+					"caption": "hospitalization",
+					"start": -1,
+					"duration": 5
+				}
+			],
+			"administrations": [
+				{
+					"caption": "tepotinib",
+					"days": [1]
+				}
+			],
+			"procedures": [
+				{
+					"caption": "ECG",
+					"days": [-1, 1, 2, 4],
+					"freq": "QD"
+				},
+				{
+					"caption": "PK sampling",
+					"days": [1, 2, 3],
+					"freq": "rich"
+				},
+				{
+					"caption": "PK sampling",
+					"days": [4, 5, 6, 7, 8],
+					"freq": "QD"
+				}	
+			]
+		},
+		{
+			"caption": "period 2",
+			"length": 9,
+			"start": -1,
+			"daylabels": [-1, 1, 4, 8],
+			"intervals": [
+				{
+					"caption": "hospitalization",
+					"start": -1,
+					"duration": 5
+				}
+			],
+			"administrations": [
+				{
+					"caption": "tepotinib",
+					"days": [1]
+				}
+			],
+			"procedures": [
+				{
+					"caption": "PK sampling",
+					"days": [1, 2, 3],
+					"freq": "rich"
+				},
+				{
+					"caption": "PK sampling",
+					"days": [4, 5, 6, 7, 8],
+					"freq": "QD"
+				},		
+				{
+					"caption": "ECG",
+					"days": [-1, 1, 2, 4],
+					"freq": "QD"
+				}
+			]
+		}
+	]
+}

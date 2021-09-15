@@ -1,0 +1,87 @@
+{
+	"periods": [
+		{
+			"caption": "S",
+			"length": 1,
+			"start": 1,
+			"daylabels": []
+		},
+		{
+			"caption": "Period 1",
+			"length": 8,
+			"start": -1,
+			"daylabels": [-1, 1, 4, 7],
+			"intervals": [
+				{
+					"caption": "hospitalization",
+					"start": -1,
+					"duration": 5
+				}
+			],
+			"administrations": [
+				{
+					"caption": "tepotinib",
+					"days": [1]
+				}
+			],
+			"procedures": [
+				{
+					"caption": "PK sampling tepotinib",
+					"days": [1, 2, 3],
+					"freq": "rich"
+				},
+				{
+					"caption": "PK sampling tepotinib",
+					"days": [4, 5, 6, 7, 8],
+					"freq": "QD"
+				}
+			]
+		},
+		{
+			"caption": "Period 2",
+			"length": 25,
+			"start": 8,
+			"daylabels": [8, 15, 22, 25, 26, 29, 32],
+			"intervals": [
+				{
+					"caption": "hospitalization",
+					"start": 25,
+					"duration": 5
+				}
+			],
+			"administrations": [
+				{
+					"caption": "tepotinib",
+					"days": [26]
+				},
+				{
+					"caption": "carbamazepine BID",
+					"days": [8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32]
+				}
+			],
+			"procedures": [
+				{
+					"caption": "PK sampling tepotinib",
+					"days": [26, 27, 28],
+					"freq": "rich"
+				},
+				{
+					"caption": "PK sampling tepotinib",
+					"days": [29, 30, 31, 32],
+					"freq": "QD"
+				},
+				{
+					"caption": "PK sampling carbamazepine",
+					"days": [25, 26],
+					"freq": "QD"
+				}
+			]
+		},
+		{
+			"caption": "F/U",
+			"length": 1,
+			"start": 39,
+			"daylabels": [39]
+		}
+	]
+}
