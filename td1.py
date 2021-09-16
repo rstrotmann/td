@@ -116,11 +116,9 @@ class Periodelement(object):
 
 	def draw_interval(self, canvas, x, y, ndays, ypadding=7, size=0.8):
 		h = self._dayheight*.5*size
-		# w = self._daywidth*.8*size
 		canvas.save()
 		canvas.set_line_width(1.2)
 		canvas.set_source_rgb(0, 0, 0)
-		# canvas.rectangle(x-w/2, y-h/2,  w, h)
 		canvas.rectangle(x, y-h/2, ndays*self._daywidth+1, h)
 		canvas.stroke()
 		canvas.restore()
@@ -275,7 +273,6 @@ class Period(object):
 		if "intervals" in pd:
 			for i in self._period_dict["intervals"]:
 				self._elements.append(Interval(period_dict=i, daywidth=self._daywidth, dayheight=self._dayheight, start=self._start, length=self._length))
-				# self._elements.append(temp)
 
 		for (t, l) in [("administrations", "administration"), ("procedures", "procedure")]:
 			if t in pd:
@@ -317,9 +314,9 @@ class Period(object):
 
 class Cycle(Period):
 	def __init__(self, period_dict, **kwargs):
-		Period.__init__(self, period_dict=period_dict, daywidth=7, **kwargs)
+		Period.__init__(self, period_dict=period_dict, **kwargs)
 
-	def draw_structure(self, canvas, x, y, ypadding=7, debug=False):
+	def draw_structure(self, canvas, x, y, ypadding=7, draw_grid=True, debug=False):
 		yt = y
 		self._periodcaption.draw(canvas, x, yt, ypadding=ypadding, debug=debug)
 		yt += self._periodcaption.height(canvas, ypadding)
@@ -329,12 +326,8 @@ class Cycle(Period):
 
 
 
-#############################
-#	trial design class
-#############################
-
 class Trialdesign(object):
-	def __init__(self, js=dict(), daywidth=15, dayheight=20, periodspacing=15):
+	def __init__(self, js=dict(), daywidth=14, dayheight=20, periodspacing=12):
 		self._period_dict = js
 		self._periodspacing = periodspacing
 		self._daywidth = daywidth
@@ -348,12 +341,9 @@ class Trialdesign(object):
 
 		elif "cycles" in self._period_dict: # cylcle trial
 			pp = self._period_dict["cycles"]
-			# print(pp)
 			for p in pp:
 				self._periods.append(Cycle(period_dict=p, daywidth=self._daywidth, dayheight=self._dayheight, periodspacing=self._periodspacing * (p is pp[-1])))
 
-
-	## to do: compress the following into parametrized function
 	def items(self, item):
 		out = list()
 		if "periods" in self._period_dict:
@@ -368,48 +358,6 @@ class Trialdesign(object):
 						out.append(i["caption"])
 		return(list(dict.fromkeys(out)))		
 
-	# def imps(self):
-	# 	out = list()
-	# 	if "periods" in self._period_dict:
-	# 		for p in self._period_dict["periods"]:
-	# 			if "administrations" in p:
-	# 				for i in p["administrations"]:
-	# 					out.append(i["caption"])
-	# 	if "cycles" in self._period_dict:
-	# 		for p in self._period_dict["cycles"]:
-	# 			if "administrations" in p:
-	# 				for i in p["administrations"]:
-	# 					out.append(i["caption"])
-	# 	return(list(dict.fromkeys(out)))
-
-	# def procedures(self):
-	# 	out = list()
-	# 	if "periods" in self._period_dict:
-	# 		for p in self._period_dict["periods"]:
-	# 			if "procedures" in p:
-	# 				for i in p["procedures"]:
-	# 					out.append(i["caption"])
-	# 	if "cycles" in self._period_dict:
-	# 		for p in self._period_dict["cycles"]:
-	# 			if "procedures" in p:
-	# 				for i in p["procedures"]:
-	# 					out.append(i["caption"])
-	# 	return(list(dict.fromkeys(out)))
-
-	# def intervals(self):
-	# 	out = list()
-	# 	if "periods" in self._period_dict:
-	# 		for p in self._period_dict["periods"]:
-	# 			if "intervals" in p:
-	# 				for i in p["intervals"]:
-	# 					out.append(i["caption"])
-	# 	if "cycles" in self._period_dict:
-	# 		for p in self._period_dict["cycles"]:
-	# 			if "intervals" in p:
-	# 				for i in p["intervals"]:
-	# 					out.append(i["caption"])
-	# 	return(list(dict.fromkeys(out)))
-
 	def __str__(self):
 		return(json.dumps(self.structure, indent=2))
 
@@ -421,63 +369,32 @@ class Trialdesign(object):
 			y += self._dayheight*1/4
 		return y
 
-	def draw_intervals(self, canvas, x, y, ypadding=7, xcaption=10, debug=False):
+	def draw_item(self, item, symbol, canvas, x, y, ypadding=7, xcaption=10, debug=False):
 		yt = y
-		# for i in self.intervals():
-		for i in self. items("intervals"):
+		for i in self.items(item):
 			h = canvas.text_extents(i.upper())[3]
 			canvas.move_to(xcaption, yt + h + ypadding)
-			canvas.set_source_rgb(0, 0, 0)
 			canvas.show_text(i)
 			canvas.stroke()
 			canvas.fill()	
 			xt = x
 			for p in self._periods:
 				if p.has_element(i):
-					temp = p.draw_element(i, canvas, xt, yt, ypadding=ypadding, debug=debug)
-					# print(temp)
+					temp = p.draw_element(i, canvas, xt, yt, ypadding=ypadding, type=symbol, debug=debug)
 				xt += p.width() + p._periodspacing
 			yt = temp
 		return yt
+
+	def draw_intervals(self, canvas, x, y, ypadding=7, xcaption=10, debug=False):
+		return self.draw_item("intervals", "interval", canvas, x, y, ypadding=ypadding, xcaption=xcaption, debug=debug)
 
 	def draw_administrations(self, canvas, x, y, ypadding=7, xcaption=10, debug=False):
-		yt = y
-		# for imp in self.imps():
-		for imp in self.items("administrations"):
-			(xu, yu, cap_widthu, cap_heightu, dxu, dyu) = canvas.text_extents(imp.upper())
-			canvas.move_to(xcaption, yt + cap_heightu + ypadding)
-			canvas.set_source_rgb(0, 0, 0)
-			canvas.show_text(imp)
-			canvas.stroke()
-			canvas.fill()	
-			xt = x
-			for p in self._periods:
-				if p.has_element(imp):
-					temp = p.draw_element(imp, canvas, xt, yt, ypadding=ypadding, type="arrow", debug=debug)
-				xt += p.width() + p._periodspacing
-			yt = temp
-		return yt
+		return self.draw_item("administrations", "arrow", canvas, x, y, ypadding=ypadding, xcaption=xcaption, debug=debug)
 
 	def draw_procedures(self, canvas, x, y, ypadding=7, xcaption=10, debug=False):
-		yt = y
-		# for proc in self.procedures():
-		for proc in self.items("procedures"):
-			h = canvas.text_extents(proc.upper())[3]
-			canvas.move_to(xcaption, yt + h + ypadding)
-			canvas.set_source_rgb(0, 0, 0)
-			canvas.show_text(proc)
-			canvas.stroke()
-			canvas.fill()	
-			xt = x
-			for p in self._periods:
-				if p.has_element(proc):
-					temp = p.draw_element(proc, canvas, xt, yt, ypadding=ypadding, debug=debug)
-				xt += p.width() + p._periodspacing
-			yt = temp
-		return yt
+		return self.draw_item("procedures", "diamond", canvas, x, y, ypadding=ypadding, xcaption=xcaption, debug=debug)
 
 	def draw(self, canvas, x, y, draw_grid=True, debug=False):
-		# temp = self.imps() + self.procedures()
 		temp = self.items("administrations") + self.items("procedures")
 		xoffset = max([canvas.text_extents(i)[4] for i in temp]) + self._daywidth*2
 		yt = td.draw_structure(canvas, xoffset=xoffset, ypadding=ypadding, yoffset=10, draw_grid=draw_grid, debug=debug)
@@ -491,14 +408,14 @@ class Trialdesign(object):
 ypadding= 6
 debug = False
 
-surface = cairo.SVGSurface("test1.svg", 1000, 700)
+surface = cairo.SVGSurface("test.svg", 1000, 700)
 
 canvas = cairo.Context(surface)
 canvas.select_font_face("Helvetica", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
 canvas.set_font_size(11)
 
-f = open("/Users/rainerstrotmann/Documents/Programming/Python3/trialdesign/ms0051.json")
-td = Trialdesign(js=json.load(f), daywidth=14, dayheight=20, periodspacing=12)
+f = open("/Users/rainerstrotmann/Documents/Programming/Python3/trialdesign/ms0044.json")
+td = Trialdesign(js=json.load(f))
 td.draw(canvas, 10, 10, draw_grid=True, debug=debug)
 
 # f = open("/Users/rainerstrotmann/Documents/Programming/Python3/trialdesign/onco.json")

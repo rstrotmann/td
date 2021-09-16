@@ -1,7 +1,12 @@
 {
 	"periods": [
 		{
-			"caption": "period 1",
+			"caption": "S",
+			"length": 1,
+			"daylabels": []
+		},
+		{
+			"caption": "Period 1",
 			"length": 9,
 			"start": -1,
 			"daylabels": [-1, 1, 4, 8],
@@ -37,7 +42,7 @@
 			]
 		},
 		{
-			"caption": "period 2",
+			"caption": "Period 2",
 			"length": 9,
 			"start": -1,
 			"daylabels": [-1, 1, 4, 8],
