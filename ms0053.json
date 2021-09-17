@@ -1,22 +1,29 @@
 {
 	"periods": [
 		{
-			"caption": "period 1",
-			"length": 6,
+			"caption": "S",
+			"length": 1,
+			"start": 1,
+			"daylabels": []
+		},
+		{
+			"caption": "Period 1",
+			"length": 8,
 			"start": -1,
-			"daylabels": [-1, 1, 5],
+			"daylabels": [-1, 1, 4, 7],
 			"intervals": [
 				{
 					"caption": "hospitalization",
 					"start": -1,
-					"duration": 3
+					"duration": 5
+				},
+				{
+					"caption": "fecal sampling",
+					"start": 1,
+					"duration": 4
 				}
 			],
 			"administrations": [
-				{
-					"caption": "itraconazole",
-					"days": []
-				},
 				{
 					"caption": "tepotinib",
 					"days": [1]
@@ -24,61 +31,70 @@
 			],
 			"procedures": [
 				{
-					"caption": "ECG",
-					"days": [1],
-					"freq": "QD"
-				},
-				{
-					"caption": "PK sampling",
-					"days": [1],
+					"caption": "PK sampling tepotinib",
+					"days": ["1, 2-3"],
 					"freq": "rich"
 				},
 				{
-					"caption": "PK sampling",
-					"days": [2, 3],
+					"caption": "PK sampling tepotinib",
+					"days": ["4-8"],
 					"freq": "QD"
-				}	
+				},
+				{
+					"caption": "laxative",
+					"days": [3]
+				}
 			]
 		},
 		{
-			"caption": "period 2",
-			"length": 8,
-			"start": -1,
-			"daylabels": [-1, 1, 5, 7],
+			"caption": "Period 2",
+			"length": 12,
+			"start": 8,
+			"daylabels": [8, 11, 12, 15, 19],
 			"intervals": [
 				{
 					"caption": "hospitalization",
-					"start": 1,
-					"duration": 3
+					"start": 11,
+					"duration": 5
+				},
+				{
+					"caption": "fecal sampling",
+					"start": 12,
+					"duration": 4
 				}
 			],
 			"administrations": [
 				{
-					"caption": "itraconazole",
-					"days": [1, 2, 3, 4, 5, 6, 7]
+					"caption": "tepotinib",
+					"days": [12]
 				},
 				{
-					"caption": "tepotinib",
-					"days": [5]
+					"caption": "itraconazole",
+					"days": ["8-10, 11, 12-18"]
 				}
 			],
 			"procedures": [
 				{
-					"caption": "PK sampling",
-					"days": [1],
+					"caption": "PK sampling tepotinib",
+					"days": ["12-14"],
 					"freq": "rich"
 				},
 				{
-					"caption": "PK sampling",
-					"days": [2, 3],
+					"caption": "PK sampling tepotinib",
+					"days": ["15-19"],
 					"freq": "QD"
-				},		
+				},
 				{
-					"caption": "ECG",
-					"days": [-1, 1, 5],
-					"freq": "QD"
+					"caption": "laxative",
+					"days": [14]
 				}
 			]
+		},
+		{
+			"caption": "F/U",
+			"length": 1,
+			"start": 20,
+			"daylabels": [20]
 		}
 	]
 }

@@ -6,6 +6,7 @@ import cairo
 import json
 import random
 import math
+import re
 
 class Periodelement(object):
 	def __init__(self, period_dict=dict(), length=0, start=1, dayheight=20, daywidth=15):
@@ -60,7 +61,7 @@ class Periodelement(object):
 
 	def draw_rect(self, canvas, x, y, ypadding=7, size=.8):
 		h = self._dayheight*.5*size
-		w = self._daywidth*.8*size
+		w = self._daywidth*.9*size
 		canvas.save()
 		canvas.set_line_width(1.2)
 		canvas.set_source_rgb(0, 0, 0)
@@ -129,7 +130,14 @@ class Periodelement(object):
 	def draw(self, canvas, x, y, ypadding=7, debug=False):
 		if debug:
 			self.draw_dummy(canvas, x, y, ypadding=ypadding)
-		pass
+
+	def draw_symbol(self, canvas, x, y, type="diamond", ypadding=7, debug=False):
+		if type=="arrow":
+			self.draw_arrow(canvas, x, y, ypadding=ypadding)
+		if type=="diamond":
+			self.draw_diamond(canvas, x, y, ypadding=ypadding)
+		if type=="rect":
+			self.draw_rect(canvas, x, y, ypadding=ypadding)
 
 	def dump(self):
 		print(json.dumps(self._period_dict, indent=2))
@@ -150,13 +158,25 @@ class Procedure(Periodelement):
 			self.draw_dummy(canvas, x, y, ypadding=ypadding)
 		yt = y + self.height(canvas, ypadding=ypadding) *1/2
 		for i in self._days:
-			xt = x + self.day_center(i)
-			if type=="arrow":
-				self.draw_arrow(canvas, xt, yt, ypadding=ypadding)
-			if type=="diamond":
-				self.draw_diamond(canvas, xt, yt, ypadding=ypadding)
-			if type=="rect":
-				self.draw_rect(canvas, xt, yt, ypadding=ypadding)
+			if isinstance(i, int):
+				self.draw_symbol(canvas, x + self.day_center(i), yt, type=type, ypadding=ypadding)
+			elif isinstance(i, str):
+				# print(f'string: {i}')
+				pat_element = r'(\d+)(-(\d+))?'
+				pat = f'({pat_element}(, )*)'
+				l = []
+				m = re.findall(pat, i)
+				if m:
+					for mm in m:
+						if mm[3] == "": # single entry
+							l.append(int(mm[1]))
+						else: # range
+							for i in range(int(mm[1]), int(mm[3])+1):
+								l.append(i)
+					for j in l:
+						self.draw_symbol(canvas, x + self.day_center(j), yt, type=type, ypadding=ypadding)
+				# else:
+				# 	print("no match")
 		return y + self.height(canvas, ypadding=ypadding)
 
 
@@ -231,8 +251,11 @@ class Periodbox(Periodelement):
 		canvas.save()
 		canvas.set_font_size(self._dayheight*.5)
 		for n in numbers:
+			xcorrection = canvas.text_extents("1")[2] / 3 # correct placement of leading "1"
 			(nx, ny, n_width, n_height, dx, dy) = canvas.text_extents(str(n))
-			canvas.move_to(x + self.day_center(n) - n_width/2, y + self._dayheight/2 + n_height/2)
+			if str(n)[0] != "1":
+				xcorrection = 0
+			canvas.move_to(x + self.day_center(n)- xcorrection - n_width/2, y + self._dayheight/2 + n_height/2)
 			canvas.show_text(str(n))
 		canvas.restore()
 
@@ -414,9 +437,6 @@ def main(file, debug, ypadding, fontsize, daywidth, dayheight):
 	infile = pathlib.Path(file)
 	inpath = pathlib.Path(file).resolve().parent
 	outfile = inpath.joinpath(infile.stem + ".svg")
-
-	# if infile.is_absolute():
-	# 	print("absolute path")
 
 	surface = cairo.SVGSurface(outfile, 1000, 700)
 	canvas = cairo.Context(surface)
