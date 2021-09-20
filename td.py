@@ -16,6 +16,10 @@ class Periodelement(object):
 		self._length = length
 		self._start = start
 		self._caption = period_dict["caption"]
+		if "freq" in period_dict:
+			self._freq = period_dict["freq"]
+		else:
+			self._freq = "QD"
 
 	def _metrics(self, canvas):
 		caption= self._period_dict["caption"].upper()
@@ -132,12 +136,14 @@ class Periodelement(object):
 			self.draw_dummy(canvas, x, y, ypadding=ypadding)
 
 	def draw_symbol(self, canvas, x, y, type="diamond", ypadding=7, debug=False):
-		if type=="arrow":
+		if type == "arrow":
 			self.draw_arrow(canvas, x, y, ypadding=ypadding)
-		if type=="diamond":
+		if type == "diamond":
 			self.draw_diamond(canvas, x, y, ypadding=ypadding)
-		if type=="rect":
+		if type == "rect":
 			self.draw_rect(canvas, x, y, ypadding=ypadding)
+		if type == "cont":
+			self.draw_arrow(canvas, x, y, 1, ypadding=ypadding)
 
 	def dump(self):
 		print(json.dumps(self._period_dict, indent=2))
@@ -153,30 +159,46 @@ class Procedure(Periodelement):
 	def caption(self):
 		return self._caption
 
-	def draw(self, canvas, x, y, ypadding=7, periodspacing=0, type="diamond", debug=False):
+	def draw(self, canvas, x, y, ypadding=7, periodspacing=0, debug=False):
+		freq = self._freq
+		type = "arrow" if self._type == "administration" else "diamond"
+		if self._freq == "rich":
+			type="rect"
+		elif self._freq == "cont":
+			type="arrow"
+
 		if debug:
 			self.draw_dummy(canvas, x, y, ypadding=ypadding)
+		# print(json.dumps(dict({"caption":self._caption, "type":self._type, "freq":self._freq})))
 		yt = y + self.height(canvas, ypadding=ypadding) *1/2
+		days = []
 		for i in self._days:
 			if isinstance(i, int):
-				self.draw_symbol(canvas, x + self.day_center(i), yt, type=type, ypadding=ypadding)
+				days.append(i)
 			elif isinstance(i, str):
-				# print(f'string: {i}')
 				pat_element = r'(\d+)(-(\d+))?'
 				pat = f'({pat_element}(, )*)'
-				l = []
 				m = re.findall(pat, i)
 				if m:
 					for mm in m:
-						if mm[3] == "": # single entry
-							l.append(int(mm[1]))
-						else: # range
+						if mm[3] == "":
+							days.append(int(mm[1]))
+						else:
 							for i in range(int(mm[1]), int(mm[3])+1):
-								l.append(i)
-					for j in l:
-						self.draw_symbol(canvas, x + self.day_center(j), yt, type=type, ypadding=ypadding)
-				# else:
-				# 	print("no match")
+								days.append(i)
+		if self._freq == "cont":
+			start, end = days[0], days[0]
+			for i in days[1:]:
+				if (i != end + 1) | (i == days[-1]):
+					if i == days[-1]:
+						end = i
+						self.draw_interval(canvas, x + self.day_start(start), yt, ndays=end-start+1)
+					start, end = i, i
+				else:
+					end = i
+		else:
+			for j in days:
+				self.draw_symbol(canvas, x + self.day_center(j), yt, type=type, ypadding=ypadding)
 		return y + self.height(canvas, ypadding=ypadding)
 
 
@@ -320,13 +342,14 @@ class Period(object):
 		e = filter(lambda i: i._caption == caption, self._elements)
 		yy = y
 		for i in e:
-			if i._type == "administration":
-				t = "arrow"
-			elif "freq" in i._period_dict and i._period_dict["freq"] == "rich":
-				t = "rect"
-			else:
-				t = "diamond"
-			yy = i.draw(canvas, x, y, ypadding=ypadding, type=t, debug=debug)
+			# if i._type == "administration":
+			# 	t = "arrow"
+			# elif "freq" in i._period_dict and i._period_dict["freq"] == "rich":
+			# 	t = "rect"
+			# else:
+			# 	t = "diamond"
+			# yy = i.draw(canvas, x, y, ypadding=ypadding, type=t, debug=debug)
+			yy = i.draw(canvas, x, y, ypadding=ypadding, debug=debug)
 		return yy
 
 	def width(self):
@@ -421,7 +444,7 @@ class Trialdesign(object):
 		yt = self.draw_intervals(canvas, x=xoffset, y=yt, ypadding=ypadding, debug=debug)
 		yt = self.draw_administrations(canvas, x=xoffset, y=yt, ypadding=ypadding, debug=debug)
 		yt = self.draw_procedures(canvas, x=xoffset, y=yt, ypadding=ypadding, debug=debug)
-
+		# print(self.items("procedures"))
 
 
 ##### Main #####

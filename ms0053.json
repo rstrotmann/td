@@ -16,20 +16,28 @@
 					"caption": "hospitalization",
 					"start": -1,
 					"duration": 5
-				},
-				{
-					"caption": "fecal sampling",
-					"start": 1,
-					"duration": 4
 				}
 			],
 			"administrations": [
+				{
+					"caption": "itraconazole",
+					"days": [	]
+				},
 				{
 					"caption": "tepotinib",
 					"days": [1]
 				}
 			],
 			"procedures": [
+				{
+					"caption": "fecal sampling",
+					"days": ["1-4"],
+					"freq": "cont"
+				},
+				{
+					"caption": "laxative",
+					"days": [3]
+				},
 				{
 					"caption": "PK sampling tepotinib",
 					"days": ["1, 2-3"],
@@ -39,10 +47,6 @@
 					"caption": "PK sampling tepotinib",
 					"days": ["4-8"],
 					"freq": "QD"
-				},
-				{
-					"caption": "laxative",
-					"days": [3]
 				}
 			]
 		},
@@ -56,21 +60,16 @@
 					"caption": "hospitalization",
 					"start": 11,
 					"duration": 5
-				},
-				{
-					"caption": "fecal sampling",
-					"start": 12,
-					"duration": 4
 				}
 			],
 			"administrations": [
 				{
-					"caption": "tepotinib",
-					"days": [12]
-				},
-				{
 					"caption": "itraconazole",
 					"days": ["8-10, 11, 12-18"]
+				},
+				{
+					"caption": "tepotinib",
+					"days": [12]
 				}
 			],
 			"procedures": [
@@ -83,6 +82,11 @@
 					"caption": "PK sampling tepotinib",
 					"days": ["15-19"],
 					"freq": "QD"
+				},
+				{
+					"caption": "fecal sampling",
+					"days": ["12-15"],
+					"freq": "cont"
 				},
 				{
 					"caption": "laxative",
