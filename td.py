@@ -150,10 +150,12 @@ class Periodelement(object):
 
 
 class Procedure(Periodelement):
-	def __init__(self, type="generic", days=[], **kwargs):
+	def __init__(self, type="generic", days=[], times=[], **kwargs):
 		self._type = type
 		Periodelement.__init__(self, **kwargs)
 		self._days = self._period_dict["days"]
+		if "times" in self._period_dict:
+			self._times = self._period_dict["times"]
 
 	@property
 	def caption(self):
@@ -166,10 +168,8 @@ class Procedure(Periodelement):
 			type="rect"
 		elif self._freq == "cont":
 			type="arrow"
-
 		if debug:
 			self.draw_dummy(canvas, x, y, ypadding=ypadding)
-		# print(json.dumps(dict({"caption":self._caption, "type":self._type, "freq":self._freq})))
 		yt = y + self.height(canvas, ypadding=ypadding) *1/2
 		days = []
 		for i in self._days:
@@ -313,7 +313,6 @@ class Period(object):
 
 		self._periodbox = Periodbox(period_dict=period_dict, length=self._length, start=self._start, daywidth=daywidth, dayheight=self._dayheight)
 
-		# intervals
 		if "intervals" in pd:
 			for i in self._period_dict["intervals"]:
 				self._elements.append(Interval(period_dict=i, daywidth=self._daywidth, dayheight=self._dayheight, start=self._start, length=self._length))
@@ -342,13 +341,6 @@ class Period(object):
 		e = filter(lambda i: i._caption == caption, self._elements)
 		yy = y
 		for i in e:
-			# if i._type == "administration":
-			# 	t = "arrow"
-			# elif "freq" in i._period_dict and i._period_dict["freq"] == "rich":
-			# 	t = "rect"
-			# else:
-			# 	t = "diamond"
-			# yy = i.draw(canvas, x, y, ypadding=ypadding, type=t, debug=debug)
 			yy = i.draw(canvas, x, y, ypadding=ypadding, debug=debug)
 		return yy
 
@@ -444,7 +436,6 @@ class Trialdesign(object):
 		yt = self.draw_intervals(canvas, x=xoffset, y=yt, ypadding=ypadding, debug=debug)
 		yt = self.draw_administrations(canvas, x=xoffset, y=yt, ypadding=ypadding, debug=debug)
 		yt = self.draw_procedures(canvas, x=xoffset, y=yt, ypadding=ypadding, debug=debug)
-		# print(self.items("procedures"))
 
 
 ##### Main #####
@@ -463,7 +454,7 @@ def main(file, debug, ypadding, fontsize, daywidth, dayheight):
 
 	surface = cairo.SVGSurface(outfile, 1000, 700)
 	canvas = cairo.Context(surface)
-	canvas.select_font_face("Helvetica", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
+	canvas.select_font_face("Calibri", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
 	canvas.set_font_size(fontsize)
 
 	f = open(infile)

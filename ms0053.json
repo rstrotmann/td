@@ -21,7 +21,7 @@
 			"administrations": [
 				{
 					"caption": "itraconazole",
-					"days": [	]
+					"days": []
 				},
 				{
 					"caption": "tepotinib",
@@ -41,7 +41,8 @@
 				{
 					"caption": "PK sampling tepotinib",
 					"days": ["1, 2-3"],
-					"freq": "rich"
+					"freq": "rich",
+					"times": [0, 0.5, 1, 2, 4, 6, 24, 36, 48, 60]
 				},
 				{
 					"caption": "PK sampling tepotinib",
