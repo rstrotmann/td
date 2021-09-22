@@ -87,6 +87,18 @@ class Periodelement(object):
 		canvas.stroke()
 		canvas.restore()
 
+	def draw_circle(self, canvas, x, y, fill=False, ypadding=7, size=0.6):
+		canvas.save()
+		canvas.set_line_width(1.2)
+		canvas.set_line_join(cairo.LINE_JOIN_ROUND)
+		canvas.set_line_join(cairo.LINE_CAP_ROUND)
+		canvas.set_source_rgb(0, 0, 0)
+		canvas.arc(x, y, self._daywidth/2*size, 0, 2*math.pi)
+		if fill:
+			canvas.fill()
+		canvas.stroke()
+		canvas.restore()				
+
 	def draw_arrow(self, canvas, x, y, ypadding=7, size=1.2):
 		canvas.save()
 		canvas.set_line_width(1.4)
@@ -135,7 +147,7 @@ class Periodelement(object):
 		if debug:
 			self.draw_dummy(canvas, x, y, ypadding=ypadding)
 
-	def draw_symbol(self, canvas, x, y, type="diamond", ypadding=7, debug=False):
+	def draw_symbol(self, canvas, x, y, type="diamond", value=False, ypadding=7, debug=False):
 		if type == "arrow":
 			self.draw_arrow(canvas, x, y, ypadding=ypadding)
 		if type == "diamond":
@@ -144,6 +156,8 @@ class Periodelement(object):
 			self.draw_rect(canvas, x, y, ypadding=ypadding)
 		if type == "cont":
 			self.draw_arrow(canvas, x, y, 1, ypadding=ypadding)
+		if type == "circle":
+			self.draw_circle(canvas, x, y, fill=value, ypadding=ypadding)
 
 	def dump(self):
 		print(json.dumps(self._period_dict, indent=2))
@@ -152,10 +166,13 @@ class Periodelement(object):
 class Procedure(Periodelement):
 	def __init__(self, type="generic", days=[], times=[], **kwargs):
 		self._type = type
+		self._value = -1
 		Periodelement.__init__(self, **kwargs)
 		self._days = self._period_dict["days"]
 		if "times" in self._period_dict:
 			self._times = self._period_dict["times"]
+		if "value" in self._period_dict:
+			self._value = self._period_dict["value"]
 
 	@property
 	def caption(self):
@@ -163,11 +180,16 @@ class Procedure(Periodelement):
 
 	def draw(self, canvas, x, y, ypadding=7, periodspacing=0, debug=False):
 		freq = self._freq
+		value = False
 		type = "arrow" if self._type == "administration" else "diamond"
 		if self._freq == "rich":
 			type="rect"
 		elif self._freq == "cont":
 			type="arrow"
+		if self._value >= 0:
+			type = "circle"
+			value = self._value>0
+
 		if debug:
 			self.draw_dummy(canvas, x, y, ypadding=ypadding)
 		yt = y + self.height(canvas, ypadding=ypadding) *1/2
@@ -198,7 +220,7 @@ class Procedure(Periodelement):
 					end = i
 		else:
 			for j in days:
-				self.draw_symbol(canvas, x + self.day_center(j), yt, type=type, ypadding=ypadding)
+				self.draw_symbol(canvas, x + self.day_center(j), yt, type=type, value=value, ypadding=ypadding)
 		return y + self.height(canvas, ypadding=ypadding)
 
 
@@ -443,23 +465,25 @@ class Trialdesign(object):
 @click.command()
 @click.argument("file")
 @click.option("--ypadding", "-y", type=int, default=6, help='vertical padding (default 6)')
-@click.option("--fontsize", "-f", type=int, default=11, help='output font size (default 11)')
+@click.option("--font", "-f", type=str, default="Calibri", help='Font face (default Calibri)')
+@click.option("--fontsize", "-s", type=int, default=11, help='output font size (default 11)')
 @click.option("--daywidth", "-w", type=int, default=14, help='width of days (default 14)')
 @click.option("--dayheight", "-h", type=int, default=20, help='height of days (default 20)')
+@click.option("--nogrid", "-g", is_flag=True, default=True, help='hide day grid')
 @click.option("--debug", "-d", is_flag=True, help='debug output')
-def main(file, debug, ypadding, fontsize, daywidth, dayheight):
+def main(file, debug, ypadding, font, nogrid, fontsize, daywidth, dayheight):
 	infile = pathlib.Path(file)
 	inpath = pathlib.Path(file).resolve().parent
 	outfile = inpath.joinpath(infile.stem + ".svg")
 
 	surface = cairo.SVGSurface(outfile, 1000, 700)
 	canvas = cairo.Context(surface)
-	canvas.select_font_face("Calibri", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
+	canvas.select_font_face(font, cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
 	canvas.set_font_size(fontsize)
 
 	f = open(infile)
 	td = Trialdesign(js=json.load(f), daywidth=daywidth, dayheight=dayheight)
-	td.draw(canvas, 10, 10, draw_grid=True, ypadding=ypadding, debug=debug)
+	td.draw(canvas, 10, 10, draw_grid=nogrid, ypadding=ypadding, debug=debug)
 	surface.finish()
 
 

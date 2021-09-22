@@ -1,0 +1,126 @@
+{
+	"periods": [
+		{
+			"caption": "S",
+			"length": 1,
+			"start": 1,
+			"daylabels": []
+		},
+		{
+			"caption": "Treatment A",
+			"length": 7,
+			"start": 1,
+			"daylabels": [1, 3, 7],
+			"intervals": [
+				{
+					"caption": "hospitalization",
+					"start": 1,
+					"duration": 3
+				}
+			],
+			"administrations": [
+				{
+					"caption": "tepotinib",
+					"days": [1]
+				}
+			],
+			"procedures": [
+				{
+					"caption": "food",
+					"value": 1,
+					"days": [1]
+				},
+				{
+					"caption": "PK sampling tepotinib",
+					"days": ["1-3"],
+					"freq": "rich"
+				},
+				{
+					"caption": "PK sampling tepotinib",
+					"days": ["4-7"],
+					"freq": "QD"
+				}
+			]
+		},
+		{
+			"caption": "Treatment B",
+			"length": 11,
+			"start": 1,
+			"daylabels": [1, 5, 7, 11],
+			"intervals": [
+				{
+					"caption": "hospitalization",
+					"start": 5,
+					"duration": 3
+				}
+			],
+			"administrations": [
+				{
+					"caption": "tepotinib",
+					"days": [5]
+				},
+				{
+					"caption": "omeprazole",
+					"days": ["1-5"]
+				}
+			],
+			"procedures": [
+				{
+					"caption": "food",
+					"value": 0,
+					"days": [5]
+				},
+				{
+					"caption": "PK sampling tepotinib",
+					"days": ["5-7"],
+					"freq": "rich"
+				},
+				{
+					"caption": "PK sampling tepotinib",
+					"days": ["8-11"],
+					"freq": "QD"
+				}
+			]
+		},
+		{
+			"caption": "Treatment C",
+			"length": 11,
+			"start": 1,
+			"daylabels": [1, 5, 7, 11],
+			"intervals": [
+				{
+					"caption": "hospitalization",
+					"start": 5,
+					"duration": 3
+				}
+			],
+			"administrations": [
+				{
+					"caption": "tepotinib",
+					"days": [5]
+				},
+				{
+					"caption": "omeprazole",
+					"days": ["1-5"]
+				}
+			],
+			"procedures": [
+				{
+					"caption": "food",
+					"value": 1,
+					"days": [5]
+				},
+				{
+					"caption": "PK sampling tepotinib",
+					"days": ["5-7"],
+					"freq": "rich"
+				},
+				{
+					"caption": "PK sampling tepotinib",
+					"days": ["8-11"],
+					"freq": "QD"
+				}
+			]
+		}		
+	]
+}
