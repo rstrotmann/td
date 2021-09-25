@@ -282,14 +282,16 @@ class Periodbox(Periodelement):
 		canvas.restore()
 
 	def draw_grid(self, canvas, x, y, ypadding=7):
+		canvas.save()
+		canvas.set_line_width(1.2)
+		canvas.set_source_rgb(0, 0, 0)
 		tx = x
 		ty = y
 		for i in range(1, self._period_dict["length"]+1):
-			canvas.set_line_width(1.2)
-			canvas.set_source_rgb(0, 0, 0)
 			canvas.rectangle(tx, ty, self._daywidth, self._dayheight)
 			canvas.stroke()
 			tx += self._daywidth
+		canvas.restore()
 
 	def draw_daynumbers(self, canvas, x, y, numbers):
 		canvas.save()
@@ -299,14 +301,31 @@ class Periodbox(Periodelement):
 			(nx, ny, n_width, n_height, dx, dy) = canvas.text_extents(str(n))
 			if str(n)[0] != "1":
 				xcorrection = 0
+			# if n == numbers[-1] & self._length >1:
+			# 	n_width = canvas.text_extents(str(n) + "-")[2]
 			canvas.move_to(x + self.day_center(n)- xcorrection - n_width/2, y + self._dayheight/2 + n_height/2)
 			canvas.show_text(str(n))
+		canvas.restore()
+
+	def draw_dayshading(self, canvas, x, y, shading):
+		canvas.save()
+		for s in shading:
+			canvas.set_source_rgb(0.85, 0.85, 0.85)
+			canvas.rectangle(x+self.day_start(s), y, self._daywidth, self._dayheight)
+			canvas.fill()
+			canvas.set_source_rgb(0,0,0)
+			canvas.set_line_width(1.2)
+			canvas.rectangle(x+self.day_start(s), y, self._daywidth, self._dayheight)
+			canvas.stroke()
 		canvas.restore()
 
 	def draw(self, canvas, x, y, ypadding=7, periodspacing=0, draw_grid=True, dash=False, debug=False):
 		tx = x
 		ty = y + ypadding
 		Periodelement.draw(self, canvas, tx, ty, ypadding, debug)
+		if "dayshading" in self._period_dict:
+			# shading = self._period_dict["dayshading"]
+			self.draw_dayshading(canvas, x, y, shading=self._period_dict["dayshading"])
 		if draw_grid:
 			self.draw_grid(canvas, x, y)
 		self.draw_outline(canvas, x, y, ypadding=ypadding, periodspacing=periodspacing, dash=dash)
@@ -489,3 +508,9 @@ def main(file, debug, ypadding, font, nogrid, fontsize, daywidth, dayheight):
 
 if __name__ == "__main__":
 	main()
+
+
+## to do:
+#
+# - use typer instead of click
+# - make command 'all' to parse all json files in folder

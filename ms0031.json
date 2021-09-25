@@ -1,0 +1,37 @@
+{
+	"cycles": [
+		{
+			"caption": "cycle 1",
+			"length": 21,
+			"daylabels": [1, 8, 15],
+			"dayshading": [1, 8, 15],
+			"administrations": [
+				{
+					"caption": "tepotinib",
+					"days": ["1-21"]
+				}
+			],
+			"procedures": [
+				{
+					"caption": "RECIST",
+					"days": []
+				},		
+				{
+					"caption": "safety ECG",
+					"days": [1, 2, 15, 16],
+					"freq": "QD"
+				},
+				{
+					"caption": "PK sampling (safety run-in)",
+					"days": [1, 15],
+					"freq": "rich"
+				},
+				{
+					"caption": "PK sampling (safety run-in)",
+					"days": [2, 16],
+					"freq": "QD"
+				}
+			]
+		}
+	]
+}

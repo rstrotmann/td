@@ -1,0 +1,70 @@
+{
+	"periods": [
+		{
+			"caption": "S",
+			"length": 1,
+			"start": 1,
+			"daylabels": []
+		},
+		{
+			"caption": "Treatment phase",
+			"length": 33,
+			"start": -1,
+			"daylabels": [-1, 1, 4, 5, 6, 8, 15, 22, 28, 32],
+			"intervals": [
+				{
+					"caption": "hospitalization",
+					"start": 4,
+					"duration": 3
+				}
+			],
+			"administrations": [
+				{
+					"caption": "DVI PfSPZ",
+					"days": [1]
+				},
+				{
+					"caption": "M5717",
+					"days": [5]
+				},
+				{
+					"caption": "rescue medication",
+					"days": [32]
+				}
+			],
+			"procedures": [
+				{
+					"caption": "parasitemia by qPCR",
+					"days": ["1, 6-24, 26, 28, 30, 32"]
+				},
+				{
+					"caption": "PK sampling",
+					"days": ["5"],
+					"freq": "rich"
+				},
+				{
+					"caption": "PK sampling",
+					"days": ["6, 10, 12, 13, 30"],
+					"freq": "QD"
+				}
+			]
+		},
+		{
+			"caption": "F/U",
+			"length": 1,
+			"start": 36,
+			"daylabels": [36],
+			"procedures": [
+				{
+					"caption": "parasitemia by qPCR",
+					"days": ["36"]
+				},
+				{
+					"caption": "PK sampling",
+					"days": ["36"],
+					"freq": "QD"
+				}
+			]
+		}	
+	]
+}

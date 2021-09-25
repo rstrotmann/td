@@ -22,3 +22,4 @@ with cairo.SVGSurface("test1.svg", 700, 700) as surface:
 		#print(x, y, width, height)
 		context.move_to(x+15-width/2, y+15+height/2)
 		context.show_text(str(i))
+

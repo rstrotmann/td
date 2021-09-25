@@ -11,6 +11,7 @@
 			"length": 8,
 			"start": -1,
 			"daylabels": [-1, 1, 4, 7],
+			"dayshading": [1],
 			"intervals": [
 				{
 					"caption": "hospitalization",
@@ -42,6 +43,7 @@
 			"length": 25,
 			"start": 8,
 			"daylabels": [8, 15, 22, 25, 26, 29, 32],
+			"dayshading": [8, 15, 22, 29],
 			"intervals": [
 				{
 					"caption": "hospitalization",

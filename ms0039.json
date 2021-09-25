@@ -11,6 +11,7 @@
 			"length": 7,
 			"start": 1,
 			"daylabels": [1, 3, 7],
+			"dayshading": [1],
 			"intervals": [
 				{
 					"caption": "hospitalization",
@@ -46,7 +47,8 @@
 			"caption": "Treatment B",
 			"length": 11,
 			"start": 1,
-			"daylabels": [1, 5, 7, 11],
+			"daylabels": [1, 5, 7, 8, 11],
+			"dayshading": [1, 8],
 			"intervals": [
 				{
 					"caption": "hospitalization",
@@ -86,7 +88,8 @@
 			"caption": "Treatment C",
 			"length": 11,
 			"start": 1,
-			"daylabels": [1, 5, 7, 11],
+			"daylabels": [1, 5, 7, 8, 11],
+			"dayshading": [1, 8],
 			"intervals": [
 				{
 					"caption": "hospitalization",
