@@ -20,6 +20,10 @@ class Periodelement(object):
 			self._freq = period_dict["freq"]
 		else:
 			self._freq = "QD"
+		if "decoration" in period_dict:
+			self._decoration = period_dict["decoration"]
+		else:
+			self._decoration = ""
 
 	def _metrics(self, canvas):
 		caption= self._period_dict["caption"].upper()
@@ -143,6 +147,38 @@ class Periodelement(object):
 		canvas.stroke()
 		canvas.restore()
 
+	def draw_open_bracket(self, canvas, x, y, ypadding=7, size=0.8, xpadding=0, radius=3):
+		h = self._dayheight*size
+		w = self._daywidth
+		r = w/5
+		r = radius
+		d = w/10
+		d = xpadding
+		canvas.save()
+		canvas.set_line_width(1.2)
+		canvas.set_source_rgb(0, 0, 0)
+		canvas.arc_negative(x-w/2+r-d, y-h/2+r, r, math.pi*1.5, math.pi)
+		canvas.line_to(x-w/2-d, y+h/2-r)
+		canvas.arc_negative(x-w/2+r-d, y+h/2-r, r, math.pi, math.pi*0.5)
+		canvas.stroke()
+		canvas.restore()
+
+	def draw_close_bracket(self, canvas, x, y, ypadding=7, size=0.8, xpadding=0, radius=3):
+		h = self._dayheight*size
+		w = self._daywidth
+		r = w/5
+		r = radius
+		d = w/10
+		d = xpadding
+		canvas.save()
+		canvas.set_line_width(1.2)
+		canvas.set_source_rgb(0, 0, 0)
+		canvas.arc(x+w/2-r+d, y-h/2+r, r, math.pi*1.5, 0)
+		canvas.line_to(x+w/2+d, y+h/2-r)
+		canvas.arc(x+w/2-r+d, y+h/2-r, r, 0, math.pi*0.5)
+		canvas.stroke()
+		canvas.restore()
+
 	def draw(self, canvas, x, y, ypadding=7, debug=False):
 		if debug:
 			self.draw_dummy(canvas, x, y, ypadding=ypadding)
@@ -152,6 +188,8 @@ class Periodelement(object):
 			self.draw_arrow(canvas, x, y, ypadding=ypadding)
 		if type == "diamond":
 			self.draw_diamond(canvas, x, y, ypadding=ypadding)
+			# self.draw_open_bracket(canvas, x, y, ypadding=ypadding)
+			# self.draw_close_bracket(canvas, x, y, ypadding=ypadding)
 		if type == "rect":
 			self.draw_rect(canvas, x, y, ypadding=ypadding)
 		if type == "cont":
@@ -208,6 +246,10 @@ class Procedure(Periodelement):
 						else:
 							for i in range(int(mm[1]), int(mm[3])+1):
 								days.append(i)
+		if self._decoration == "bracketed":
+			# print("bracketed")
+			self.draw_open_bracket(canvas, x+self.day_center(min(days)), yt)
+			self.draw_close_bracket(canvas, x+self.day_center(max(days)), yt)
 		if self._freq == "cont":
 			start, end = days[0], days[0]
 			for i in days[1:]:
@@ -245,6 +287,10 @@ class Interval(Procedure):
 		yt = y + self.height(canvas, ypadding=ypadding) * 1/2
 		xt = x + self.day_start(self._begin)
 		self.draw_interval(canvas, xt, yt, self._duration)
+		if self._decoration == "bracketed":
+			d = self._daywidth*1/4
+			self.draw_open_bracket(canvas, x+self.day_center(self._begin)-d, yt, xpadding=self._daywidth/4)
+			self.draw_close_bracket(canvas, x+self.day_center(self._begin+self._duration-1)+d, yt, xpadding=self._daywidth/4)
 		return y + self.height(canvas, ypadding=ypadding)
 
 
@@ -337,6 +383,20 @@ class Periodbox(Periodelement):
 		return 
 
 
+class Timeline(Periodelement):
+	def __init__(self, startday, endday, times=[], **kwargs):
+		Periodelement.__init__(self, **kwargs)
+		self._startday = startday
+		self._endday = endday
+
+	def draw(self, canvas, x, y, ypadding=7, periodspacing=0, debug=False):
+		print("draw timeline")
+		Periodelement.draw(self, canvas, tx, ty, ypadding, debug)
+		self.draw_curly(canvas, x+self.day_start(self._startday), x+self.day_start(self._endday), y)
+
+	# def draw(self, canvas, x, y, ypadding=7, periodspacing=0, debug=False):
+
+
 class Period(object):
 	def __init__(self, period_dict=dict(), daywidth=15, dayheight=20, periodspacing=15):
 		self._period_dict = period_dict
@@ -362,6 +422,8 @@ class Period(object):
 			if t in pd:
 				for i in pd[t]:
 					self._elements.append(Procedure(type=l, period_dict=i, daywidth=self._daywidth, dayheight=self._dayheight, length=self._length, start=self._start))
+
+		# self._elements.append(Timeline(1, 7, times=[0, 1, 2, 4, 8], period_dict=period_dict, length=self._length, start=self._start, daywidth=daywidth, dayheight=dayheight))
 
 	def dump(self):
 		print(json.dumps(self._period_dict, indent=2))
@@ -446,6 +508,8 @@ class Trialdesign(object):
 		return y
 
 	def draw_item(self, item, symbol, canvas, x, y, ypadding=7, xcaption=10, debug=False):
+		if debug:
+			print(self.items("procedures"))
 		yt = y
 		for i in self.items(item):
 			h = canvas.text_extents(i.upper())[3]

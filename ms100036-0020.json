@@ -53,15 +53,13 @@
 				{
 					"caption": "hospitalization",
 					"start": 25,
-					"duration": 5,
-					"decoration": "bracketed"
+					"duration": 5
 				}
 			],
 			"administrations": [
 				{
 					"caption": "tepotinib",
-					"days": [26],
-					"decoration": "bracketed"
+					"days": [26]
 				},
 				{
 					"caption": "carbamazepine BID",
@@ -82,8 +80,7 @@
 				{
 					"caption": "PK sampling carbamazepine",
 					"days": ["25-26"],
-					"freq": "QD",
-					"decoration": "bracketed"
+					"freq": "QD"
 				}
 			]
 		},
