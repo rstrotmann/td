@@ -24,6 +24,10 @@ class Periodelement(object):
 			self._decoration = period_dict["decoration"]
 		else:
 			self._decoration = ""
+		if "times" in period_dict:
+			self._times = period_dict["times"]
+		else:
+			self._times = []
 
 	def _metrics(self, canvas):
 		caption= self._period_dict["caption"].upper()
@@ -216,9 +220,15 @@ class Procedure(Periodelement):
 	def caption(self):
 		return self._caption
 
-	def draw(self, canvas, x, y, ypadding=7, periodspacing=0, debug=False):
+	def draw(self, canvas, x, y, ypadding=7, periodspacing=0, show_timeline=True, debug=False):
 		freq = self._freq
 		value = False
+
+		if show_timeline:
+			# height *= 2
+			pass
+
+		height = self.height(canvas, ypadding=ypadding)
 		type = "arrow" if self._type == "administration" else "diamond"
 		if self._freq == "rich":
 			type="rect"
@@ -230,6 +240,7 @@ class Procedure(Periodelement):
 
 		if debug:
 			self.draw_dummy(canvas, x, y, ypadding=ypadding)
+
 		yt = y + self.height(canvas, ypadding=ypadding) *1/2
 		days = []
 		for i in self._days:
@@ -246,10 +257,22 @@ class Procedure(Periodelement):
 						else:
 							for i in range(int(mm[1]), int(mm[3])+1):
 								days.append(i)
+		if show_timeline:
+			pass
+
+		# bracketed
 		if self._decoration == "bracketed":
-			# print("bracketed")
 			self.draw_open_bracket(canvas, x+self.day_center(min(days)), yt)
 			self.draw_close_bracket(canvas, x+self.day_center(max(days)), yt)
+
+		# # times
+		# if self._times != []:
+		# 	startx = x + self.day_start(min(days))
+		# 	#endx = x + self.day_end(max(self._times)/24)
+		# 	endx = x + self.day_end(max(days))
+		# 	self.draw_curly(canvas, startx, endx, yt + self._dayheight/2, radius=5)
+		# 	return y + 3 * self.height(canvas, ypadding=ypadding)
+
 		if self._freq == "cont":
 			start, end = days[0], days[0]
 			for i in days[1:]:
@@ -263,7 +286,8 @@ class Procedure(Periodelement):
 		else:
 			for j in days:
 				self.draw_symbol(canvas, x + self.day_center(j), yt, type=type, value=value, ypadding=ypadding)
-		return y + self.height(canvas, ypadding=ypadding)
+		# return y + self.height(canvas, ypadding=ypadding)
+		return y + height
 
 
 class Interval(Procedure):
@@ -384,15 +408,15 @@ class Periodbox(Periodelement):
 
 
 class Timeline(Periodelement):
-	def __init__(self, startday, endday, times=[], **kwargs):
+	def __init__(self, times=[], **kwargs):
 		Periodelement.__init__(self, **kwargs)
-		self._startday = startday
-		self._endday = endday
+		# self._startday = startday
+		# self._endday = endday
 
 	def draw(self, canvas, x, y, ypadding=7, periodspacing=0, debug=False):
 		print("draw timeline")
-		Periodelement.draw(self, canvas, tx, ty, ypadding, debug)
-		self.draw_curly(canvas, x+self.day_start(self._startday), x+self.day_start(self._endday), y)
+		Periodelement.draw(self, canvas, tx, ty, ypadding, debug=debug)
+		# self.draw_curly(canvas, x+self.day_start(self._startday), x+self.day_start(self._endday), y)
 
 	# def draw(self, canvas, x, y, ypadding=7, periodspacing=0, debug=False):
 
@@ -405,6 +429,8 @@ class Period(object):
 		self._periodspacing = periodspacing
 		self._length = period_dict["length"]
 		self._start = 1
+		self._caption = period_dict["caption"]
+
 		if "start" in self._period_dict:
 			self._start = period_dict["start"]
 		self._elements = []
@@ -423,10 +449,14 @@ class Period(object):
 				for i in pd[t]:
 					self._elements.append(Procedure(type=l, period_dict=i, daywidth=self._daywidth, dayheight=self._dayheight, length=self._length, start=self._start))
 
-		# self._elements.append(Timeline(1, 7, times=[0, 1, 2, 4, 8], period_dict=period_dict, length=self._length, start=self._start, daywidth=daywidth, dayheight=dayheight))
+		# temp = Timeline(times=[0, 1, 2, 4, 8], period_dict=period_dict, length=self._length, start=self._start, daywidth=daywidth, dayheight=dayheight)
+		# temp._caption="timeline"
+		# self._elements.append(temp)
 
 	def dump(self):
-		print(json.dumps(self._period_dict, indent=2))
+		# print(json.dumps(self._period_dict, indent=2))
+		for e in self._elements:
+			print(e._caption)
 
 	def draw_structure(self, canvas, x, y, ypadding=7, draw_grid=True, debug=False):
 		yt = y
@@ -499,6 +529,11 @@ class Trialdesign(object):
 	def __str__(self):
 		return(json.dumps(self.structure, indent=2))
 
+	def dump(self):
+		for p in self._periods:
+			print(f"\n##### Period {p._caption} #####")
+			p.dump()
+
 	def draw_structure(self, canvas, xoffset=10, yoffset=10, ypadding=7, draw_grid=True, debug=False):
 		xt = xoffset
 		for p in self._periods:
@@ -508,10 +543,11 @@ class Trialdesign(object):
 		return y
 
 	def draw_item(self, item, symbol, canvas, x, y, ypadding=7, xcaption=10, debug=False):
-		if debug:
-			print(self.items("procedures"))
+		# if debug:
+		# 	print(self.items("procedures"))
 		yt = y
 		for i in self.items(item):
+			# print(i)
 			h = canvas.text_extents(i.upper())[3]
 			canvas.move_to(xcaption, yt + h + ypadding)
 			canvas.show_text(i)
@@ -536,6 +572,8 @@ class Trialdesign(object):
 
 	def draw(self, canvas, x, y, draw_grid=True, ypadding=7, debug=False):
 		temp = self.items("administrations") + self.items("procedures")
+		#print(f"items to be drawn: {temp}")
+
 		xoffset = max([canvas.text_extents(i)[4] for i in temp]) + self._daywidth*2
 		yt = self.draw_structure(canvas, xoffset=xoffset, ypadding=ypadding, yoffset=10, draw_grid=draw_grid, debug=debug)
 		yt = self.draw_intervals(canvas, x=xoffset, y=yt, ypadding=ypadding, debug=debug)
@@ -568,6 +606,8 @@ def main(file, debug, ypadding, font, nogrid, fontsize, daywidth, dayheight):
 	td = Trialdesign(js=json.load(f), daywidth=daywidth, dayheight=dayheight)
 	td.draw(canvas, 10, 10, draw_grid=nogrid, ypadding=ypadding, debug=debug)
 	surface.finish()
+
+	# td.dump()
 
 
 if __name__ == "__main__":
