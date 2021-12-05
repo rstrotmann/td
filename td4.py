@@ -8,7 +8,13 @@ import random
 # import math
 import re
 import itertools
-#from decorators import safe_render
+
+
+# to do:#
+# implement interval
+# implement correct ordering of procedures
+# implement time scale bracket
+
 
 
 @click.command()
@@ -32,6 +38,9 @@ def main(file, debug, fontsize):
 	with open(infile) as f:
 		td = Trialdesign(js=json.load(f), debug=debug)
 	td.render(canvas)
+
+
+#### Helper functions
 
 def textwidth(canvas, text):
 	(x, y, cap_width, cap_height, dx, dy) = canvas.text_extents(text)
@@ -60,30 +69,13 @@ def decode_daylist(daylist):
 	return(days)
 
 
-def items_names(trial, item):
+def item_names(trial, item_class):
 	out = []
 	for p in trial['periods']:
-		if 'procedures' in p.keys():
-			for proc in p['procedures']:
+		if item_class in p.keys():
+			for proc in p[item_class]:
 				out += [proc['caption']]
 	return(list(set(out)))	
-
-def procedure_names(trial):
-	#return(list(set([c['caption'] for p in trial['periods'] for c in p['procedures']])))
-	out = []
-	for p in trial['periods']:
-		if 'procedures' in p.keys():
-			for proc in p['procedures']:
-				out += [proc['caption']]
-	return(list(set(out)))
-
-def administration_names(trial):
-	out = []
-	for p in trial['periods']:
-		if 'administrations' in p.keys():
-			for proc in p['administrations']:
-				out += [proc['caption']]
-	return(list(set(out)))
 
 def extract_procedure(period, caption):
 	temp = []
@@ -93,10 +85,20 @@ def extract_procedure(period, caption):
 				if proc['caption'] == caption:
 					if 'times' in proc.keys():
 						t = proc['times']
+					elif 'freq' in proc.keys() and proc['freq'] == 'rich':
+						t = [0, 0]
 					else: 
 						t = [0]
 					temp += [(d, t) for d in decode_daylist(proc['days'])]
 	return(temp)
+
+def extract_interval(period, caption):
+	out = []
+	if 'interval' in period.keys():
+		for intv in period['intervals']:
+			if intv['caption'] == caption:
+				out = [intv['start'], intv['duration']]
+	return(out)
 
 def day_index(period, day):
 	temp = day - period['start']
@@ -138,12 +140,13 @@ def period_day_starts(period, canvas, xoffset, width_function):
 def period_day_centers(period, canvas, xoffset, width_function):
 	return([start + width / 2 for start, width in zip(period_day_starts(period, canvas, xoffset, width_function), width_function(period, canvas))])
 
+def period_day_ends(period, canvas, xoffset, width_function):
+	starts = period_day_starts(period, canvas, xoffset, width_function)
+	widths = width_function(period, canvas)
+	return([s+w for s, w in zip(starts, widths)])
 
-#### RENDERING ####
 
-
-
-
+#### Trial design class
 
 class Trialdesign(object):
 	def __init__(self, js=dict(), debug=True):
@@ -153,8 +156,7 @@ class Trialdesign(object):
 		self._td = js
 		self._debug = debug
 
-	def render(self, cn, width_function=period_day_widths):
-		canvas = cn
+	def render(self, canvas, width_function=period_day_widths):
 		ypadding = 7
 		ylabelpadding = 3
 		yheaderpadding = ypadding
@@ -163,7 +165,7 @@ class Trialdesign(object):
 		headerheight = textheight(canvas, "X") * 2
 		lineheight = textheight(canvas, "X") * 1.5
 
-		xoffset = max([textwidth(canvas, i) for i in procedure_names(self._td)]) + 30
+		xoffset = max([textwidth(canvas, i) for i in item_names(self._td, 'procedures')]) + 30
 		yoffset = 10
 
 		def safe_render(render_func):
@@ -171,16 +173,21 @@ class Trialdesign(object):
 				canvas.save()
 				out = render_func(*args, **kwargs)
 				canvas.stroke()
-				#canvas.fill()
 				canvas.restore()
 				return out
 			return wrapper
 
 		@safe_render
-		def render_daygrid(period, xoffset, yoffset, height, width_function, debug=False):
+		def render_dummy(period, xoffset, yoffset, lineheight, debug=False):
+			canvas.set_source_rgb(random.uniform(0.8, 1), random.uniform(0.8, 1), random.uniform(0.8, 1))
+			canvas.rectangle(xoffset, yoffset, period_width(period, canvas, width_function), lineheight)
+			canvas.fill()
+
+		@safe_render
+		def render_daygrid(period, xoffset, yoffset, height, debug=False):
 			y = yoffset
 			if debug:
-				render_dummy(period, canvas, xoffset, yoffset, height, width_function)
+				render_dummy(period, xoffset, yoffset, height)
 			for start, width, center, label, shading in zip(period_day_starts(period, canvas, xoffset, width_function), width_function(period, canvas), period_day_centers(period, canvas, xoffset, width_function), day_labels(period), day_shadings(period)):
 				if shading:
 					canvas.rectangle(start, y, width, height)
@@ -191,38 +198,58 @@ class Trialdesign(object):
 				canvas.stroke()
 				canvas.move_to(center - textwidth(canvas, str(label)) / 2, yoffset + height - (height- textheight(canvas, "X")) / 2)
 				canvas.show_text(str(label))
-				#canvas.stroke()
 			return(height)
 
 		@safe_render
-		def render_periodcaption(period, xoffset, yoffset, height, width_function, debug=False):
+		def render_periodcaption(period, xoffset, yoffset, height, debug=False):
 			if debug:
-				render_dummy(period, xoffset, yoffset, height, width_function)
+				render_dummy(period, xoffset, yoffset, height)
 			xcenter = xoffset + period_width(period, canvas, width_function)/2
 			canvas.move_to(xcenter - textwidth(canvas, str(period['caption']))/2, yoffset+ height - (height-textheight(canvas, "X"))/2)
 			canvas.show_text(str(period['caption']))
 			return(height)
 
 		@safe_render
-		def render_dummy(period, xoffset, yoffset, lineheight, width_function):
-			canvas.set_source_rgb(random.uniform(0.8, 1), random.uniform(0.8, 1), random.uniform(0.8, 1))
-			canvas.rectangle(xoffset, yoffset, period_width(period, canvas, width_function), lineheight)
-			canvas.fill()
-			return
-
-		@safe_render
-		def render_procedure(period, caption, xoffset, yoffset, lineheight, width_function, default_symbol, debug=False):
+		def render_procedure(period, caption, xoffset, yoffset, lineheight, default_symbol, debug=False):
 			if debug:
-				render_dummy(period, xoffset, yoffset, lineheight, width_function)
+				render_dummy(period, xoffset, yoffset, lineheight)
 			y = yoffset + lineheight/2 # center of the line
+			# render procedure name
 			canvas.move_to(5, y + textheight(canvas, caption) * (1/2 - 0.1))
 			canvas.show_text(caption)
-			positions = period_day_centers(period, canvas, xoffset, width_function)
+			
+			centers = period_day_centers(period, canvas, xoffset, width_function)
 			widths = width_function(period, canvas)
+
 			symbols = procedure_symbols(period, caption, default_symbol)
-			for p, w, s in zip(positions, widths, symbols):
+			for p, w, s in zip(centers, widths, symbols):
 				if s != "":
 					render_symbol(p, y, textheight(canvas, "X"), w, s)
+			return(lineheight)
+
+		@safe_render
+		def render_interval(period, caption, xoffset, yoffset, lineheight, debug=self._debug):
+			if debug:
+				render_dummy(period, xoffset, yoffset, lineheight)
+			y = yoffset + lineheight/2 # center of the line
+			# render procedure name
+			canvas.move_to(5, y + textheight(canvas, caption) * (1/2 - 0.1))
+			canvas.show_text(caption)
+			# render interval box
+			starts = period_day_starts(period, canvas, xoffset, width_function)
+			ends = period_day_ends(period, canvas, xoffset, width_function)
+			height = 0.5 * lineheight
+			if 'intervals' in period.keys():
+				for intv in period['intervals']:
+					if intv['caption'] == caption:
+						start, duration = intv['start'], intv['duration']
+						startx = starts[day_index(period, start)]
+						end = start + duration -1
+						if start <0 and end >0:
+							end += 1
+						endx = ends[day_index(period, end)]
+						canvas.rectangle(startx, y-height/2, endx-startx, height)
+						canvas.stroke()
 			return(lineheight)
 
 		def draw_line(x1, y1, x2, y2):
@@ -240,6 +267,7 @@ class Trialdesign(object):
 
 		def procedure_symbols(period, caption, default="diamond"):
 			temp = extract_procedure(period, caption)
+			#print(f'{caption}, {temp}')
 			out = [""] * period['length']
 			for (d, t) in temp:
 				if len(t) > 1:
@@ -247,16 +275,15 @@ class Trialdesign(object):
 				else:
 					symbol = default
 				out[day_index(period, d)] = symbol
+				#print(out)
 			return(out)
 
 		@safe_render
 		def draw_diamond(x, y, height, size=0.7):
-			#canvas.set_line_width(1.2)
 			draw_line(x, y - height*size, x + height*1/2*size, y)
 			canvas.line_to(x, y + height*size)
 			canvas.line_to(x - height*1/2*size, y)
 			canvas.line_to(x, y - height*size)
-			#canvas.stroke()
 
 		@safe_render
 		def draw_rect(x, y, height, width, size=1):
@@ -278,7 +305,7 @@ class Trialdesign(object):
 		## render header:
 		def render_periods(x, y, height, render_function):
 			for p in self._periods:
-				yy = render_function(p, x, y, height, width_function, debug=self._debug)
+				yy = render_function(p, x, y, height, debug=self._debug)
 				x += period_width(p, canvas, width_function) + periodspacing
 			return(y + yy)
 
@@ -296,23 +323,26 @@ class Trialdesign(object):
 			x += periodspacing
 			canvas.stroke()
 
-		def render_items(name_function, default_symbol, y):
-			for n in name_function(self._td):
+		def render_items(item_class, default_symbol, y):
+			for n in item_names(self._td, item_class):
 				x = xoffset
 				for p in self._periods:
-					yy = render_procedure(p, n, x, y, lineheight, width_function, default_symbol, debug=self._debug)
+					if item_class == 'intervals':
+						yy = render_interval(p, n, x, y, lineheight, debug=self._debug)
+					else:
+						yy = render_procedure(p, n, x, y, lineheight, default_symbol, debug=self._debug)
 					x += period_width(p, canvas, width_function) + periodspacing
 				y += yy + ypadding
 			return(y)
 
 		# render procedures
-		for nf, ds in [(administration_names, "arrow"), (procedure_names, "diamond")]:
-			y = render_items(nf, ds, y)
+		for item_class, ds in [('intervals', 'rect'), ('administrations', "arrow"), ('procedures', "diamond")]:
+			y = render_items(item_class, ds, y)
 
 
 	def dump(self, canvas):
 		for p in self._periods:
-			print()
+			pass
 
 
 if __name__ == "__main__":
