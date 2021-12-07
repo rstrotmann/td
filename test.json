@@ -41,7 +41,7 @@
 				},
 				{
 					"caption": "PK sampling",
-					"days": [2],
+					"days": [2, 3],
 					"times": [0]
 				}				
 			]
@@ -77,12 +77,12 @@
 				},
 				{
 					"caption": "PK sampling",
-					"days": [1, 5],
+					"days": [5],
 					"times": [0, 1, 2, 3, 4, 6, 8, 12]
 				},
 				{
 					"caption": "PK sampling",
-					"days": [2, "6-7"],
+					"days": ["6-7"],
 					"times": [0]
 				}
 			]

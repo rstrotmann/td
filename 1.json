@@ -1,0 +1,36 @@
+{
+	"periods": [
+		{
+			"caption": "Treatment phase",
+			"length": 29,
+			"start": 1,
+			"daylabels": ["1-4", 8, 15, 22, 29],
+			"intervals": [
+				{
+					"caption": "hospitalization",
+					"start": 1,
+					"duration": 4
+				}
+			],
+			"administrations": [
+				{
+					"caption": "M5717 + pyronaridine",
+					"days": [1]
+				}
+			],
+			"procedures": [
+				{
+					"caption": "ECG",
+					"days": [4, 29],
+					"freq": "QD"
+				}	
+			]
+		},
+		{
+			"caption": "f/u",
+			"length": 1,
+			"start": 43,
+			"daylabels": [43]
+		}
+	]
+}

@@ -5,7 +5,7 @@ import pathlib
 import cairo
 import json
 import random
-# import math
+import math
 import re
 import itertools
 
@@ -35,7 +35,7 @@ def main(file, debug, fontsize):
 
 	with open(infile) as f:
 		td = Trialdesign(js=json.load(f), debug=debug)
-	td.render(canvas)
+	td.render(canvas, width_function=period_day_widths1)
 
 
 #### Helper functions
@@ -98,6 +98,10 @@ def extract_interval(period, caption):
 			if intv['caption'] == caption:
 				out = [intv['start'], intv['duration']]
 	return(out)
+
+def extract_times(period, caption):
+	temp = extract_procedure(period, caption)
+	return([(d-1)*24+t for (d, ts) in temp for t in ts])
 
 def day_index(period, day):
 	temp = day - period['start']
@@ -184,6 +188,7 @@ class Trialdesign(object):
 
 		@safe_render
 		def render_daygrid(period, caption, xoffset, yoffset, height):
+			print(width_function(period, canvas))
 			y = yoffset
 			if self._debug:
 				render_dummy(period, xoffset, yoffset, height)
@@ -195,7 +200,9 @@ class Trialdesign(object):
 					canvas.set_source_rgb(0, 0, 0)
 				canvas.rectangle(start, y, width, height)
 				canvas.stroke()
-				canvas.move_to(center - textwidth(canvas, str(label)) / 2, yoffset + height - (height- textheight(canvas, "X")) / 2)
+				label = str(label)
+				delta = textwidth(canvas, "1")*.5 if len(label)>0 and label[0] == "1" else 0
+				canvas.move_to(center - textwidth(canvas, str(label)) / 2-delta, yoffset + height - (height- textheight(canvas, "X")) / 2)
 				canvas.show_text(str(label))
 			return(height)
 
@@ -254,6 +261,10 @@ class Trialdesign(object):
 		def draw_line(x1, y1, x2, y2):
 			canvas.move_to(x1, y1)
 			canvas.line_to(x2, y2)
+
+		def draw_text(x, y, caption):
+			canvas.move_to(x, y)
+			canvas.show_text(str(caption))
 
 		def render_symbol(x, y, height, width, symbol):
 			if symbol == "diamond":
@@ -314,15 +325,46 @@ class Trialdesign(object):
 			canvas.line_to(xend-radius, y+radius)
 			canvas.arc_negative(xend-radius, y, radius, math.pi/2, 0)
 
-		## render header:
+		@safe_render
+		def render_bracket(period, xoffset, y, startday, endday):
+			starts = period_day_starts(period, canvas, xoffset, width_function)
+			ends = period_day_ends(period, canvas, xoffset, width_function)
+			if day_index(period, startday) < len(starts) and day_index(period, endday) < len(ends):
+				startx = starts[day_index(period, startday)]
+				endx = ends[day_index(period, endday)]
+				draw_curly(startx, endx, y, radius=lineheight/3)
+			return(y+lineheight/3)
+
 		def render_periods(x, y, caption, height, render_function, **kwargs):
 			for p in self._periods:
 				yy = render_function(p, caption, x, y, height, **kwargs)
 				x += period_width(p, canvas, width_function) + periodspacing
 			return(y + yy)
 
+		def render_times(x, y, period, caption, height):
+			times = extract_times(period, caption)
+			pw = period_width(period, canvas, width_function) 
+			scale_width = pw
+			scale_x = x + (pw-scale_width)/2
+			scale_y = y + height/2
+			scale_factor = scale_width / max(times)
+			draw_line(scale_x, scale_y, scale_x+scale_width, scale_y)
+			c_width = [textwidth(canvas, str(i)) for i in times]
+			c_pos = [scale_x+scale_factor*i for i in times]
+			for ti, wi, pi in zip(times, c_width, c_pos):
+				draw_line(pi, y, pi, y+height)
+				draw_text(pi - wi/2, y+height+ypadding, ti)
+
+			canvas.stroke()
+			return
+
+
+		## rendering proper
+
 		x = xoffset
 		y = yoffset
+
+		# header
 		y = render_periods(xoffset, y, "", headerheight, render_periodcaption) + ylabelpadding
 		y = render_periods(xoffset, y, "", headerheight, render_daygrid) + yheaderpadding
 
@@ -335,18 +377,32 @@ class Trialdesign(object):
 			xx += periodspacing
 			canvas.stroke()
 
+		# intervals, administrations, procedures
 		for n in item_names(self._td, 'intervals'):
 			y = render_periods(xoffset, y, n, lineheight, render_interval) + ypadding
 
 		for n in item_names(self._td, 'administrations'):
 			y = render_periods(xoffset, y, n, lineheight, render_procedure, default_symbol="arrow") + ypadding
 
-		# print(item_names(self._td, "procedures"))
 		for n in item_names(self._td, 'procedures'):
 			y = render_periods(xoffset, y, n, lineheight, render_procedure, default_symbol="diamond") + ypadding
 
+		# xx = xoffset
+		# for p in self._periods:
+		# 	yy = render_bracket(p, xx, y, 1, 4)
+		# 	xx += period_width(p, canvas, width_function) + periodspacing
 
+		print(extract_procedure(self._periods[1], "PK sampling"))
+		print(extract_times(self._periods[1], "PK sampling"))
 
+		# p = self._periods[1]
+		# d = extract_procedure(p, "PK sampling")
+		# dmin = min([x for (x,t) in d])
+		# dmax = max([x for (x, t) in d])
+		# print(dmin, dmax)
+		# xx = xoffset + period_width(self._periods[0], canvas, width_function) + periodspacing
+		# y = render_bracket(p, xx, y, dmin, dmax) + ypadding
+		# render_times(xx, y, p, "PK sampling", lineheight)
 
 	def dump(self, canvas):
 		for p in self._periods:
