@@ -18,8 +18,9 @@ import itertools
 @click.command()
 @click.argument("file")
 @click.option("--fontsize", "-s", type=int, default=11, help='output font size (default 11)')
+@click.option("--condensed", "-c", is_flag=True, help='condensed daygrid')
 @click.option("--debug", "-d", is_flag=True, help='debug output')
-def main(file, debug, fontsize):
+def main(file, debug, fontsize, condensed):
 	infile = pathlib.Path(file)
 	inpath = pathlib.Path(file).resolve().parent
 	outfile = inpath.joinpath(infile.stem + ".svg")
@@ -35,7 +36,12 @@ def main(file, debug, fontsize):
 
 	with open(infile) as f:
 		td = Trialdesign(js=json.load(f), debug=debug)
-	td.render(canvas, width_function=period_day_widths1)
+
+	if condensed:
+		wf=period_day_widths1
+	else:
+		wf=period_day_widths
+	td.render(canvas, width_function=wf)
 
 
 #### Helper functions
@@ -126,8 +132,14 @@ def day_shadings(period):
 def period_day_widths(period, canvas):
 	return([textwidth(canvas, "XX")] * period['length'])
 
+# def period_day_widths1(period, canvas):
+# 	return([textwidth(canvas, "XX") if i!="" else 5 for i in day_labels(period)])
+
 def period_day_widths1(period, canvas):
-	return([textwidth(canvas, "XX") if i!="" else 5 for i in day_labels(period)])
+	temp=[textwidth(canvas, "XX") if i!="" else 5 for i in day_labels(period)]
+	if len(temp)==1:
+		temp=[textwidth(canvas, "XX")]
+	return(temp)
 
 def period_width(period, canvas, width_function):
 	return(sum(width_function(period, canvas)))
@@ -188,7 +200,7 @@ class Trialdesign(object):
 
 		@safe_render
 		def render_daygrid(period, caption, xoffset, yoffset, height):
-			print(width_function(period, canvas))
+			#print(width_function(period, canvas))
 			y = yoffset
 			if self._debug:
 				render_dummy(period, xoffset, yoffset, height)
@@ -198,7 +210,15 @@ class Trialdesign(object):
 					canvas.set_source_rgb(0.85, 0.85, 0.85)
 					canvas.fill()
 					canvas.set_source_rgb(0, 0, 0)
-				canvas.rectangle(start, y, width, height)
+				if width >5:
+					canvas.rectangle(start, y, width, height)
+				else:
+					canvas.save()
+					canvas.set_dash([2.5, 2.5], 0)
+					draw_line(start, y, start+width, y)
+					draw_line(start, y+height, start+width, y+height)
+					canvas.stroke()	
+					canvas.restore()
 				canvas.stroke()
 				label = str(label)
 				delta = textwidth(canvas, "1")*.5 if len(label)>0 and label[0] == "1" else 0
