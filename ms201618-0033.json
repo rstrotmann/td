@@ -22,6 +22,16 @@
 				{
 					"caption": "M5717 + pyronaridine",
 					"days": [1]
+				},
+				{
+					"caption": "M5717 + pyronaridine",
+					"days": [2],
+					"decoration": "bracketed"
+				},
+				{
+					"caption": "M5717 + pyronaridine",
+					"days": [3],
+					"decoration": "bracketed"
 				}
 			],
 			"procedures": [
@@ -46,6 +56,26 @@
 					"freq": "QD"
 				},
 				{
+					"caption": "blood microscopy",
+					"days": [1],
+					"times": [6, 12, 18]
+				},
+				{
+					"caption": "blood microscopy",
+					"days": [2],
+					"times": [0, 6, 12]
+				},
+				{
+					"caption": "blood microscopy",
+					"days": [3],
+					"times": [0, 12]
+				},
+				{
+					"caption": "blood microscopy",
+					"days": [4],
+					"times": [0]
+				},
+				{
 					"caption": "PK sampling",
 					"days": [1],
 					"freq": "rich"
@@ -61,7 +91,24 @@
 			"caption": "F/U",
 			"length": 1,
 			"start": 43,
-			"daylabels": [43]
+			"daylabels": [43],
+			"procedures": [
+				{
+					"caption": "qPCR (parasites)",
+					"days": [43],
+					"freq": "QD"
+				},
+				{
+					"caption": "qPCR (gametocytes)",
+					"days": [43],
+					"freq": "QD"
+				},
+				{
+					"caption": "blood microscopy",
+					"days": [43],
+					"times": [0]
+				}
+			]
 		}
 	]
 }

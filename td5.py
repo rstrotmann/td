@@ -25,7 +25,7 @@ def main(file, debug, fontsize, condensed):
 	inpath = pathlib.Path(file).resolve().parent
 	outfile = inpath.joinpath(infile.stem + ".svg")
 
-	surface = cairo.SVGSurface(outfile, 1000, 700)
+	surface = cairo.SVGSurface("temp.svg", 1000, 700)
 	canvas = cairo.Context(surface)
 	canvas.select_font_face("Calibri", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
 	canvas.set_font_size(fontsize)
@@ -176,6 +176,46 @@ def period_day_ends(period, canvas, xoffset, width_function):
 	widths = width_function(period, canvas)
 	return([s+w for s, w in zip(starts, widths)])
 
+def svg_line(x1, y1, x2, y2, lwd=1, color="black", dashed=False):
+	dash = "stroke-dasharray: 2.5 2.5" if dashed else ""
+	#return(f'<line x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" stroke="{color}" stroke-width="{lwd}; {dash}" />\n')
+	return(f'<line x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" style="stroke:{color}; stroke-width:{lwd}; {dash}" />\n')
+
+def svg_rect(x, y, w, h, lwd=1, fill_color="none", line_color="black"):
+	return(f'<rect x="{x}" y="{y}" width="{w}" height="{h}" style="stroke:{line_color};  stroke-width:{lwd}; fill:{fill_color};" />\n')
+
+def svg_text(x, y, text):
+	return(f'<text x="{x}" y="{y}">{text}</text>\n')
+
+# def svg_arrow(x, y, size=1):
+# 	#arrow_points = [(-0.0625, 0.0), (0.0625, 0.0), (0.0625, 0.5), (0.1875, 0.5), (0.0, 1.0), (-0.1875, 0.5), (-0.0625, 0.5)]
+# 	arrow_points = [(-0.03, 0.0), (0.03, 0.0), (0.03, 0.5), (0.1875, 0.5), (0.0, 1.0), (-0.1875, 0.5), (-0.03, 0.5)]
+# 	(x1, y1) = arrow_points[-1]
+# 	out = f'<path d="M{x1*size+x} {y1*size+y} '
+# 	for (x2, y2) in arrow_points:
+# 		out += f'L{x2*size+x} {y2*size+x} '
+# 	out += 'Z" />'
+# 	return(out)
+
+def svg_path(x, y, points, lwd=1, size=1, fill=False, dashed=False):
+	fill_color = "black" if fill else "none"
+	dash = "stroke-dasharray: 2.5 2.5" if dashed else ""
+	(x1, y1) = points[-1]
+	out = f'<path d="M{x1*size+x}, {y1*size+y} '
+	for (x2, y2) in points:
+		out += f'L{x2*size+x}, {y2*size+y} '
+	out += f'Z" style="stroke: black; fill: {fill_color}; stroke-width:{lwd}; {dash}" />'
+	return(out)	
+
+def svg_symbol(x, y, symbol, size=1, fill=False, lwd=1.2):
+	if symbol == "diamond":
+		return svg_path(x, y, [(0,-0.5), (0.25, 0), (0, 0.5), (-0.25, 0)], size=size*1.4, lwd=lwd)
+	elif symbol == "block":
+		return svg_path(x, y, [(-1.5/4, -.25), (1.5/4, -.25), (1.5/4, .25), (-1.5/4, .25)], size=size*1.5, lwd=lwd)
+	elif symbol == "arrow":
+		return svg_path(x, y, [(-0.03, -0.5), (0.03, -0.5), (0.03, 0), (0.1875, 0), (0.0, 0.5), (-0.1875, 0), (-0.03, 0)], size=size*1.2, lwd=lwd, fill=True)
+	return ""
+
 
 #### Trial design class
 
@@ -186,8 +226,17 @@ class Trialdesign(object):
 			self._periods.append(p)
 		self._td = js
 		self._debug = debug
+		self.svg_out = ""
 
 	def render(self, canvas, width_function=period_day_widths):
+		image_size = 1000
+		image_pad = 10
+		font = "Arial"
+		size = 11
+
+		self.svg_out = f'<svg viewBox="-{image_pad} -{image_pad} {image_size + 2 * image_pad} {image_size + 2 * image_pad}" xmlns="http://www.w3.org/2000/svg">\n'
+		self.svg_out += f'<style>text {{font-family: {font}; font-size: {size}px ;}}</style>\n'
+
 		ypadding = 7
 		ylabelpadding = 3
 		yheaderpadding = ypadding
@@ -213,10 +262,10 @@ class Trialdesign(object):
 			canvas.set_source_rgb(random.uniform(0.8, 1), random.uniform(0.8, 1), random.uniform(0.8, 1))
 			canvas.rectangle(xoffset, yoffset, period_width(period, canvas, width_function), lineheight)
 			canvas.fill()
+			self.svg_out += svg_rect(xoffset, yoffset, period_width(period, canvas, width_function), lineheight, lwd=0, fill_color="cornsilk")
 
 		@safe_render
 		def render_daygrid(period, caption, xoffset, yoffset, height):
-			#print(width_function(period, canvas))
 			y = yoffset
 			if self._debug:
 				render_dummy(period, xoffset, yoffset, height)
@@ -226,13 +275,17 @@ class Trialdesign(object):
 					canvas.set_source_rgb(0.85, 0.85, 0.85)
 					canvas.fill()
 					canvas.set_source_rgb(0, 0, 0)
+					self.svg_out += svg_rect(start, y, width, height, lwd=0, fill_color="lightgray")
 				if width >5:
 					canvas.rectangle(start, y, width, height)
+					self.svg_out += svg_rect(start, y, width, height, lwd=1.2)
 				else:
 					canvas.save()
 					canvas.set_dash([2.5, 2.5], 0)
 					draw_line(start, y, start+width, y)
 					draw_line(start, y+height, start+width, y+height)
+					self.svg_out += svg_line(start, y, start+width, y, lwd=1.2, dashed=True)
+					self.svg_out += svg_line(start, y+height, start+width, y+height, lwd=1.2, dashed=True)
 					canvas.stroke()	
 					canvas.restore()
 				canvas.stroke()
@@ -240,6 +293,7 @@ class Trialdesign(object):
 				delta = textwidth(canvas, "1")*.5 if len(label)>0 and label[0] == "1" else 0
 				canvas.move_to(center - textwidth(canvas, str(label)) / 2-delta, yoffset + height - (height- textheight(canvas, "X")) / 2)
 				canvas.show_text(str(label))
+				self.svg_out += svg_text(center - textwidth(canvas, str(label)) / 2-delta, yoffset + height - (height- textheight(canvas, "X")) / 2, str(label))
 			return(height)
 
 		@safe_render
@@ -249,32 +303,33 @@ class Trialdesign(object):
 			xcenter = xoffset + period_width(period, canvas, width_function)/2
 			canvas.move_to(xcenter - textwidth(canvas, str(period['caption']))/2, yoffset+ height - (height-textheight(canvas, "X"))/2)
 			canvas.show_text(str(period['caption']))
+			self.svg_out += svg_text(xcenter - textwidth(canvas, str(period['caption']))/2, yoffset+ height - (height-textheight(canvas, "X"))/2, str(period['caption']))
 			return(height)
 
 		@safe_render
 		def render_procedure(period, caption, xoffset, yoffset, lineheight, default_symbol):
-			# print(f'\n\nRENDER PROCEDURE: {caption}')
 			if self._debug:
 				render_dummy(period, xoffset, yoffset, lineheight)
 			y = yoffset + lineheight/2 # center of the line
 			# render procedure name
 			canvas.move_to(5, y + textheight(canvas, caption) * (1/2 - 0.1))
 			canvas.show_text(caption)
+			self.svg_out += svg_text(5, y + textheight(canvas, caption) * (1/2 - 0.1), caption)
 			
 			centers = period_day_centers(period, canvas, xoffset, width_function)
 			widths = width_function(period, canvas)
 			brackets = extract_decorations(period, caption)
 			symbols = procedure_symbols(period, caption, default_symbol)
 
-			# print(f'centers:  {centers}')
-			# print(f'widths:   {widths}')
-			# print(f'brackets: {brackets}')
 			for p, w, s, b in zip(centers, widths, symbols, brackets):
 				if s != "":
-					render_symbol(p, y, textheight(canvas, "X"), w, s)
+					render_symbol(p, y, lineheight, w, s)
+					self.svg_out += svg_symbol(p, y, s, size=textheight(canvas, "X"))
 					if b=="bracketed":
 						draw_open_bracket(p, y, lineheight, w*.8, size=0.8, xpadding=0, radius=2)
 						draw_close_bracket(p, y, lineheight, w*.8, size=0.8, xpadding=0, radius=2)
+						self.svg_out += svg_open_bracket(p, y, lineheight*1.2, w*.8, xpadding=0, radius=lineheight/4, lwd=1)
+						self.svg_out += svg_close_bracket(p, y, lineheight*1.2, w*.8, xpadding=0, radius=lineheight/4, lwd=1)
 			return(lineheight)
 
 		@safe_render
@@ -285,6 +340,7 @@ class Trialdesign(object):
 			# render procedure name
 			canvas.move_to(5, y + textheight(canvas, caption) * (1/2 - 0.1))
 			canvas.show_text(caption)
+			self.svg_out += svg_text(5, y + textheight(canvas, caption) * (1/2 - 0.1), caption)
 			# render interval box
 			starts = period_day_starts(period, canvas, xoffset, width_function)
 			ends = period_day_ends(period, canvas, xoffset, width_function)
@@ -300,6 +356,7 @@ class Trialdesign(object):
 						endx = ends[day_index(period, end)]
 						canvas.rectangle(startx, y-height/2, endx-startx, height)
 						canvas.stroke()
+						self.svg_out += svg_rect(startx, y-height/2, endx-startx, height, lwd=1.2)
 			return(lineheight)
 
 		def draw_line(x1, y1, x2, y2):
@@ -377,14 +434,29 @@ class Trialdesign(object):
 			r = radius
 			d = w/10
 			d = xpadding
-			# canvas.save()
-			# canvas.set_line_width(1.2)
-			# canvas.set_source_rgb(0, 0, 0)
 			canvas.arc_negative(x-w/2+r-d, y-h/2+r, r, math.pi*1.5, math.pi)
 			canvas.line_to(x-w/2-d, y+h/2-r)
 			canvas.arc_negative(x-w/2+r-d, y+h/2-r, r, math.pi, math.pi*0.5)
-			# canvas.stroke()
-			# canvas.restore()
+
+		def svg_open_bracket(x, y, height, width, xpadding=0, radius=3, lwd=1.2):
+			h, w = height, width
+			r = radius
+			d = xpadding
+			out = f'<path d="M{x-w/2+r-d}, {y-h/2} A{r}, {r} 0 0,0 {x-w/2-d}, {y-h/2+r}'
+			out += f'L{x-w/2-d}, {y+h/2-r} ' 
+			out += f'A{r}, {r} 0 0,0 {x-w/2+r-d} {y+h/2}'
+			out += f'" style="stroke: black; stroke-width:{lwd}; fill:none" />'
+			return(out)
+
+		def svg_close_bracket(x, y, height, width, xpadding=0, radius=3, lwd=1.2):
+			h, w = height, width
+			r = radius
+			d = xpadding
+			out = f'<path d="M{x+w/2-r+d}, {y-h/2} A{r}, {r} 0 0,1 {x+w/2+d}, {y-h/2+r}'
+			out += f'L{x+w/2+d}, {y+h/2-r} ' 
+			out += f'A{r}, {r} 0 0,1 {x+w/2-r+d} {y+h/2}'
+			out += f'" style="stroke: black; stroke-width:{lwd}; fill:none" />'
+			return(out)
 
 		@safe_render
 		def draw_close_bracket(x, y, height, width, size=0.8, xpadding=0, radius=3):
@@ -394,14 +466,9 @@ class Trialdesign(object):
 			r = radius
 			d = w/10
 			d = xpadding
-			# canvas.save()
-			# canvas.set_line_width(1.2)
-			# canvas.set_source_rgb(0, 0, 0)
 			canvas.arc(x+w/2-r+d, y-h/2+r, r, math.pi*1.5, 0)
 			canvas.line_to(x+w/2+d, y+h/2-r)
 			canvas.arc(x+w/2-r+d, y+h/2-r, r, 0, math.pi*0.5)
-			# canvas.stroke()
-			# canvas.restore()
 
 		@safe_render
 		def render_bracket(period, xoffset, y, startday, endday):
@@ -453,6 +520,7 @@ class Trialdesign(object):
 		for i in w[:-1]:
 			xx += i
 			draw_line(xx, y-yheaderpadding - headerheight/2, xx+ periodspacing, y-yheaderpadding-headerheight/2)
+			self.svg_out += svg_line(xx, y-yheaderpadding - headerheight/2, xx+ periodspacing, y-yheaderpadding-headerheight/2)
 			xx += periodspacing
 			canvas.stroke()
 
@@ -485,6 +553,14 @@ class Trialdesign(object):
 		# xx = xoffset + period_width(self._periods[0], canvas, width_function) + periodspacing
 		# y = render_bracket(p, xx, y, dmin, dmax) + ypadding
 		# render_times(xx, y, p, "PK sampling", lineheight)
+
+		# self.svg_out += svg_symbol(100, 100, "arrow", size=30)
+		# self.svg_out += svg_symbol(200, 100, "diamond", size=30)
+		# self.svg_out += svg_symbol(300, 100, "block", size=30)
+
+		self.svg_out += f'</svg>'
+		with open("td.svg", "w") as f:
+			f.write(self.svg_out)
 
 	def dump(self, canvas):
 		pass
