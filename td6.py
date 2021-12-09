@@ -160,7 +160,7 @@ def svg_close_bracket(x, y, height, width, xpadding=0, radius=3, lwd=1.2):
 
 @click.command()
 @click.argument("file")
-@click.option("--fontsize", "-s", type=int, default=24, help='output font size (default 18)')
+@click.option("--fontsize", "-s", type=int, default=14, help='output font size (default 11)')
 @click.option("--condensed", "-c", is_flag=True, help='condensed daygrid')
 @click.option("--debug", "-d", is_flag=True, help='debug output')
 def main(file, debug, fontsize, condensed):
@@ -356,8 +356,15 @@ def main(file, debug, fontsize, condensed):
 		for n in item_names(td, 'procedures'):
 			y = render_periods(xoffset, y, n, lineheight, render_procedure, default_symbol="diamond") + ypadding
 
+		viewport_height = y
+		temp = xoffset + sum([period_width(i, width_function) for i in periods]) + (len(periods))*periodspacing
+		#viewport_width = max(period_day_ends(periods[-1], xoffset, width_function))
+		viewport_width = temp
+		# print(viewport_height, viewport_width)
+
+
 		#### completed svg output
-		out = f'<svg viewBox="-{image_pad} -{image_pad} {image_size + 2 * image_pad} {image_size + 2 * image_pad}" xmlns="http://www.w3.org/2000/svg">\n'
+		out = f'<svg width="{viewport_width}" height="{viewport_height}" xmlns="http://www.w3.org/2000/svg">\n'
 		out += f'<style>text {{font-family: {font}; font-size: {size}px ;}}</style>\n'
 		out += svg_out
 		out += f'</svg>'
