@@ -12,6 +12,7 @@ import itertools
 
 # to do:#
 # implement time scale bracket
+# clean up functions
 
 
 
