@@ -246,7 +246,6 @@ def main(file, debug, fontsize, condensed, timescale, help):
 		return([s+w for s, w in zip(starts, widths)])
 	
 	def procedure_symbols(period, caption, default="diamond"):
-		#temp = extract_procedure(period, caption)
 		out = [""] * period['length']
 		for (d, t, rel) in extract_procedure(period, caption):
 			if len(t) > 1:

@@ -16,7 +16,8 @@
 				{
 					"caption": "hospitalization",
 					"start": -1,
-					"duration": 5
+					"duration": 5,
+					"decoration": "bracketed"
 				}
 			],
 			"administrations": [
