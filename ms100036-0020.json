@@ -10,7 +10,7 @@
 			"caption": "Period 1",
 			"length": 8,
 			"start": -1,
-			"daylabels": [-1, 1, 4, 7],
+			"daylabels": [-1, "1-3", 4, 7],
 			"dayshading": [1],
 			"intervals": [
 				{

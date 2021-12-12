@@ -5,14 +5,17 @@ import pathlib
 import cairo
 import json
 #import random
-#import math
+import math
 import re
 #import itertools
+import sys
 
 
 # to do:#
 # implement time scale bracket
 # clean up functions
+# implement broken time axis for PK sampling times after rich period + 24 h
+# implement curly bracket start/stop at day center when QD
 
 def decode_daylist(daylist):
 	days = []
@@ -54,7 +57,11 @@ def extract_procedure(period, caption):
 						t = [0, 0]
 					else: 
 						t = [0]
-					temp += [(d, t) for d in decode_daylist(proc['days'])]
+					if 'relative' in proc.keys():
+						rel = proc['relative']
+					else:
+						rel = 1
+					temp += [(d, t, rel) for d in decode_daylist(proc['days'])]
 	return(temp)
 
 def extract_decorations(period, caption):
@@ -82,7 +89,8 @@ def extract_interval(period, caption):
 
 def extract_times(period, caption):
 	temp = extract_procedure(period, caption)
-	return([(d-1)*24+t for (d, ts) in temp for t in ts])
+	# print(temp)
+	return([(d-rel)*24+t for (d, ts, rel) in temp for t in ts])
 
 def day_index(period, day):
 	temp = day - period['start']
@@ -114,8 +122,8 @@ def svg_rect(x, y, w, h, lwd=1, fill_color="none", line_color="black"):
 def svg_text(x, y, text):
 	return(f'<text x="{x}" y="{y}">{text}</text>\n')
 
-def svg_path(x, y, points, lwd=1, size=1, fill=False, dashed=False):
-	fill_color = "black" if fill else "none"
+def svg_path(x, y, points, lwd=1, size=1, fill=False, dashed=False, fill_color="none"):
+	#fill_color = "black" if fill else "none"
 	dash = "stroke-dasharray: 2.5 2.5" if dashed else ""
 	(x1, y1) = points[-1]
 	out = f'<path d="M{x1*size+x}, {y1*size+y} '
@@ -124,13 +132,16 @@ def svg_path(x, y, points, lwd=1, size=1, fill=False, dashed=False):
 	out += f'Z" style="stroke: black; fill: {fill_color}; stroke-width:{lwd}; {dash}" />'
 	return(out)	
 
-def svg_symbol(x, y, symbol, size=1, fill=False, lwd=1.2):
+def svg_symbol(x, y, width, symbol, size=1, fill=False, fill_color="none", lwd=1.2):
 	if symbol == "diamond":
-		return svg_path(x, y, [(0,-0.5), (0.25, 0), (0, 0.5), (-0.25, 0)], size=size*1.4, lwd=lwd)
+		return svg_path(x, y, [(0,-0.5), (0.25, 0), (0, 0.5), (-0.25, 0)], size=size*1.4, lwd=lwd, fill=fill)
+	# elif symbol == "block":
+	# 	return svg_path(x, y, [(-1.5/4, -.25), (1.5/4, -.25), (1.5/4, .25), (-1.5/4, .25)], size=size*1.5, lwd=lwd, fill=fill)
 	elif symbol == "block":
-		return svg_path(x, y, [(-1.5/4, -.25), (1.5/4, -.25), (1.5/4, .25), (-1.5/4, .25)], size=size*1.5, lwd=lwd)
+		w = width/size/1.5*.6
+		return svg_path(x, y, [(w/-2, -.25), (w/2, -.25), (w/2, .25), (-w/2, .25)], size=size*1.5, lwd=lwd, fill=fill)
 	elif symbol == "arrow":
-		return svg_path(x, y, [(-0.03, -0.5), (0.03, -0.5), (0.03, 0), (0.1875, 0), (0.0, 0.5), (-0.1875, 0), (-0.03, 0)], size=size*1.2, lwd=lwd, fill=True)
+		return svg_path(x, y, [(-0.03, -0.5), (0.03, -0.5), (0.03, 0), (0.1875, 0), (0.0, 0.5), (-0.1875, 0), (-0.03, 0)], size=size*1.2, lwd=lwd, fill=True, fill_color="black")
 	return ""
 
 def svg_open_bracket(x, y, height, width, xpadding=0, radius=3, lwd=1.2):
@@ -153,6 +164,19 @@ def svg_close_bracket(x, y, height, width, xpadding=0, radius=3, lwd=1.2):
 	out += f'" style="stroke: black; stroke-width:{lwd}; fill:none" />'
 	return(out)
 
+def svg_curly(xstart, xend, y, radius=8, lwd=1.2):
+	xcenter = xstart + (xend - xstart)/2
+	out = f'<path d="M{xstart}, {y} '
+	out += f'A{radius}, {radius}, 0, 0 0 {xstart+radius}, {y+radius} '
+	out += f'L{xcenter-radius}, {y+radius} '
+	out += f'A{radius}, {radius} 0, 0 1 {xcenter}, {y+2*radius} '
+	out += f'A{radius}, {radius}, 0, 0 1 {xcenter+radius}, {y+radius} '
+	out += f'L{xend-radius}, {y+radius} '
+	out += f'A{radius}, {radius} 0, 0 0 {xend}, {y} '
+	out += f'" style="stroke: black; stroke-width:{lwd}; fill:none" />'
+	return(out)
+
+
 ########################################
 ########################################
 ########################################
@@ -162,8 +186,10 @@ def svg_close_bracket(x, y, height, width, xpadding=0, radius=3, lwd=1.2):
 @click.argument("file")
 @click.option("--fontsize", "-s", type=int, default=14, help='output font size (default 11)')
 @click.option("--condensed", "-c", is_flag=True, help='condensed daygrid')
+@click.option("--timescale", "-t", is_flag=True, help='show time scale')
 @click.option("--debug", "-d", is_flag=True, help='debug output')
-def main(file, debug, fontsize, condensed):
+@click.option("--help", "-h", is_flag=True, help='help')
+def main(file, debug, fontsize, condensed, timescale, help):
 	debug = debug
 	infile = pathlib.Path(file)
 	inpath = pathlib.Path(file).resolve().parent
@@ -173,12 +199,15 @@ def main(file, debug, fontsize, condensed):
 	canvas.select_font_face("Arial", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
 	canvas.set_font_size(fontsize)
 
+	if len(file) == 0:
+		sys.exit()
+
 	with open(infile) as f:
 		td = json.load(f)
 	periods = []
-	for p in td["periods"]:
-		periods.append(p)
-
+	if "periods" in td.keys():
+		for p in td["periods"]:
+			periods.append(p)
 
 	def textwidth(text):
 		(x, y, cap_width, cap_height, dx, dy) = canvas.text_extents(text)
@@ -217,9 +246,9 @@ def main(file, debug, fontsize, condensed):
 		return([s+w for s, w in zip(starts, widths)])
 	
 	def procedure_symbols(period, caption, default="diamond"):
-		temp = extract_procedure(period, caption)
+		#temp = extract_procedure(period, caption)
 		out = [""] * period['length']
-		for (d, t) in temp:
+		for (d, t, rel) in extract_procedure(period, caption):
 			if len(t) > 1:
 				symbol = "block"
 			else:
@@ -233,9 +262,6 @@ def main(file, debug, fontsize, condensed):
 		font = font
 		size = fontsize
 		line_width = lwd
-
-		# svg_out = f'<svg viewBox="-{image_pad} -{image_pad} {image_size + 2 * image_pad} {image_size + 2 * image_pad}" xmlns="http://www.w3.org/2000/svg">\n'
-		# svg_out += f'<style>text {{font-family: {font}; font-size: {size}px ;}}</style>\n'
 
 		svg_out = ""
 
@@ -294,7 +320,7 @@ def main(file, debug, fontsize, condensed):
 
 			for p, w, s, b in zip(centers, widths, symbols, brackets):
 				if s != "":
-					svg_out += svg_symbol(p, y, s, size=textheight("X"), lwd=line_width)
+					svg_out += svg_symbol(p, y, w, s, size=textheight("X"), lwd=line_width)
 					if b=="bracketed":
 						svg_out += svg_open_bracket(p, y, lineheight, w*.8, xpadding=0, radius=lineheight/8, lwd=line_width)
 						svg_out += svg_close_bracket(p, y, lineheight, w*.8, xpadding=0, radius=lineheight/8, lwd=line_width)
@@ -310,6 +336,8 @@ def main(file, debug, fontsize, condensed):
 			# render interval box
 			starts = period_day_starts(period, xoffset, width_function)
 			ends = period_day_ends(period, xoffset, width_function)
+			widths = width_function(period)
+
 			height = 0.4 * lineheight
 			if 'intervals' in period.keys():
 				for intv in period['intervals']:
@@ -320,8 +348,95 @@ def main(file, debug, fontsize, condensed):
 						if start <0 and end >0:
 							end += 1
 						endx = ends[day_index(period, end)]
+						if "decoration" in intv.keys():
+							if intv["decoration"] == "bracketed":
+								wo = widths[day_index(period, start)]
+								wc = widths[day_index(period, end)]
+								svg_out += svg_open_bracket(startx, y, lineheight, wo*.6, xpadding=0, radius=lineheight/8, lwd=line_width)
+								svg_out += svg_close_bracket(endx, y, lineheight, wc*.6, xpadding=0, radius=lineheight/8, lwd=line_width)
 						svg_out += svg_rect(startx, y-height/2, endx-startx, height, lwd=line_width)
 			return(lineheight)
+
+		def render_times(period, caption, xoffset, yoffset, lineheight, first_pass=True):
+			nonlocal svg_out
+			if debug:
+				render_dummy(period, xoffset, yoffset, lineheight*2)
+			proc = extract_procedure(period, caption)
+			if len(proc) > 0:
+				# print(proc)
+				times = list(dict.fromkeys(extract_times(period, caption)))
+				# print(times)
+				maxtime = max(times)
+				break_time = sorted(list([i for i in times if i<24]))[-1] * 1.5
+				# print(break_time)
+				times_below = len([i for i in times if i<=break_time])
+				times_above = len([i for i in times if i>break_time])
+				# print(below24, above24)
+				# mediantime = times[math.floor(len(times)/2)]
+				# print(maxtime, mediantime)
+				y = yoffset
+
+				# render curly bracket
+				startx = period_day_starts(period, xoffset, width_function)[day_index(period, min([i for (i, t, rel) in proc]))]
+				endx = period_day_ends(period, xoffset, width_function)[day_index(period, max([i for (i, t, rel) in proc]))]
+				bracketheight = lineheight * 2/3
+				svg_out += svg_curly(startx, endx, y, radius=bracketheight/2)
+				y += lineheight + ypadding
+
+				# render time scale
+				pw = period_width(period, width_function) 
+				scale_width = pw * .8
+				scale_break = scale_width * times_below/(times_below+times_above) # scale breakpoint
+
+				dx = (pw - scale_width) if startx - yoffset > endx - (yoffset + pw) else 0
+				scale_x = xoffset + dx
+
+				def scale_left(time):
+					return(scale_x + scale_break/break_time*time)
+
+				def scale_right(time):
+					return(scale_x + scale_break +
+						(scale_width-scale_break)/(maxtime-24)*(time - 24))
+
+				y += lineheight/2
+				svg_out += svg_line(scale_x, y, scale_x + scale_width, y)
+			
+				c_width = [textwidth(str(i)) for i in times]
+				# last_caption_end = 0
+				for ti, wi in zip(times, c_width):
+					x = scale_left(ti) if ti < 24 else scale_right(ti)
+					# print(f'x: {x} - {ti}')
+					# svg_out += svg_line(x, y, x, y+lineheight/4)
+					svg_out += svg_symbol(x, y-lineheight/2, c_width, "diamond", size=textheight("x"), fill=True)
+					# ti_start = x - wi/2	
+					# if ti_start > last_caption_end:
+					# 	svg_out += svg_text(x - wi/2, y+lineheight + textheight("X"), ti)
+					# 	last_caption_end = x + wi/2 + textwidth(".	")
+
+				# render scale and labels
+				left_times = list(range(0, int(break_time)+1, 2))
+				right_times = list(range(24, int(maxtime)+1, 24))
+				print(left_times)
+				print(right_times)
+				last_label_end = 0
+				for ti in left_times:
+					x = scale_left(ti)
+					wi = textwidth(str(ti))
+					ti_start = x-wi/2
+					svg_out += svg_line(x, y, x, y+lineheight/4)
+					if ti_start > last_label_end:
+						svg_out += svg_text(x - wi/2, y+lineheight + textheight("X"), ti)
+						last_label_end = x + wi/2 + textwidth("1")
+				for ti in right_times:
+					x = scale_right(ti)
+					wi = textwidth(str(ti))
+					ti_start = x-wi/2
+					svg_out += svg_line(x, y, x, y+lineheight/4)
+					if ti_start > last_label_end:
+						svg_out += svg_text(x - wi/2, y+lineheight + textheight("X"), ti)
+						last_label_end = x + wi/2 + textwidth("1")
+
+			return(lineheight*3)
 
 		def render_periods(x, y, caption, height, render_function, **kwargs):
 			first = True
@@ -356,11 +471,17 @@ def main(file, debug, fontsize, condensed):
 		for n in item_names(td, 'procedures'):
 			y = render_periods(xoffset, y, n, lineheight, render_procedure, default_symbol="diamond") + ypadding
 
+		#### test
+		if timescale:
+			y = render_periods(xoffset, y, "PK sampling", lineheight, render_times) + ypadding
+		#svg_out += svg_curly(100, 180, 100, radius=10)
+
+		#### test end
+
+
 		viewport_height = y
 		temp = xoffset + sum([period_width(i, width_function) for i in periods]) + (len(periods))*periodspacing
-		#viewport_width = max(period_day_ends(periods[-1], xoffset, width_function))
 		viewport_width = temp
-		# print(viewport_height, viewport_width)
 
 
 		#### completed svg output
@@ -376,7 +497,6 @@ def main(file, debug, fontsize, condensed):
 	out = render(width_function=wf, lwd=fontsize/10, fontsize=fontsize, font="Arial")
 	with open(outfile, "w") as f:
 		f.write(out)
-
 
 
 if __name__ == "__main__":
