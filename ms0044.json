@@ -32,12 +32,14 @@
 				},
 				{
 					"caption": "PK sampling",
-					"days": [1, 2, 3],
-					"freq": "rich"
+					"days": [1],
+					"times": [0, 0.25, 0.5, 1, 2, 4, 6, 8],
+					"relative": 1,
+					"timescale": "show"
 				},
 				{
 					"caption": "PK sampling",
-					"days": [4, 5, 6, 7, 8],
+					"days": [2, 3, 4, 5, 6, 7, 8],
 					"freq": "QD"
 				}	
 			]

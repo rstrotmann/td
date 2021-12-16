@@ -36,7 +36,8 @@
 					"days": ["1"],
 					"freq": "rich",
 					"times": [0, 0.5, 1, 2, 3, 4, 6, 8],
-					"relative": 1
+					"relative": 1,
+					"timescale": "show"
 				},
 				{
 					"caption": "PK sampling",
@@ -78,7 +79,8 @@
 					"caption": "PK sampling",
 					"days": ["5"],
 					"times": [0, 0.5, 1, 2, 3, 4, 6, 8],
-					"relative": 5
+					"relative": 5,
+					"timescale": "show"
 				},
 				{
 					"caption": "PK sampling",
