@@ -17,13 +17,14 @@
 					"caption": "hospitalization",
 					"start": -1,
 					"duration": 5
+				},
+				{
+					"caption": "fecal sampling",
+					"start": 1,
+					"duration": 4
 				}
 			],
 			"administrations": [
-				{
-					"caption": "itraconazole",
-					"days": []
-				},
 				{
 					"caption": "tepotinib",
 					"days": [1]
@@ -31,23 +32,33 @@
 			],
 			"procedures": [
 				{
-					"caption": "fecal sampling",
-					"days": ["1-4"],
-					"freq": "cont"
-				},
-				{
 					"caption": "laxative",
 					"days": [3]
 				},
 				{
 					"caption": "PK sampling tepotinib",
-					"days": ["1, 2-3"],
-					"freq": "rich",
-					"times": [0, 0.5, 1, 2, 4, 6, 24, 36, 48, 60]
+					"days": [1],
+					"relative": 1,
+					"times": [0, 1, 1.5, 2, 3, 4, 6, 8, 12, 16],
+					"timescale": "show"
 				},
 				{
 					"caption": "PK sampling tepotinib",
-					"days": ["4-8"],
+					"days": [2],
+					"relative": 1,
+					"times": [0, 6, 14],
+					"timescale": "show"
+				},
+				{
+					"caption": "PK sampling tepotinib",
+					"days": [3],
+					"relative": 1,
+					"times": [0, 12],
+					"timescale": "show"
+				},				
+				{
+					"caption": "PK sampling tepotinib",
+					"days": ["4-7"],
 					"freq": "QD"
 				}
 			]
@@ -63,12 +74,17 @@
 					"caption": "hospitalization",
 					"start": 11,
 					"duration": 5
+				},
+				{
+					"caption": "fecal sampling",
+					"start": 12,
+					"duration": 4
 				}
 			],
 			"administrations": [
 				{
 					"caption": "itraconazole",
-					"days": ["8-10, 11, 12-18"]
+					"days": ["8-18"]
 				},
 				{
 					"caption": "tepotinib",
@@ -78,18 +94,14 @@
 			"procedures": [
 				{
 					"caption": "PK sampling tepotinib",
-					"days": ["12-14"],
-					"freq": "rich"
+					"days": ["12"],
+					"relative": 12,
+					"times": [0, 0.5, 1, 2, 4, 6, 24, 36, 48, 60]
 				},
 				{
 					"caption": "PK sampling tepotinib",
-					"days": ["15-19"],
+					"days": ["13-19"],
 					"freq": "QD"
-				},
-				{
-					"caption": "fecal sampling",
-					"days": ["12-15"],
-					"freq": "cont"
 				},
 				{
 					"caption": "laxative",

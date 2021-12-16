@@ -72,6 +72,18 @@ def extract_procedure(period, caption):
 					temp += [(d, t, rel) for d in decode_daylist(proc['days'])]
 	return(temp)
 
+def normalize_procedure(procedure):
+	"""break down times to days"""
+	out = []
+	for (d, t, rel) in procedure:
+		dd = 0
+		while len(t)>0:
+			out.append((d+dd, [i for i in t if i<24], rel))
+			t = [i-24 for i in t if i>=24]
+			dd += 1
+	return(out)
+
+
 def has_timescale(period, caption):
 	temp = False
 	for x in ['procedures', 'administrations']:
@@ -84,7 +96,16 @@ def has_timescale(period, caption):
 	return(temp)
 
 def extract_decorations(period, caption):
+	# print(f'extr deco: {caption}')
+	l = int(period['length'])
+	# print(f'length: {l}')
+	# print(period)
+	# print(period["length"])
+	# print(day_index(period, period['length']))
 	temp = [""] * period['length']
+
+	#temp = [""] * int(day_index(period, int(period['length']))+1)
+	#print(temp)
 	for x in ['procedures', 'administrations']:
 		if x in period.keys():
 			for proc in period[x]:
@@ -93,9 +114,13 @@ def extract_decorations(period, caption):
 						deco = proc['decoration']
 					else:
 						deco = ""
+					# print(deco)
 					dd = [(d, deco) for d in decode_daylist(proc['days'])]
-					for (i, deco) in dd:
-						temp[day_index(period, i)] = deco
+					# print(f'dd: {dd}')
+					# for (i, deco) in dd:
+						# print(f'deco: day index {day_index(period, i)} out of {len(temp)}')
+						#temp[day_index(period, i)] = deco
+	# print(temp)
 	return(temp)
 
 def extract_interval(period, caption):
@@ -108,7 +133,9 @@ def extract_interval(period, caption):
 
 def extract_times(period, caption):
 	temp = extract_procedure(period, caption)
-	# print(temp)
+	# print(f'extract_times: {temp}')
+	temp = normalize_procedure(temp)
+	# print(f'extract_times after norm: {temp}')
 	return([(d-rel)*24+t for (d, ts, rel) in temp for t in ts])
 
 def day_index(period, day):
@@ -194,14 +221,46 @@ def svg_curly_up(xstart, xend, y, radius=8, lwd=1.2):
 	return(out)
 
 def procedure_symbols(period, caption, default="diamond"):
-	out = [""] * period['length']
-	for (d, t, rel) in extract_procedure(period, caption):
+	out = [""] * (period['length']+1)
+	#out = [""] * int(day_index(period, int(period['length']))+1)
+	# print(f'proc symb: {out}')
+	for (d, t, rel) in normalize_procedure(extract_procedure(period, caption)):
+		# print(d, t, rel)
 		if len(t) > 1:
 			symbol = "block"
 		else:
 			symbol = default
 		out[day_index(period, d)] = symbol
 	return(out)	
+
+# def procedure_symbols(period, caption, default="diamond"):
+# 	# print(f'\nproc symbols for period {period["caption"]}, proc {caption}')
+# 	out = [""] * (period['length']+1)
+# 	symbol=default
+# 	for (d, t, rel) in extract_procedure(period, caption):
+# 		# print(d, t, rel)
+# 		if len(t) == 1:
+# 			symbol = default
+# 			out[day_index(period, d)] = symbol
+# 		else:
+# 			symbol = default
+# 			n = 0
+# 			dd = 0
+# 			for tt in t:
+# 				if int(tt / 24) == dd:
+# 					n += 1
+# 				else:
+# 					if n > 1:
+# 						symbol="block"
+# 					out[day_index(period, d+dd)] = symbol
+# 					n = 0
+# 					dd += 1
+# 					symbol=default
+# 				# print(f'd: {d}, dd: {dd}, tt: {tt}, n: {n}, sym {symbol}')
+# 			out[day_index(period, d+dd)] = symbol
+# 	# print(f'proc symb: {out}')
+# 	return(out)	
+
 
 ###### functions that rely on day_width_function:
 
@@ -318,24 +377,35 @@ def render_interval(period, caption, xoffset, yoffset, lineheight, metrics, lwd=
 				svg_out += svg_rect(startx, y-height/2, endx-startx, height, lwd=lwd)
 	return(svg_out)
 
-def render_times(period, caption, xoffset, yoffset, lineheight, metrics, lwd=1.2, first_pass=True, debug=False, default_symbol="diamond"):
+def render_times(period, caption, xoffset, yoffset, lineheight, metrics, maxwidth=100, lwd=1.2, first_pass=True, debug=False, default_symbol="diamond"):
 	(daywidth_function, textwidth_function, textheight_function, ypadding) = metrics
 	out = ""
 	if debug:
 		out += render_dummy(period, xoffset, yoffset, lineheight*2 + ypadding*3 + lineheight/6 + textheight_function("X"), metrics)
 
 	proc = extract_procedure(period, caption)
+	# print(f'\nperiod {period["caption"]}')
+	# print(proc)
+	# print(normalize_procedure(proc))
+	proc = normalize_procedure(proc)
+
 	if(len(proc)) > 0:
 		y = yoffset #+ lineheight/2 # center of the line
 		times = list(dict.fromkeys(extract_times(period, caption)))
-		# print(times)
+		# print(f'times: {times}')
+		scale_width = min(len(times) * textwidth_function("XX"), maxwidth-xoffset)
 
 		maxtime = max(times)
-		break_time = sorted(list([i for i in times if i<24]))[-1] * 1.5
+		break_time = min(sorted(list([i for i in times if i<24]))[-1] + 2, 23)
 		times_below = len([i for i in times if i<=break_time])
 		times_above = len([i for i in times if i>break_time])
 
-		#startx = period_day_starts(period, xoffset, daywidth_function)[day_index(period, min([i for (i, t, rel) in proc]))]
+		# temp = min([i for (i,t,rel) in normalize_procedure(proc)])
+		# print(f'render_times min index: {day_index(period, temp)}')
+		
+		# temp = max([i for (i,t,rel) in normalize_procedure(proc)])
+		# print(f'render_times max index: {temp}')
+
 		startx = period_day_starts(period, xoffset, daywidth_function)[day_index(period, min([i for (i, t, rel) in proc]))]
 
 		endx = period_day_ends(period, xoffset, daywidth_function)[day_index(period, max([i for (i, t, rel) in proc]))]
@@ -344,8 +414,7 @@ def render_times(period, caption, xoffset, yoffset, lineheight, metrics, lwd=1.2
 		out += svg_curly_up(startx, endx, y, radius=bracketheight/2, lwd=lwd)
 		y += lineheight*2 + ypadding*1.5
 
-		pw = period_width(period, daywidth_function) 
-		scale_width = pw * 1.5
+
 		scale_height = lineheight/3
 		scale_break = scale_width * times_below/(times_below+times_above)
 		scale_gap = textwidth_function("m")
@@ -371,9 +440,6 @@ def render_times(period, caption, xoffset, yoffset, lineheight, metrics, lwd=1.2
 				out += svg_symbol(xi, y - lineheight/2-ypadding/2, 0, "diamond", size=textheight_function("X"), lwd=lwd)
 			return(out)
 
-
-		# dx = (pw-scale_width) if startx-yoffset > endx-(yoffset+pw) else 0
-		# scale_startx = xoffset + dx
 		scale_startx = xoffset
 
 		out += render_points(scale_startx, y, scale_break, 0, break_time)
@@ -510,42 +576,19 @@ def main(file, debug, fontsize, font, condensed, timescale, padding):
 		out += render_periods(periods, xoffset, y, n, lineheight, render_procedure, metrics, periodspacing, default_symbol="diamond", debug=debug, lwd=lwd)
 		y += lineheight + ypadding
 
-	# test whether to render timescale. Only the first period counts
-	if timescale:
-		ts = False
-		x = xoffset
-		for p in periods:
-			if has_timescale(p, n):
-				ts = True
-				break
-			x += period_width(p, daywidth_function)
-			x += periodspacing
-		if ts:
-			out += render_times(p, n, x, y, lineheight, metrics, debug=debug, lwd=lwd)
-			y += lineheight*4 + ypadding
-
-	############### experimental ###############
-	# render times
-	# if timescale:
-		# ptimes =[]
-		# for p in periods:
-		# 	temp = list(dict.fromkeys(extract_times(p, "PK sampling")))
-		# 	if len(temp)>0:
-		# 		ptimes.append(temp)
-		# sametimes = False
-		# for t in ptimes[1:]:
-		# 	#print(f't: {t}')
-		# 	if t == ptimes[0]:
-		# 		sametimes = True
-		# #print(ptimes)
-		# # if ptimes[0] == ptimes[1]:
-		# # 	print("same")
-		# print(f'all times the same: {sametimes}')
-
-		# out += render_periods(periods, xoffset, y, "PK sampling", lineheight, render_times, metrics, periodspacing, default_symbol="diamond", debug=debug, lwd=lwd)
-		# y += lineheight * 3 + ypadding
-
-	############# experimental end #############
+		# test whether to render timescale. Only the first period counts
+		if timescale:
+			ts = False
+			x = xoffset
+			for p in periods:
+				if has_timescale(p, n):
+					ts = True
+					break
+				x += period_width(p, daywidth_function)
+				x += periodspacing
+			if ts:
+				out += render_times(p, n, x, y, lineheight, metrics, maxwidth=xoffset + sum([period_width(i, daywidth_function) for i in periods]) + (len(periods)-1) * periodspacing, debug=debug, lwd=lwd)
+				y += lineheight*4 + ypadding
 
 	# re-calculate image dimensions, finalize svg
 	viewport_width = xoffset + sum([period_width(i, daywidth_function) for i in periods]) + (len(periods)) * periodspacing

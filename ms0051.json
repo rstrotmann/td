@@ -1,6 +1,7 @@
 {
 	"periods": [
 		{
+			"name": "MS200095-0051",
 			"caption": "S",
 			"length": 1,
 			"start": 1,
@@ -10,7 +11,7 @@
 			"caption": "Period 1",
 			"length": 8,
 			"start": -1,
-			"daylabels": [-1, 1, 4, 7],
+			"daylabels": [-1, "1-7"],
 			"dayshading": [1],
 			"intervals": [
 				{
@@ -26,20 +27,17 @@
 				}
 			],
 			"procedures": [
-{
+				{
 					"caption": "PK sampling carbamazepine",
 					"days": [],
 					"freq": "QD"
 				},
 				{
 					"caption": "PK sampling tepotinib",
-					"days": ["1-3"],
-					"freq": "rich"
-				},
-				{
-					"caption": "PK sampling tepotinib",
-					"days": ["4-7"],
-					"freq": "QD"
+					"days": [1],
+					"times": [0, 1, 1.5, 2, 3, 4, 6, 8, 12, 16, 24, 30, 38, 48, 60, 72, 96, 120, 144],
+					"relative": 1,
+					"timescale": "show"
 				}
 			]
 		},
@@ -47,14 +45,13 @@
 			"caption": "Period 2",
 			"length": 25,
 			"start": 8,
-			"daylabels": [8, 15, 22, 25, 26, 29, 32],
+			"daylabels": [8, 15, 22, "25-32"],
 			"dayshading": [8, 15, 22, 29],
 			"intervals": [
 				{
 					"caption": "hospitalization",
 					"start": 25,
-					"duration": 5,
-					"decoration": "bracketed"
+					"duration": 5
 				}
 			],
 			"administrations": [
@@ -81,9 +78,16 @@
 				},
 				{
 					"caption": "PK sampling carbamazepine",
-					"days": ["25-26"],
-					"freq": "QD",
-					"decoration": "bracketed"
+					"days": [25],
+					"times": [0],
+					"relative": 25
+				},
+				{
+					"caption": "PK sampling carbamazepine",
+					"days": [26],
+					"times": [0, 1, 1.5, 2, 3, 4, 6, 8, 12],
+					"relative": 26,
+					"timescale": "hide"
 				}
 			]
 		},

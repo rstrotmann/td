@@ -1,7 +1,7 @@
 {
 	"cycles": [
 		{
-			"name": "MS200095-0022",
+			"name": "MS200095-0022",	
 			"caption": "S",
 			"length": 1,
 			"procedures": [
@@ -14,18 +14,24 @@
 		{
 			"caption": "Cycle 1",
 			"length": 21,
-			"daylabels": [1, 2, 8, 15, 16, 21],
+			"daylabels": [1, 21],
 			"dayshading": [1, 8, 15],
 			"administrations": [
 				{
-					"caption": "tepotinib (+ osimertinib)",
+					"caption": "tepotinib",
 					"days": ["1-21"]
 				}
 			],
 			"procedures": [	
 				{
-					"caption": "safety ECG",
-					"days": [1, 2, 8, 15, 16],
+					"caption": "digital ECG",
+					"days": [1],
+					"times": [0,4],
+					"timescale": "hide"
+				},
+				{
+					"caption": "safety lab",
+					"days": [1],
 					"freq": "QD"
 				},
 				{
@@ -33,19 +39,10 @@
 					"days": []
 				},
 				{
-					"caption": "rich PK sampling (safety run-in)",
-					"days": [1, 15],
-					"times": [0, 0.25, 0.5, 1, 1.5, 2, 3, 4, 6, 8, 12]
-				},
-				{
-					"caption": "sparse PK sampling",
+					"caption": "PK sampling",
 					"days": [1],
-					"times": [0, 1.5, 4]
-				},
-				{
-					"caption": "rich PK sampling (safety run-in)",
-					"days": [2, 16],
-					"times": [0]
+					"times": [0, 1.5, 4],
+					"timescale": "show"
 				}
 			]
 		},
@@ -56,20 +53,26 @@
 			"dayshading": [1, 8, 15],
 			"administrations": [
 				{
-					"caption": "tepotinib (+ osimertinib)",
+					"caption": "tepotinib",
 					"days": ["1-21"]
 				}
 			],
 			"procedures": [
 				{
-					"caption": "safety ECG",
+					"caption": "digital ECG",
+					"days": [1],
+					"times": [0,4]
+				},
+				{
+					"caption": "safety lab",
 					"days": [1],
 					"freq": "QD"
 				},
 				{
-					"caption": "sparse PK sampling",
+					"caption": "PK sampling",
 					"days": [1],
-					"times": [0, 1.5, 4]
+					"times": [0, 1.5, 4],
+					"timescale": "show"
 				}
 			]
 		},
@@ -81,7 +84,7 @@
 			"decoration": "bracketed",
 			"administrations": [
 				{
-					"caption": "tepotinib (+ osimertinib)",
+					"caption": "tepotinib",
 					"days": ["1-21"]
 				}
 			],
@@ -91,11 +94,16 @@
 					"days": [1]
 				},
 				{
+					"caption": "safety lab",
+					"days": [1],
+					"freq": "QD"
+				},
+				{
 					"caption": "ctDNA sampling",
 					"days": [1]
 				},
 				{
-					"caption": "safety ECG",
+					"caption": "digital ECG",
 					"days": [1],
 					"freq": "QD"
 				}
@@ -108,13 +116,18 @@
 			"dayshading": [1, 8, 15],
 			"administrations": [
 				{
-					"caption": "tepotinib (+ osimertinib)",
+					"caption": "tepotinib",
 					"days": ["1-21"]
 				}
 			],
 			"procedures": [
 				{
-					"caption": "safety ECG",
+					"caption": "digital ECG",
+					"days": [1],
+					"freq": "QD"
+				},
+				{
+					"caption": "safety lab",
 					"days": [1],
 					"freq": "QD"
 				}
@@ -133,7 +146,7 @@
 					"days": [1]
 				},
 				{
-					"caption": "safety ECG",
+					"caption": "digital ECG",
 					"days": [1],
 					"freq": "QD"
 				}
