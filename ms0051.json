@@ -57,8 +57,7 @@
 			"administrations": [
 				{
 					"caption": "tepotinib",
-					"days": [26],
-					"decoration": "bracketed"
+					"days": [26]
 				},
 				{
 					"caption": "carbamazepine BID",
