@@ -416,14 +416,18 @@ def render_periods(periods, x, y, caption, height, render_function, metrics, per
 
 @click.command()
 @click.argument("file")
-@click.option("--fontsize", "-s", type=int, default=14, help='output font size (default 11)')
-@click.option("--font", "-f", type=str, default="Arial", help='output font type (default: Arial)')
-@click.option("--padding", "-p", type=int, default=1, help='y padding factor (default 1)')
-@click.option("--condensed", "-c", is_flag=True, help='condensed daygrid')
-@click.option("--timescale", "-t", is_flag=True, help='show time scale')
-@click.option("--ellipsis", "-e", is_flag=True, help='reduce symbols in condensed representation')
-@click.option("--debug", "-d", is_flag=True, help='debug output')
+@click.option("--fontsize", "-s", type=int, default=14, help='Output font size (default 11)')
+@click.option("--font", "-f", type=str, default="Arial", help='Output font type (default: Arial)')
+@click.option("--padding", "-p", type=int, default=1, help='Y-axis padding factor (default 1)')
+@click.option("--condensed", "-c", is_flag=True, help='Show condensed daygrid')
+@click.option("--timescale", "-t", is_flag=True, help='Show time scale')
+@click.option("--ellipsis", "-e", is_flag=True, help='Reduce symbols in condensed output')
+@click.option("--debug", "-d", is_flag=True, help='Debug output')
 def main(file, debug, fontsize, font, condensed, timescale, padding, ellipsis):
+	"""Clinical Trial design visualization\n
+	Schedule of assessments to be provided in json-formatted FILE (see examples for guidance). Graphical output in svg vector format. Use below OPTIONS to manage output style.\n
+	Version 2.0 (Dec-2021), (c) Rainer Strotmann,
+	proudly written in functional Python."""
 	debug = debug
 	infile = pathlib.Path(file)
 	inpath = pathlib.Path(file).resolve().parent

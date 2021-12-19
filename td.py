@@ -4,617 +4,547 @@ import click
 import pathlib
 import cairo
 import json
-import random
 import math
 import re
+#import sys
+from pprint import pprint
 
-class Periodelement(object):
-	def __init__(self, period_dict=dict(), length=0, start=1, dayheight=20, daywidth=15):
-		self._period_dict = period_dict
-		self._dayheight = dayheight
-		self._daywidth = daywidth
-		self._length = length
-		self._start = start
-		self._caption = period_dict["caption"]
-		if "freq" in period_dict:
-			self._freq = period_dict["freq"]
+
+# to do:#
+# implement time scale bracket
+# implement broken time axis for PK sampling times after rich period + 24 h
+# implement curly bracket start/stop at day center when QD
+
+def decode_daylist(daylist):
+	days = []
+	for i in daylist:
+		if isinstance(i, int):
+			days.append(i)
+		elif isinstance(i, str):
+			pat_element = r'(\d+)(-(\d+))?'
+			pat = f'({pat_element}(, )*)'
+			m = re.findall(pat, i)
+			if m:
+				for mm in m:
+					if mm[3] == "":
+						days.append(int(mm[1]))
+					else:
+						for i in range(int(mm[1]), int(mm[3])+1):
+							days.append(i)
+	return(days)
+
+def item_names(trial, item_class):
+	out = []
+	unit = "cycles" if "cycles" in trial.keys() else "periods"
+	for p in trial[unit]:
+		if item_class in p.keys():
+			for proc in p[item_class]:
+				temp = proc['caption']
+				if not temp in out:
+					out.append(temp)
+	return(out)
+
+def extract_procedure(period, caption):
+	temp = []
+	for x in ['procedures', 'administrations']:
+		if x in period.keys():
+			for proc in period[x]:
+				if proc['caption'] == caption:
+					if 'times' in proc.keys():
+						t = proc['times']
+					elif 'freq' in proc.keys() and proc['freq'] == 'rich':
+						t = [0, 0]
+					else: 
+						t = [0]
+					if 'relative' in proc.keys():
+						rel = proc['relative']
+					else:
+						rel = 1
+					temp += [(d, t, rel) for d in decode_daylist(proc['days'])]
+	return(temp)
+
+def normalize_procedure(procedure):
+	"""break down times to days"""
+	out = []
+	for (d, t, rel) in procedure:
+		dd = 0
+		while len(t)>0:
+			out.append((d+dd, [i for i in t if i<24], rel))
+			t = [i-24 for i in t if i>=24]
+			dd += 1
+	return(out)
+
+
+def has_timescale(period, caption):
+	temp = False
+	for x in ['procedures', 'administrations']:
+		if x in period.keys():
+			for proc in period[x]:
+				if proc['caption'] == caption:
+					if 'timescale' in proc.keys():
+						if proc['timescale'] == 'show':
+							temp = True
+	return(temp)
+
+def extract_decorations(period, caption):
+	l = int(period['length'])
+	temp = [""] * period['length']
+
+	for x in ['procedures', 'administrations']:
+		if x in period.keys():
+			for proc in period[x]:
+				if proc['caption'] == caption:
+					if 'decoration' in proc.keys():
+						# print(f'{period["caption"]}, {caption} has decoration')
+						deco = proc['decoration']
+					else:
+						deco = ""
+					dd = [(d, deco) for d in decode_daylist(proc['days'])]
+					# print(dd)
+					for (day, dec) in dd:
+						temp[day_index(period, day)] = dec
+	# print(temp)
+	return(temp)
+
+def extract_interval(period, caption):
+	out = []
+	if 'interval' in period.keys():
+		for intv in period['intervals']:
+			if intv['caption'] == caption:
+				out = [intv['start'], intv['duration']]
+	return(out)
+
+def extract_times(period, caption):
+	temp = extract_procedure(period, caption)
+	temp = normalize_procedure(temp)
+	return([(d-rel)*24+t for (d, ts, rel) in temp for t in ts])
+
+def day_index(period, day):
+	temp = day - period['start']
+	if period['start'] < 0 and day > 0:
+		temp -= 1
+	return(temp)
+
+def day_labels(period):
+	temp = [""] * period['length']
+	if "daylabels" in period.keys():
+		for i in decode_daylist(period['daylabels']):
+			temp[day_index(period, i)] = i
+	return(temp)
+
+def day_shadings(period):
+	temp = [False] * period['length']
+	if "dayshading" in period.keys():
+		for i in decode_daylist(period['dayshading'])	:
+			temp[day_index(period, i)] = True
+	return(temp)
+
+def svg_line(x1, y1, x2, y2, lwd=1, color="black", dashed=False):
+	dash = f'stroke-dasharray: {lwd*3} {lwd*3}' if dashed else ""
+	return(f'<line x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" style="stroke:{color}; stroke-width:{lwd}; {dash}" />\n')
+
+def svg_rect(x, y, w, h, lwd=1, fill_color="none", line_color="black"):
+	return(f'<rect x="{x}" y="{y}" width="{w}" height="{h}" style="stroke:{line_color};  stroke-width:{lwd}; fill:{fill_color};" />\n')
+
+def svg_circle(x, y, r, lwd=1.2, fill_color="none", line_color="black"):
+	return(f'<circle cx="{x}" cy="{y}" r="{r}" style="stroke:{line_color};  stroke-width:{lwd}; fill:{fill_color};"/>\n')
+
+def svg_text(x, y, text):
+	return(f'<text x="{x}" y="{y}">{text}</text>\n')
+
+def svg_path(x, y, points, lwd=1, size=1, fill=False, dashed=False, fill_color="none"):
+	#fill_color = "black" if fill else "none"
+	dash = "stroke-dasharray: 2.5 2.5" if dashed else ""
+	(x1, y1) = points[-1]
+	out = f'<path d="M{x1*size+x}, {y1*size+y} '
+	for (x2, y2) in points:
+		out += f'L{x2*size+x}, {y2*size+y} '
+	out += f'Z" style="stroke: black; fill: {fill_color}; stroke-width:{lwd}; {dash}" />'
+	return(out)	
+
+def svg_symbol(x, y, width, symbol, size=1, fill=False, fill_color="none", lwd=1.2):
+	if symbol == "diamond":
+		return svg_path(x, y, [(0,-0.5), (0.25, 0), (0, 0.5), (-0.25, 0)], size=size*1.4, lwd=lwd, fill=fill)
+	elif symbol == "block":
+		w = width/size/1.5*.6
+		return svg_path(x, y, [(w/-2, -.25), (w/2, -.25), (w/2, .25), (-w/2, .25)], size=size*1.5, lwd=lwd, fill=fill)
+	elif symbol == "arrow":
+		return svg_path(x, y, [(-0.03, -0.5), (0.03, -0.5), (0.03, 0), (0.1875, 0), (0.0, 0.5), (-0.1875, 0), (-0.03, 0)], size=size*1.2, lwd=lwd, fill=True, fill_color="black")
+	return ""
+
+def svg_open_bracket(x, y, height, width, xpadding=0, radius=3, lwd=1.2):
+	h, w = height, width
+	r = radius
+	d = xpadding
+	out = f'<path d="M{x-w/2+r-d}, {y-h/2} A{r}, {r} 0 0,0 {x-w/2-d}, {y-h/2+r}'
+	out += f'L{x-w/2-d}, {y+h/2-r} ' 
+	out += f'A{r}, {r} 0 0,0 {x-w/2+r-d} {y+h/2}'
+	out += f'" style="stroke: black; stroke-width:{lwd}; fill:none" />'
+	return(out)
+
+def svg_close_bracket(x, y, height, width, xpadding=0, radius=3, lwd=1.2):
+	h, w = height, width
+	r = radius
+	d = xpadding
+	out = f'<path d="M{x+w/2-r+d}, {y-h/2} A{r}, {r} 0 0,1 {x+w/2+d}, {y-h/2+r}'
+	out += f'L{x+w/2+d}, {y+h/2-r} ' 
+	out += f'A{r}, {r} 0 0,1 {x+w/2-r+d} {y+h/2}'
+	out += f'" style="stroke: black; stroke-width:{lwd}; fill:none" />'
+	return(out)
+
+def svg_curly_up(xstart, xend, y, radius=8, lwd=1.2):
+	xcenter = xstart + (xend - xstart)/2
+	out = f'<path d="M{xstart}, {y} '
+	out += f'A{radius}, {radius}, 0, 0 0 {xstart+radius}, {y+radius} '
+	out += f'L{xcenter-radius}, {y+radius} '
+	out += f'A{radius}, {radius} 0, 0 1 {xcenter}, {y+2*radius} '
+	out += f'A{radius}, {radius}, 0, 0 1 {xcenter+radius}, {y+radius} '
+	out += f'L{xend-radius}, {y+radius} '
+	out += f'A{radius}, {radius} 0, 0 0 {xend}, {y} '
+	out += f'" style="stroke: black; stroke-width:{lwd}; fill:none" />'
+	return(out)
+
+def procedure_symbols(period, caption, default="diamond"):
+	out = [""] * (period['length']+1)
+	for (d, t, rel) in normalize_procedure(extract_procedure(period, caption)):
+		if len(t) > 1:
+			symbol = "block"
 		else:
-			self._freq = "QD"
-		if "decoration" in period_dict:
-			self._decoration = period_dict["decoration"]
+			symbol = default
+		out[day_index(period, d)] = symbol
+	return(out)	
+
+###### functions that rely on day_width_function:
+
+def period_width(period, day_width_function):
+	return(sum(day_width_function(period)))
+
+def period_day_starts(period, xoffset, daywidth_function):
+	out=[xoffset]
+	acc = xoffset
+	for i in daywidth_function(period):
+		acc += i
+		out.append(acc)
+	return out[:-1]
+
+def period_day_centers(period, xoffset, daywidth_function):
+	return([start + width / 2 for start, width in zip(period_day_starts(period, xoffset, daywidth_function), daywidth_function(period))])
+
+def period_day_ends(period, xoffset, daywidth_function):
+	starts = period_day_starts(period, xoffset, daywidth_function)
+	widths = daywidth_function(period)
+	return([s+w for s, w in zip(starts, widths)])
+
+####### functions that rely on the metrics
+
+def render_dummy(period, xoffset, yoffset, lineheight, metrics):
+	"""renders placeholder box for visual debugging purposes"""
+	(daywidth_function, textwidth_function, textheight_function, ypadding) = metrics
+	return(svg_rect(xoffset, yoffset, period_width(period, daywidth_function), lineheight, lwd=0, fill_color="cornsilk"))
+
+def render_daygrid(period, caption, xoffset, yoffset, height, metrics, lwd=1.2, first_pass=True, debug=False, ellipsis=False):
+	"""renders the svg output for the day grid for a period"""
+	(daywidth_function, textwidth_function, textheight_function, ypadding) = metrics
+	svg_out = ""
+	y = yoffset
+	if debug:
+		svg_out += render_dummy(period, xoffset, yoffset, height, metrics)
+	for start, width, center, label, shading in zip(period_day_starts(period, xoffset, daywidth_function), daywidth_function(period), period_day_centers(period, xoffset, daywidth_function), day_labels(period), day_shadings(period)):
+		if shading:
+			svg_out += svg_rect(start, y, width, height, lwd=0, fill_color="lightgray")
+		if width >textwidth_function("XX")/3:
+			svg_out += svg_rect(start, y, width, height, lwd=lwd)
 		else:
-			self._decoration = ""
-		if "times" in period_dict:
-			self._times = period_dict["times"]
-		else:
-			self._times = []
+			svg_out += svg_line(start, y, start+width, y, lwd=lwd, dashed=True)
+			svg_out += svg_line(start, y+height, start+width, y+height, lwd=lwd, dashed=True)
+		label = str(label)
+		delta = textwidth_function("1")*.5 if len(label)>0 and label[0] == "1" else 0
+		svg_out += svg_text(center - textwidth_function(str(label)) / 2-delta, yoffset + height - (height- textheight_function("X")) / 2, str(label))
+	return(svg_out)
+
+def render_periodcaption(period, caption, xoffset, yoffset, height, metrics, lwd=1.2, first_pass=True, debug=False, ellipsis=False):
+	"""renders svg code for the header above the daygrid"""
+	(daywidth_function, textwidth_function, textheight_function, ypadding) = metrics
+	svg_out = ""
+	if debug:
+		svg_out += render_dummy(period, xoffset, yoffset, height, metrics)
+	xcenter = xoffset + period_width(period, daywidth_function)/2
+	return(svg_out + svg_text(xcenter - textwidth_function(str(period['caption']))/2, yoffset+ height - (height-textheight_function("X"))/2, str(period['caption'])))
+
+def render_procedure(period, caption, xoffset, yoffset, lineheight, metrics, default_symbol="diamond", lwd=1.2, first_pass=True, debug=False, ellipsis=False):
+	(daywidth_function, textwidth_function, textheight_function, ypadding) = metrics
+	svg_out = ""
+	if debug:
+		svg_out += render_dummy(period, xoffset, yoffset, lineheight, metrics)
+
+	y = yoffset + lineheight/2 # center of the line
+	if first_pass:
+		svg_out += svg_text(5, y + textheight_function(caption) * (1/2 - 0.1), caption)
+
+	centers = period_day_centers(period, xoffset, daywidth_function)
+	widths = daywidth_function(period)
+	brackets = extract_decorations(period, caption)
+	symbols = procedure_symbols(period, caption, default_symbol)
+	dlabels = day_labels(period)
+
+	ellipses = [1 if (s!="" and l == "" and len(symbols)>3) else 0 for (s,l) in zip(symbols, dlabels)]
+
+	for p, w, s, b, e in zip(centers, widths, symbols, brackets, ellipses):
+		if s != "":
+			if e==1 and b=="" and s=="arrow" and ellipsis==True:
+				svg_out += svg_circle(p, y, lineheight/30, fill_color="black")
+			else:
+				svg_out += svg_symbol(p, y, w, s, size=textheight_function("X"), lwd=lwd)
+				if b=="bracketed":
+					svg_out += svg_open_bracket(p, y, lineheight, w*.8, xpadding=0, radius=lineheight/8, lwd=lwd)
+					svg_out += svg_close_bracket(p, y, lineheight, w*.8, xpadding=0, radius=lineheight/8, lwd=lwd)
+	return(svg_out)
+
+def render_interval(period, caption, xoffset, yoffset, lineheight, metrics, lwd=1.2, first_pass=True, debug=False, ellipsis=False):
+	(daywidth_function, textwidth_function, textheight_function, ypadding) = metrics
+	svg_out = ""
+	if debug:
+		svg_out += render_dummy(period, xoffset, yoffset, lineheight, metrics)
+	y = yoffset + lineheight/2 # center of the line
+	if first_pass:
+		svg_out += svg_text(5, y + textheight_function(caption) * (1/2 - 0.1), caption)
+	# render interval box
+	starts = period_day_starts(period, xoffset, daywidth_function)
+	ends = period_day_ends(period, xoffset, daywidth_function)
+	widths = daywidth_function(period)
+
+	height = 0.4 * lineheight
+	if 'intervals' in period.keys():
+		for intv in period['intervals']:
+			if intv['caption'] == caption:
+				start, duration = intv['start'], intv['duration']
+				startx = starts[day_index(period, start)]
+				end = start + duration -1
+				if start <0 and end >0:
+					end += 1
+				endx = ends[day_index(period, end)]
+				if "decoration" in intv.keys():
+					if intv["decoration"] == "bracketed":
+						wo = widths[day_index(period, start)]
+						wc = widths[day_index(period, end)]
+						svg_out += svg_open_bracket(startx, y, lineheight, wo*.6, xpadding=0, radius=lineheight/8, lwd=lwd)
+						svg_out += svg_close_bracket(endx, y, lineheight, wc*.6, xpadding=0, radius=lineheight/8, lwd=lwd)
+				svg_out += svg_rect(startx, y-height/2, endx-startx, height, lwd=lwd)
+	return(svg_out)
+
+def render_times(period, caption, xoffset, yoffset, lineheight, metrics, maxwidth=100, lwd=1.2, first_pass=True, debug=False, default_symbol="diamond"):
+	(daywidth_function, textwidth_function, textheight_function, ypadding) = metrics
+	out = ""
+	if debug:
+		out += render_dummy(period, xoffset, yoffset, lineheight*2 + ypadding*3 + lineheight/6 + textheight_function("X"), metrics)
+
+	proc = extract_procedure(period, caption)
+	proc = normalize_procedure(proc)
+
+	if(len(proc)) > 0:
+		y = yoffset #+ lineheight/2 # center of the line
+		times = list(dict.fromkeys(extract_times(period, caption)))
+		scale_width = min(len(times) * textwidth_function("XX"), maxwidth-xoffset)
+
+		maxtime = max(times)
+		break_time = min(sorted(list([i for i in times if i<24]))[-1] + 2, 23)
+		times_below = len([i for i in times if i<=break_time])
+		times_above = len([i for i in times if i>break_time])
+
+		startx = period_day_starts(period, xoffset, daywidth_function)[day_index(period, min([i for (i, t, rel) in proc]))]
+
+		endx = period_day_ends(period, xoffset, daywidth_function)[day_index(period, max([i for (i, t, rel) in proc]))]
+
+		bracketheight = lineheight * 2/3
+		out += svg_curly_up(startx, endx, y, radius=bracketheight/2, lwd=lwd)
+		y += lineheight*2 + ypadding*1.5
+
+
+		scale_height = lineheight/3
+		scale_break = scale_width * times_below/(times_below+times_above)
+		scale_gap = textwidth_function("m")
+
+		def render_scale(x, y, width, height, scale_min, scale_max, scale_labels):
+			out = svg_line(x, y, x+width, y, lwd=lwd)
+			label_widths = [textwidth_function(str(i)) for i in scale_labels]
+			last_label_end = 0
+			for i, wi in zip(scale_labels, label_widths):
+				xi = (i-scale_min) * width/(scale_max-scale_min) + x
+				out += svg_line(xi, y-height/2, xi, y+height/2, lwd=lwd)
+				dxi = wi/2
+				if xi-dxi > last_label_end:
+					out += svg_text(xi-dxi, y+height/2+textheight_function("X")+ypadding, str(i))
+					last_label_end = xi+dxi+textwidth_function(".")
+			return(out)
+
+		def render_points(x, y, width, scale_min, scale_max):
+			points = [t for t in times if t>=scale_min and t<=scale_max]
+			points_x = [(i-scale_min) * width/(scale_max-scale_min) + x for i in points]
+			out = ""
+			for p, xi in zip(points, points_x):
+				out += svg_symbol(xi, y - lineheight/2-ypadding/2, 0, "diamond", size=textheight_function("X"), lwd=lwd)
+			return(out)
+
+		scale_startx = xoffset
+
+		out += render_points(scale_startx, y, scale_break, 0, break_time)
+		out += render_points(scale_startx+scale_break+scale_gap, y, scale_width - scale_gap - scale_break, 24, maxtime)
+
+		y += ypadding/2
+
+		out += render_scale(scale_startx, y, scale_break, scale_height, 0, break_time, range(0, int(break_time), 2))
+
+		out += render_scale(scale_startx+scale_break+scale_gap, y, scale_width - scale_gap - scale_break, scale_height, 24, maxtime, [i*24 for i in range(1, int(maxtime/24+1))])
+	return(out)
+
+
+def render_periods(periods, x, y, caption, height, render_function, metrics, periodspacing, *args, ellipsis=False, **kwargs):
+	(daywidth_function, textwidth_function, textheight_function, ypadding) = metrics
+	first = True
+	out = ""
+	for p in periods:
+		out += render_function(p, caption, x, y, height, metrics, first_pass=first, *args, ellipsis=ellipsis, **kwargs)
+		x += period_width(p, daywidth_function) + periodspacing
+		first=False
+	return(out)
+
+
+########################################
+########################################
+########################################
 
-	def _metrics(self, canvas):
-		caption= self._period_dict["caption"].upper()
-		(xu, yu, cap_widthu, cap_heightu, dxu, dyu) = canvas.text_extents(caption)
-		caption = self._period_dict["caption"]
-		(x, y, cap_width, cap_height, dx, dy) = canvas.text_extents(caption)
-		return(caption, cap_width, cap_heightu)	
-
-	def _dayposition(self, day):
-		temp = day - self._start + 1
-		if self._start * day < 0:
-			temp -= 1
-		return temp
-
-	def height(self, canvas, ypadding):
-		return self._metrics(canvas)[2] + 2 * ypadding
-
-	def width(self):
-		return self._length * self._daywidth
-
-	def day_start(self, day):
-		day = self._dayposition(day)
-		return self._daywidth * (day-1)
-
-	def day_end(self, day):
-		return self._daywidth * (day)
-
-	def day_center(self, day):
-		return self.day_start(day) + self._daywidth*1/2
-
-	def day_am(self, day):
-		return self.day_start(day) + self._daywidth*1/6
-
-	def day_pm(self, day):
-		return self.day_start(day) + self._daywidth*4/6
-
-	def draw_dummy(self, canvas, x, y, ypadding=7):
-		canvas.save()
-		canvas.set_source_rgb(random.uniform(0.8, 1), random.uniform(0.8, 1), random.uniform(0.8, 1))
-		canvas.rectangle(x, y, self.width(), self.height(canvas, ypadding=ypadding))
-		canvas.fill()
-		canvas.restore()
-
-	def draw_rect(self, canvas, x, y, ypadding=7, size=.8):
-		h = self._dayheight*.5*size
-		w = self._daywidth*.9*size
-		canvas.save()
-		canvas.set_line_width(1.2)
-		canvas.set_source_rgb(0, 0, 0)
-		canvas.rectangle(x-w/2, y-h/2,  w, h)
-		canvas.stroke()
-		canvas.restore()		
-
-	def draw_diamond(self, canvas, x, y, ypadding=7, size=0.6):
-		canvas.save()
-		canvas.set_line_width(1.2)
-		canvas.set_line_join(cairo.LINE_JOIN_ROUND)
-		canvas.set_line_join(cairo.LINE_CAP_ROUND)
-		canvas.set_source_rgb(0, 0, 0)
-		canvas.move_to(x, y-self._dayheight/2*size)
-		canvas.line_to(x + self._dayheight*1/4*size, y)
-		canvas.line_to(x, y+self._dayheight/2*size)
-		canvas.line_to(x - self._dayheight*1/4*size, y)
-		canvas.line_to(x, y-self._dayheight/2*size)
-		canvas.stroke()
-		canvas.restore()
-
-	def draw_circle(self, canvas, x, y, fill=False, ypadding=7, size=0.6):
-		canvas.save()
-		canvas.set_line_width(1.2)
-		canvas.set_line_join(cairo.LINE_JOIN_ROUND)
-		canvas.set_line_join(cairo.LINE_CAP_ROUND)
-		canvas.set_source_rgb(0, 0, 0)
-		canvas.arc(x, y, self._daywidth/2*size, 0, 2*math.pi)
-		if fill:
-			canvas.fill()
-		canvas.stroke()
-		canvas.restore()				
-
-	def draw_arrow(self, canvas, x, y, ypadding=7, size=1.2):
-		canvas.save()
-		canvas.set_line_width(1.4)
-		canvas.set_line_join(cairo.LINE_JOIN_ROUND)
-		canvas.set_line_join(cairo.LINE_CAP_ROUND)
-		canvas.set_source_rgb(0, 0, 0)
-		ybase = y - self.height(canvas, 0) * size / 2
-		yapex = y + self.height(canvas, 0) * size / 2
-		yarrow = yapex - (yapex - ybase) * .45
-		xarrow = (yapex - ybase) * .15
-		canvas.move_to(x, ybase)
-		canvas.line_to(x, yapex)
-		canvas.line_to(x - xarrow, yarrow)
-		canvas.move_to(x, yapex)
-		canvas.line_to(x + xarrow, yarrow)
-		canvas.stroke()
-		canvas.restore()		
-
-	def draw_curly(self, canvas, xstart, xend, y, ypadding=7, radius=8, debug=False):
-		xcenter = xstart + (xend - xstart)/2
-		canvas.save()
-		canvas.set_line_width(1.4)
-		canvas.set_line_join(cairo.LINE_JOIN_ROUND)
-		canvas.set_source_rgb(0, 0, 0)
-		canvas.move_to(xstart, y)
-		canvas.arc_negative(xstart+radius, y, radius, math.pi, math.pi/2)
-		canvas.line_to(xcenter-2*radius, y+radius)
-		canvas.arc(xcenter-radius, y+2*radius, radius, math.pi*1.5, 0)
-		canvas.arc(xcenter+radius, y+2*radius, radius, math.pi, math.pi*1.5)
-		canvas.move_to(xcenter+radius, y+radius)
-		canvas.line_to(xend-radius, y+radius)
-		canvas.arc_negative(xend-radius, y, radius, math.pi/2, 0)
-		canvas.stroke()
-		canvas.restore()	
-
-	def draw_interval(self, canvas, x, y, ndays, ypadding=7, size=0.8):
-		h = self._dayheight*.5*size
-		canvas.save()
-		canvas.set_line_width(1.2)
-		canvas.set_source_rgb(0, 0, 0)
-		canvas.rectangle(x, y-h/2, ndays*self._daywidth+1, h)
-		canvas.stroke()
-		canvas.restore()
-
-	def draw_open_bracket(self, canvas, x, y, ypadding=7, size=0.8, xpadding=0, radius=3):
-		h = self._dayheight*size
-		w = self._daywidth
-		r = w/5
-		r = radius
-		d = w/10
-		d = xpadding
-		canvas.save()
-		canvas.set_line_width(1.2)
-		canvas.set_source_rgb(0, 0, 0)
-		canvas.arc_negative(x-w/2+r-d, y-h/2+r, r, math.pi*1.5, math.pi)
-		canvas.line_to(x-w/2-d, y+h/2-r)
-		canvas.arc_negative(x-w/2+r-d, y+h/2-r, r, math.pi, math.pi*0.5)
-		canvas.stroke()
-		canvas.restore()
-
-	def draw_close_bracket(self, canvas, x, y, ypadding=7, size=0.8, xpadding=0, radius=3):
-		h = self._dayheight*size
-		w = self._daywidth
-		r = w/5
-		r = radius
-		d = w/10
-		d = xpadding
-		canvas.save()
-		canvas.set_line_width(1.2)
-		canvas.set_source_rgb(0, 0, 0)
-		canvas.arc(x+w/2-r+d, y-h/2+r, r, math.pi*1.5, 0)
-		canvas.line_to(x+w/2+d, y+h/2-r)
-		canvas.arc(x+w/2-r+d, y+h/2-r, r, 0, math.pi*0.5)
-		canvas.stroke()
-		canvas.restore()
-
-	def draw(self, canvas, x, y, ypadding=7, debug=False):
-		if debug:
-			self.draw_dummy(canvas, x, y, ypadding=ypadding)
-
-	def draw_symbol(self, canvas, x, y, type="diamond", value=False, ypadding=7, debug=False):
-		if type == "arrow":
-			self.draw_arrow(canvas, x, y, ypadding=ypadding)
-		if type == "diamond":
-			self.draw_diamond(canvas, x, y, ypadding=ypadding)
-			# self.draw_open_bracket(canvas, x, y, ypadding=ypadding)
-			# self.draw_close_bracket(canvas, x, y, ypadding=ypadding)
-		if type == "rect":
-			self.draw_rect(canvas, x, y, ypadding=ypadding)
-		if type == "cont":
-			self.draw_arrow(canvas, x, y, 1, ypadding=ypadding)
-		if type == "circle":
-			self.draw_circle(canvas, x, y, fill=value, ypadding=ypadding)
-
-	def dump(self):
-		print(json.dumps(self._period_dict, indent=2))
-
-
-class Procedure(Periodelement):
-	def __init__(self, type="generic", days=[], times=[], **kwargs):
-		self._type = type
-		self._value = -1
-		Periodelement.__init__(self, **kwargs)
-		self._days = self._period_dict["days"]
-		if "times" in self._period_dict:
-			self._times = self._period_dict["times"]
-		if "value" in self._period_dict:
-			self._value = self._period_dict["value"]
-
-	@property
-	def caption(self):
-		return self._caption
-
-	def draw(self, canvas, x, y, ypadding=7, periodspacing=0, show_timeline=True, debug=False):
-		freq = self._freq
-		value = False
-
-		if show_timeline:
-			# height *= 2
-			pass
-
-		height = self.height(canvas, ypadding=ypadding)
-		type = "arrow" if self._type == "administration" else "diamond"
-		if self._freq == "rich":
-			type="rect"
-		elif self._freq == "cont":
-			type="arrow"
-		if self._value >= 0:
-			type = "circle"
-			value = self._value>0
-
-		if debug:
-			self.draw_dummy(canvas, x, y, ypadding=ypadding)
-
-		yt = y + self.height(canvas, ypadding=ypadding) *1/2
-		days = []
-		for i in self._days:
-			if isinstance(i, int):
-				days.append(i)
-			elif isinstance(i, str):
-				pat_element = r'(\d+)(-(\d+))?'
-				pat = f'({pat_element}(, )*)'
-				m = re.findall(pat, i)
-				if m:
-					for mm in m:
-						if mm[3] == "":
-							days.append(int(mm[1]))
-						else:
-							for i in range(int(mm[1]), int(mm[3])+1):
-								days.append(i)
-		if show_timeline:
-			pass
-
-		# bracketed
-		if self._decoration == "bracketed":
-			self.draw_open_bracket(canvas, x+self.day_center(min(days)), yt)
-			self.draw_close_bracket(canvas, x+self.day_center(max(days)), yt)
-
-		# # times
-		# if self._times != []:
-		# 	startx = x + self.day_start(min(days))
-		# 	#endx = x + self.day_end(max(self._times)/24)
-		# 	endx = x + self.day_end(max(days))
-		# 	self.draw_curly(canvas, startx, endx, yt + self._dayheight/2, radius=5)
-		# 	return y + 3 * self.height(canvas, ypadding=ypadding)
-
-		if self._freq == "cont":
-			start, end = days[0], days[0]
-			for i in days[1:]:
-				if (i != end + 1) | (i == days[-1]):
-					if i == days[-1]:
-						end = i
-						self.draw_interval(canvas, x + self.day_start(start), yt, ndays=end-start+1)
-					start, end = i, i
-				else:
-					end = i
-		else:
-			for j in days:
-				self.draw_symbol(canvas, x + self.day_center(j), yt, type=type, value=value, ypadding=ypadding)
-		# return y + self.height(canvas, ypadding=ypadding)
-		return y + height
-
-
-class Interval(Procedure):
-	def __init__(self, **kwargs):
-		Periodelement.__init__(self, **kwargs)
-		pd = self._period_dict
-		self._begin = pd["start"]
-		self._type = "generic"
-		if "duration" in pd:
-			d = pd["duration"]
-			self._end = self._start + d
-			self._duration = d
-			## correct for negative day numbers
-		if "end" in pd:
-			self._end = pd["end"]
-			self._duration = pd["end"] - self._start
-
-	def draw(self, canvas, x, y, ypadding=7, periodspacing=0, type="interval", debug=False):
-		if debug:
-			self.draw_dummy(canvas, x, y, ypadding=ypadding)
-		yt = y + self.height(canvas, ypadding=ypadding) * 1/2
-		xt = x + self.day_start(self._begin)
-		self.draw_interval(canvas, xt, yt, self._duration)
-		if self._decoration == "bracketed":
-			d = self._daywidth*1/4
-			self.draw_open_bracket(canvas, x+self.day_center(self._begin)-d, yt, xpadding=self._daywidth/4)
-			self.draw_close_bracket(canvas, x+self.day_center(self._begin+self._duration-1)+d, yt, xpadding=self._daywidth/4)
-		return y + self.height(canvas, ypadding=ypadding)
-
-
-class Periodcaption(Periodelement):
-	def __init__(self, **kwargs):
-		Periodelement.__init__(self, **kwargs)
-
-	def draw(self, canvas, x, y, ypadding=7, debug=False):
-		Periodelement.draw(self, canvas, x, y, ypadding, debug)
-		(caption, cap_width, cap_height) = self._metrics(canvas)
-		canvas.set_source_rgb(0, 0, 0)
-		canvas.move_to(x + self.width()/2 - cap_width/2, y + cap_height + ypadding)
-		canvas.show_text(caption)		
-
-
-class Periodbox(Periodelement):
-	def __init__(self, **kwargs):
-		Periodelement.__init__(self, **kwargs)
-
-	def height(self, canvas, ypadding):
-		return self._dayheight + 2 * ypadding
-
-	def draw_outline(self, canvas, x, y, ypadding=7, periodspacing=0, dash=False):
-		canvas.set_line_width(1.2)
-		canvas.set_source_rgb(0, 0, 0)
-		canvas.rectangle(x, y + ypadding, self.width(), self._dayheight)
-		canvas.stroke()
-		canvas.save()
-		if dash:
-			canvas.set_dash([1.5, 2.5], 1.5)
-		if periodspacing != 0:
-			canvas.move_to(x + self.width(), y + ypadding + self._dayheight/2)
-			canvas.line_to(x + self.width() + periodspacing, y + ypadding + self._dayheight/2)
-		canvas.stroke()
-		canvas.restore()
-
-	def draw_grid(self, canvas, x, y, ypadding=7):
-		canvas.save()
-		canvas.set_line_width(1.2)
-		canvas.set_source_rgb(0, 0, 0)
-		tx = x
-		ty = y
-		for i in range(1, self._period_dict["length"]+1):
-			canvas.rectangle(tx, ty, self._daywidth, self._dayheight)
-			canvas.stroke()
-			tx += self._daywidth
-		canvas.restore()
-
-	def draw_daynumbers(self, canvas, x, y, numbers):
-		canvas.save()
-		canvas.set_font_size(self._dayheight*.5)
-		for n in numbers:
-			xcorrection = canvas.text_extents("1")[2] / 3 # correct placement of leading "1"
-			(nx, ny, n_width, n_height, dx, dy) = canvas.text_extents(str(n))
-			if str(n)[0] != "1":
-				xcorrection = 0
-			# if n == numbers[-1] & self._length >1:
-			# 	n_width = canvas.text_extents(str(n) + "-")[2]
-			canvas.move_to(x + self.day_center(n)- xcorrection - n_width/2, y + self._dayheight/2 + n_height/2)
-			canvas.show_text(str(n))
-		canvas.restore()
-
-	def draw_dayshading(self, canvas, x, y, shading):
-		canvas.save()
-		for s in shading:
-			canvas.set_source_rgb(0.85, 0.85, 0.85)
-			canvas.rectangle(x+self.day_start(s), y, self._daywidth, self._dayheight)
-			canvas.fill()
-			canvas.set_source_rgb(0,0,0)
-			canvas.set_line_width(1.2)
-			canvas.rectangle(x+self.day_start(s), y, self._daywidth, self._dayheight)
-			canvas.stroke()
-		canvas.restore()
-
-	def draw(self, canvas, x, y, ypadding=7, periodspacing=0, draw_grid=True, dash=False, debug=False):
-		tx = x
-		ty = y + ypadding
-		Periodelement.draw(self, canvas, tx, ty, ypadding, debug)
-		if "dayshading" in self._period_dict:
-			# shading = self._period_dict["dayshading"]
-			self.draw_dayshading(canvas, x, y, shading=self._period_dict["dayshading"])
-		if draw_grid:
-			self.draw_grid(canvas, x, y)
-		self.draw_outline(canvas, x, y, ypadding=ypadding, periodspacing=periodspacing, dash=dash)
-		canvas.stroke()
-		numbers=[self._start, 1]
-		if "daylabels" in self._period_dict:
-			numbers = self._period_dict["daylabels"]
-		self.draw_daynumbers(canvas, x, y, numbers=numbers)
-		return 
-
-
-class Timeline(Periodelement):
-	def __init__(self, times=[], **kwargs):
-		Periodelement.__init__(self, **kwargs)
-		# self._startday = startday
-		# self._endday = endday
-
-	def draw(self, canvas, x, y, ypadding=7, periodspacing=0, debug=False):
-		print("draw timeline")
-		Periodelement.draw(self, canvas, tx, ty, ypadding, debug=debug)
-		# self.draw_curly(canvas, x+self.day_start(self._startday), x+self.day_start(self._endday), y)
-
-	# def draw(self, canvas, x, y, ypadding=7, periodspacing=0, debug=False):
-
-
-class Period(object):
-	def __init__(self, period_dict=dict(), daywidth=15, dayheight=20, periodspacing=15):
-		self._period_dict = period_dict
-		self._daywidth = daywidth
-		self._dayheight = dayheight
-		self._periodspacing = periodspacing
-		self._length = period_dict["length"]
-		self._start = 1
-		self._caption = period_dict["caption"]
-
-		if "start" in self._period_dict:
-			self._start = period_dict["start"]
-		self._elements = []
-
-		pd = self._period_dict
-		self._periodcaption = Periodcaption(period_dict=period_dict, length=self._length, start=self._start, daywidth=daywidth, dayheight=dayheight)
-
-		self._periodbox = Periodbox(period_dict=period_dict, length=self._length, start=self._start, daywidth=daywidth, dayheight=self._dayheight)
-
-		if "intervals" in pd:
-			for i in self._period_dict["intervals"]:
-				self._elements.append(Interval(period_dict=i, daywidth=self._daywidth, dayheight=self._dayheight, start=self._start, length=self._length))
-
-		for (t, l) in [("administrations", "administration"), ("procedures", "procedure")]:
-			if t in pd:
-				for i in pd[t]:
-					self._elements.append(Procedure(type=l, period_dict=i, daywidth=self._daywidth, dayheight=self._dayheight, length=self._length, start=self._start))
-
-		# temp = Timeline(times=[0, 1, 2, 4, 8], period_dict=period_dict, length=self._length, start=self._start, daywidth=daywidth, dayheight=dayheight)
-		# temp._caption="timeline"
-		# self._elements.append(temp)
-
-	def dump(self):
-		# print(json.dumps(self._period_dict, indent=2))
-		for e in self._elements:
-			print(e._caption)
-
-	def draw_structure(self, canvas, x, y, ypadding=7, draw_grid=True, debug=False):
-		yt = y
-		self._periodcaption.draw(canvas, x, y, ypadding=ypadding, debug=debug)
-		yt += self._periodcaption.height(canvas, ypadding)
-		self._periodbox.draw(canvas, x, yt, ypadding=0, periodspacing=self._periodspacing, draw_grid=draw_grid, debug=debug)
-		yt += self._periodbox.height(canvas, ypadding=0)
-		return yt
-
-	def has_element(self, caption):
-		e = filter(lambda i: i._caption == caption, self._elements)
-		return len(list(e)) > 0
-
-	def draw_element(self, caption, canvas, x, y, type="diamond", ypadding=7, debug=False):
-		e = filter(lambda i: i._caption == caption, self._elements)
-		yy = y
-		for i in e:
-			yy = i.draw(canvas, x, y, ypadding=ypadding, debug=debug)
-		return yy
-
-	def width(self):
-		return self._periodbox.width()
-		
-
-class Cycle(Period):
-	def __init__(self, period_dict, **kwargs):
-		Period.__init__(self, period_dict=period_dict, **kwargs)
-
-	def draw_structure(self, canvas, x, y, ypadding=7, draw_grid=True, debug=False):
-		yt = y
-		self._periodcaption.draw(canvas, x, yt, ypadding=ypadding, debug=debug)
-		yt += self._periodcaption.height(canvas, ypadding)
-		self._periodbox.draw(canvas, x, yt, ypadding=0, periodspacing=self._periodspacing, draw_grid=False, dash=True, debug=debug)
-		yt += self._periodbox.height(canvas, ypadding=0)
-		return yt
-
-
-class Trialdesign(object):
-	def __init__(self, js=dict(), daywidth=14, dayheight=20, periodspacing=12):
-		self._period_dict = js
-		self._periodspacing = periodspacing
-		self._daywidth = daywidth
-		self._dayheight = dayheight
-		self._periods = []
-
-		if "periods" in self._period_dict: # period trial
-			pp = self._period_dict["periods"]
-			for p in pp:
-				self._periods.append(Period(p, daywidth=self._daywidth, dayheight=self._dayheight, periodspacing=self._periodspacing * (not p is pp[-1])))
-
-		elif "cycles" in self._period_dict: # cylcle trial
-			pp = self._period_dict["cycles"]
-			for p in pp:
-				self._periods.append(Cycle(period_dict=p, daywidth=self._daywidth, dayheight=self._dayheight, periodspacing=self._periodspacing * (p is pp[-1])))
-
-	def items(self, item):
-		out = list()
-		if "periods" in self._period_dict:
-			for p in self._period_dict["periods"]:
-				if item in p:
-					for i in p[item]:
-						out.append(i["caption"])
-		if "cycles" in self._period_dict:
-			for p in self._period_dict["cycles"]:
-				if item in p:
-					for i in p[item]:
-						out.append(i["caption"])
-		return(list(dict.fromkeys(out)))		
-
-	def __str__(self):
-		return(json.dumps(self.structure, indent=2))
-
-	def dump(self):
-		for p in self._periods:
-			print(f"\n##### Period {p._caption} #####")
-			p.dump()
-
-	def draw_structure(self, canvas, xoffset=10, yoffset=10, ypadding=7, draw_grid=True, debug=False):
-		xt = xoffset
-		for p in self._periods:
-			y = p.draw_structure(canvas, x=xt, y=yoffset, ypadding=ypadding, draw_grid=draw_grid, debug=debug)
-			xt += p.width() + p._periodspacing
-			y += self._dayheight*1/4
-		return y
-
-	def draw_item(self, item, symbol, canvas, x, y, ypadding=7, xcaption=10, debug=False):
-		# if debug:
-		# 	print(self.items("procedures"))
-		yt = y
-		for i in self.items(item):
-			# print(i)
-			h = canvas.text_extents(i.upper())[3]
-			canvas.move_to(xcaption, yt + h + ypadding)
-			canvas.show_text(i)
-			canvas.stroke()
-			canvas.fill()	
-			xt = x
-			for p in self._periods:
-				if p.has_element(i):
-					temp = p.draw_element(i, canvas, xt, yt, ypadding=ypadding, type=symbol, debug=debug)
-				xt += p.width() + p._periodspacing
-			yt = temp
-		return yt
-
-	def draw_intervals(self, canvas, x, y, ypadding=7, xcaption=10, debug=False):
-		return self.draw_item("intervals", "interval", canvas, x, y, ypadding=ypadding, xcaption=xcaption, debug=debug)
-
-	def draw_administrations(self, canvas, x, y, ypadding=7, xcaption=10, debug=False):
-		return self.draw_item("administrations", "arrow", canvas, x, y, ypadding=ypadding, xcaption=xcaption, debug=debug)
-
-	def draw_procedures(self, canvas, x, y, ypadding=7, xcaption=10, debug=False):
-		return self.draw_item("procedures", "diamond", canvas, x, y, ypadding=ypadding, xcaption=xcaption, debug=debug)
-
-	def draw(self, canvas, x, y, draw_grid=True, ypadding=7, debug=False):
-		temp = self.items("administrations") + self.items("procedures")
-		#print(f"items to be drawn: {temp}")
-
-		xoffset = max([canvas.text_extents(i)[4] for i in temp]) + self._daywidth*2
-		yt = self.draw_structure(canvas, xoffset=xoffset, ypadding=ypadding, yoffset=10, draw_grid=draw_grid, debug=debug)
-		yt = self.draw_intervals(canvas, x=xoffset, y=yt, ypadding=ypadding, debug=debug)
-		yt = self.draw_administrations(canvas, x=xoffset, y=yt, ypadding=ypadding, debug=debug)
-		yt = self.draw_procedures(canvas, x=xoffset, y=yt, ypadding=ypadding, debug=debug)
-
-
-##### Main #####
 
 @click.command()
 @click.argument("file")
-@click.option("--ypadding", "-y", type=int, default=6, help='vertical padding (default 6)')
-@click.option("--font", "-f", type=str, default="Calibri", help='Font face (default Calibri)')
-@click.option("--fontsize", "-s", type=int, default=11, help='output font size (default 11)')
-@click.option("--daywidth", "-w", type=int, default=14, help='width of days (default 14)')
-@click.option("--dayheight", "-h", type=int, default=20, help='height of days (default 20)')
-@click.option("--nogrid", "-g", is_flag=True, default=True, help='hide day grid')
-@click.option("--debug", "-d", is_flag=True, help='debug output')
-def main(file, debug, ypadding, font, nogrid, fontsize, daywidth, dayheight):
+@click.option("--fontsize", "-s", type=int, default=14, help='Output font size (default 11)')
+@click.option("--font", "-f", type=str, default="Arial", help='Output font type (default: Arial)')
+@click.option("--padding", "-p", type=int, default=1, help='Y-axis padding factor (default 1)')
+@click.option("--condensed", "-c", is_flag=True, help='Show condensed daygrid')
+@click.option("--timescale", "-t", is_flag=True, help='Show time scale')
+@click.option("--ellipsis", "-e", is_flag=True, help='Reduce symbols in condensed output')
+@click.option("--debug", "-d", is_flag=True, help='Debug output')
+def main(file, debug, fontsize, font, condensed, timescale, padding, ellipsis):
+	"""Clinical Trial design visualization\n
+	Schedule of assessments to be provided in json-formatted FILE (see examples for guidance). Graphical output in svg vector format. Use below OPTIONS to manage output style.\n
+	Version 2.0 (Dec-2021), (c) Rainer Strotmann,
+	proudly written in functional Python."""
+	debug = debug
 	infile = pathlib.Path(file)
 	inpath = pathlib.Path(file).resolve().parent
 	outfile = inpath.joinpath(infile.stem + ".svg")
 
-	surface = cairo.SVGSurface(outfile, 1000, 700)
-	canvas = cairo.Context(surface)
-	canvas.select_font_face(font, cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
+	ypadding = fontsize/1.8 * padding
+
+	canvas = cairo.Context(cairo.SVGSurface("temp.svg", 10, 10))
+	canvas.select_font_face("Arial", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
 	canvas.set_font_size(fontsize)
 
-	f = open(infile)
-	td = Trialdesign(js=json.load(f), daywidth=daywidth, dayheight=dayheight)
-	td.draw(canvas, 10, 10, draw_grid=nogrid, ypadding=ypadding, debug=debug)
-	surface.finish()
+	if len(file) == 0:
+		sys.exit()
+	with open(infile) as f:
+		td = json.load(f)
+	periods = []
 
-	# td.dump()
+	if "periods" in td.keys():
+		for p in td["periods"]:
+			periods.append(p)
+	if "cycles" in td.keys():
+		for c in td["cycles"]:
+			c["start"] = 1
+			periods.append(c)
+
+	def make_textwidth(canvas):
+		def textwidth_function(text):
+			(x, y, cap_width, cap_height, dx, dy) = canvas.text_extents(text)
+			return(cap_width)
+		return textwidth_function
+
+	def make_textheight(canvas):
+		def textheight_function(text):
+			(x, y, cap_width, cap_height, dx, dy) = canvas.text_extents(text)
+			return(cap_height)
+		return textheight_function
+
+	textheight_function = make_textheight(canvas)
+	textwidth_function = make_textwidth(canvas)
+
+	def make_daywidth_function(textwidth_function, condensed):
+		if condensed:
+			def daywidth_function(period):
+				temp=[textwidth_function("XX") if i!="" else textwidth_function("XX")/3 for i in day_labels(period)]
+				if len(temp)==1:
+					temp=[textwidth_function("XX")]
+				return(temp)
+		else:
+			def daywidth_function(period):
+				return([textwidth_function("XX")] * period['length'])
+		return(daywidth_function)
+
+	daywidth_function = make_daywidth_function(textwidth_function, condensed)
+	metrics = (daywidth_function, textwidth_function, textheight_function, ypadding)
+
+	periodspacing = textwidth_function("XX")
+	lineheight = textheight_function("X") * 2
+	xoffset = max([textwidth_function(i) for i in item_names(td, 'procedures') + item_names(td, 'intervals') + item_names(td, 'admininstrations')]) + 30
+	yoffset = 10
+	lwd = fontsize/10
+
+	y = yoffset
+	out = ""
+
+	# render header
+	out += render_periods(periods, xoffset, y, "", lineheight, render_periodcaption, metrics, periodspacing, debug=debug, lwd=lwd)
+	y += lineheight + ypadding/2
+
+	out += render_periods(periods, xoffset, y, "", lineheight, render_daygrid, metrics, periodspacing, debug=debug, lwd=lwd)
+	y += lineheight
+
+	# render dashes between periods
+	xx = xoffset
+	w = [period_width(i, daywidth_function) for i in periods]
+	for i in w[:-1]:
+		xx += i
+		out += svg_line(xx, y-lineheight/2, xx + periodspacing, y-lineheight/2, lwd=lwd)
+		xx += periodspacing
+	y += ypadding*2
+
+	# render intervals, administrations, procedures
+	for n in item_names(td, 'intervals'):
+		out += render_periods(periods, xoffset, y, n, lineheight, render_interval, metrics, periodspacing, debug=debug, lwd=lwd)
+		y += lineheight + ypadding
+
+	for n in item_names(td, 'administrations'):
+		out += render_periods(periods, xoffset, y, n, lineheight, render_procedure, metrics, periodspacing, default_symbol="arrow", debug=debug, lwd=lwd, ellipsis=ellipsis)
+		y += lineheight + ypadding
+
+	for n in item_names(td, 'procedures'):
+		out += render_periods(periods, xoffset, y, n, lineheight, render_procedure, metrics, periodspacing, default_symbol="diamond", debug=debug, lwd=lwd, ellipsis=ellipsis)
+		y += lineheight + ypadding
+
+		# test whether to render timescale. Only the first period counts
+		if timescale:
+			ts = False
+			x = xoffset
+			for p in periods:
+				if has_timescale(p, n):
+					ts = True
+					break
+				x += period_width(p, daywidth_function)
+				x += periodspacing
+			if ts:
+				out += render_times(p, n, x, y, lineheight, metrics, maxwidth=xoffset + sum([period_width(i, daywidth_function) for i in periods]) + (len(periods)-1) * periodspacing, debug=debug, lwd=lwd)
+				y += lineheight*4 + ypadding
+
+	# re-calculate image dimensions, finalize svg
+	viewport_width = xoffset + sum([period_width(i, daywidth_function) for i in periods]) + (len(periods)) * periodspacing
+	viewport_height = y 
+	out = f'<svg width="{viewport_width}" height="{viewport_height}" xmlns="http://www.w3.org/2000/svg">\n<style>text {{font-family: {font}; font-size: {fontsize}px ;}}</style>\n' + out
+	out += f'</svg>'
+
+	with open(outfile, "w") as f:
+		f.write(out)
+	return
 
 
 if __name__ == "__main__":
 	main()
-
-
-## to do:
-#
-# - use typer instead of click
-# - make command 'all' to parse all json files in folder
