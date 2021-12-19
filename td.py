@@ -413,8 +413,9 @@ def render_periods(periods, x, y, caption, height, render_function, metrics, per
 ########################################
 ########################################
 
+CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
 
-@click.command()
+@click.command(context_settings=CONTEXT_SETTINGS)
 @click.argument("file")
 @click.option("--fontsize", "-s", type=int, default=14, help='Output font size (default 11)')
 @click.option("--font", "-f", type=str, default="Arial", help='Output font type (default: Arial)')
@@ -424,10 +425,15 @@ def render_periods(periods, x, y, caption, height, render_function, metrics, per
 @click.option("--ellipsis", "-e", is_flag=True, help='Reduce symbols in condensed output')
 @click.option("--debug", "-d", is_flag=True, help='Debug output')
 def main(file, debug, fontsize, font, condensed, timescale, padding, ellipsis):
-	"""Clinical Trial design visualization\n
-	Schedule of assessments to be provided in json-formatted FILE (see examples for guidance). Graphical output in svg vector format. Use below OPTIONS to manage output style.\n
-	Version 2.0 (Dec-2021), (c) Rainer Strotmann,
+	"""Clinical Trial design visualization
+
+
+	Schedule of assessments to be provided in json-formatted input FILE (see examples for guidance). Graphical output in svg vector format. Use below OPTIONS to manage output style.
+	
+
+	Version 2.0 (Dec-2021), Rainer Strotmann,
 	proudly written in functional Python."""
+	
 	debug = debug
 	infile = pathlib.Path(file)
 	inpath = pathlib.Path(file).resolve().parent
