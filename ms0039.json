@@ -10,7 +10,7 @@
 			"caption": "Treatment A",
 			"length": 7,
 			"start": 1,
-			"daylabels": [1, 3, 7],
+			"daylabels": [1, 2, 3, 7],
 			"dayshading": [1],
 			"intervals": [
 				{
@@ -50,7 +50,7 @@
 			"caption": "Treatment B",
 			"length": 11,
 			"start": 1,
-			"daylabels": [1, 5, 7, 8, 11],
+			"daylabels": [1, 5, 6, 7, 8, 11],
 			"dayshading": [1, 8],
 			"intervals": [
 				{
@@ -94,14 +94,13 @@
 			"caption": "Treatment C",
 			"length": 11,
 			"start": 1,
-			"daylabels": [1, 5, 7, 8, 11],
+			"daylabels": [1, 5, 6, 7, 8, 11],
 			"dayshading": [1, 8],
 			"intervals": [
 				{
 					"caption": "hospitalization",
 					"start": 5,
-					"duration": 3,
-					"decoration": "bracketed"
+					"duration": 3
 				}
 			],
 			"administrations": [
@@ -111,7 +110,11 @@
 				},
 				{
 					"caption": "omeprazole",
-					"days": ["1-5"]
+					"days": ["1,2,4,5"]
+				},
+				{
+					"caption": "omeprazole",
+					"days": ["3"]
 				}
 			],
 			"procedures": [

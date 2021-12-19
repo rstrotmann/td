@@ -7,6 +7,7 @@ import json
 import math
 import re
 #import sys
+from pprint import pprint
 
 
 # to do:#
@@ -31,16 +32,6 @@ def decode_daylist(daylist):
 						for i in range(int(mm[1]), int(mm[3])+1):
 							days.append(i)
 	return(days)
-
-# def item_names(trial, item_class):
-# 	out = []
-# 	for p in trial['periods']:
-# 		if item_class in p.keys():
-# 			for proc in p[item_class]:
-# 				temp = proc['caption']
-# 				if not temp in out:
-# 					out.append(temp)
-# 	return(out)
 
 def item_names(trial, item_class):
 	out = []
@@ -96,30 +87,22 @@ def has_timescale(period, caption):
 	return(temp)
 
 def extract_decorations(period, caption):
-	# print(f'extr deco: {caption}')
 	l = int(period['length'])
-	# print(f'length: {l}')
-	# print(period)
-	# print(period["length"])
-	# print(day_index(period, period['length']))
 	temp = [""] * period['length']
 
-	#temp = [""] * int(day_index(period, int(period['length']))+1)
-	#print(temp)
 	for x in ['procedures', 'administrations']:
 		if x in period.keys():
 			for proc in period[x]:
 				if proc['caption'] == caption:
 					if 'decoration' in proc.keys():
+						# print(f'{period["caption"]}, {caption} has decoration')
 						deco = proc['decoration']
 					else:
 						deco = ""
-					# print(deco)
 					dd = [(d, deco) for d in decode_daylist(proc['days'])]
-					# print(f'dd: {dd}')
-					# for (i, deco) in dd:
-						# print(f'deco: day index {day_index(period, i)} out of {len(temp)}')
-						#temp[day_index(period, i)] = deco
+					# print(dd)
+					for (day, dec) in dd:
+						temp[day_index(period, day)] = dec
 	# print(temp)
 	return(temp)
 
@@ -133,9 +116,7 @@ def extract_interval(period, caption):
 
 def extract_times(period, caption):
 	temp = extract_procedure(period, caption)
-	# print(f'extract_times: {temp}')
 	temp = normalize_procedure(temp)
-	# print(f'extract_times after norm: {temp}')
 	return([(d-rel)*24+t for (d, ts, rel) in temp for t in ts])
 
 def day_index(period, day):
@@ -164,6 +145,9 @@ def svg_line(x1, y1, x2, y2, lwd=1, color="black", dashed=False):
 
 def svg_rect(x, y, w, h, lwd=1, fill_color="none", line_color="black"):
 	return(f'<rect x="{x}" y="{y}" width="{w}" height="{h}" style="stroke:{line_color};  stroke-width:{lwd}; fill:{fill_color};" />\n')
+
+def svg_circle(x, y, r, lwd=1.2, fill_color="none", line_color="black"):
+	return(f'<circle cx="{x}" cy="{y}" r="{r}" style="stroke:{line_color};  stroke-width:{lwd}; fill:{fill_color};"/>\n')
 
 def svg_text(x, y, text):
 	return(f'<text x="{x}" y="{y}">{text}</text>\n')
@@ -222,45 +206,13 @@ def svg_curly_up(xstart, xend, y, radius=8, lwd=1.2):
 
 def procedure_symbols(period, caption, default="diamond"):
 	out = [""] * (period['length']+1)
-	#out = [""] * int(day_index(period, int(period['length']))+1)
-	# print(f'proc symb: {out}')
 	for (d, t, rel) in normalize_procedure(extract_procedure(period, caption)):
-		# print(d, t, rel)
 		if len(t) > 1:
 			symbol = "block"
 		else:
 			symbol = default
 		out[day_index(period, d)] = symbol
 	return(out)	
-
-# def procedure_symbols(period, caption, default="diamond"):
-# 	# print(f'\nproc symbols for period {period["caption"]}, proc {caption}')
-# 	out = [""] * (period['length']+1)
-# 	symbol=default
-# 	for (d, t, rel) in extract_procedure(period, caption):
-# 		# print(d, t, rel)
-# 		if len(t) == 1:
-# 			symbol = default
-# 			out[day_index(period, d)] = symbol
-# 		else:
-# 			symbol = default
-# 			n = 0
-# 			dd = 0
-# 			for tt in t:
-# 				if int(tt / 24) == dd:
-# 					n += 1
-# 				else:
-# 					if n > 1:
-# 						symbol="block"
-# 					out[day_index(period, d+dd)] = symbol
-# 					n = 0
-# 					dd += 1
-# 					symbol=default
-# 				# print(f'd: {d}, dd: {dd}, tt: {tt}, n: {n}, sym {symbol}')
-# 			out[day_index(period, d+dd)] = symbol
-# 	# print(f'proc symb: {out}')
-# 	return(out)	
-
 
 ###### functions that rely on day_width_function:
 
@@ -290,7 +242,7 @@ def render_dummy(period, xoffset, yoffset, lineheight, metrics):
 	(daywidth_function, textwidth_function, textheight_function, ypadding) = metrics
 	return(svg_rect(xoffset, yoffset, period_width(period, daywidth_function), lineheight, lwd=0, fill_color="cornsilk"))
 
-def render_daygrid(period, caption, xoffset, yoffset, height, metrics, lwd=1.2, first_pass=True, debug=False):
+def render_daygrid(period, caption, xoffset, yoffset, height, metrics, lwd=1.2, first_pass=True, debug=False, ellipsis=False):
 	"""renders the svg output for the day grid for a period"""
 	(daywidth_function, textwidth_function, textheight_function, ypadding) = metrics
 	svg_out = ""
@@ -310,7 +262,7 @@ def render_daygrid(period, caption, xoffset, yoffset, height, metrics, lwd=1.2, 
 		svg_out += svg_text(center - textwidth_function(str(label)) / 2-delta, yoffset + height - (height- textheight_function("X")) / 2, str(label))
 	return(svg_out)
 
-def render_periodcaption(period, caption, xoffset, yoffset, height, metrics, lwd=1.2, first_pass=True, debug=False):
+def render_periodcaption(period, caption, xoffset, yoffset, height, metrics, lwd=1.2, first_pass=True, debug=False, ellipsis=False):
 	"""renders svg code for the header above the daygrid"""
 	(daywidth_function, textwidth_function, textheight_function, ypadding) = metrics
 	svg_out = ""
@@ -319,7 +271,7 @@ def render_periodcaption(period, caption, xoffset, yoffset, height, metrics, lwd
 	xcenter = xoffset + period_width(period, daywidth_function)/2
 	return(svg_out + svg_text(xcenter - textwidth_function(str(period['caption']))/2, yoffset+ height - (height-textheight_function("X"))/2, str(period['caption'])))
 
-def render_procedure(period, caption, xoffset, yoffset, lineheight, metrics, default_symbol="diamond", lwd=1.2, first_pass=True, debug=False):
+def render_procedure(period, caption, xoffset, yoffset, lineheight, metrics, default_symbol="diamond", lwd=1.2, first_pass=True, debug=False, ellipsis=False):
 	(daywidth_function, textwidth_function, textheight_function, ypadding) = metrics
 	svg_out = ""
 	if debug:
@@ -333,19 +285,22 @@ def render_procedure(period, caption, xoffset, yoffset, lineheight, metrics, def
 	widths = daywidth_function(period)
 	brackets = extract_decorations(period, caption)
 	symbols = procedure_symbols(period, caption, default_symbol)
+	dlabels = day_labels(period)
 
-	# if has_timescale(period, caption):
-	# 	print(f'period {period["caption"]}: procedure {caption} has timescale')
+	ellipses = [1 if (s!="" and l == "" and len(symbols)>3) else 0 for (s,l) in zip(symbols, dlabels)]
 
-	for p, w, s, b in zip(centers, widths, symbols, brackets):
+	for p, w, s, b, e in zip(centers, widths, symbols, brackets, ellipses):
 		if s != "":
-			svg_out += svg_symbol(p, y, w, s, size=textheight_function("X"), lwd=lwd)
-			if b=="bracketed":
-				svg_out += svg_open_bracket(p, y, lineheight, w*.8, xpadding=0, radius=lineheight/8, lwd=lwd)
-				svg_out += svg_close_bracket(p, y, lineheight, w*.8, xpadding=0, radius=lineheight/8, lwd=lwd)
+			if e==1 and b=="" and s=="arrow" and ellipsis==True:
+				svg_out += svg_circle(p, y, lineheight/30, fill_color="black")
+			else:
+				svg_out += svg_symbol(p, y, w, s, size=textheight_function("X"), lwd=lwd)
+				if b=="bracketed":
+					svg_out += svg_open_bracket(p, y, lineheight, w*.8, xpadding=0, radius=lineheight/8, lwd=lwd)
+					svg_out += svg_close_bracket(p, y, lineheight, w*.8, xpadding=0, radius=lineheight/8, lwd=lwd)
 	return(svg_out)
 
-def render_interval(period, caption, xoffset, yoffset, lineheight, metrics, lwd=1.2, first_pass=True, debug=False):
+def render_interval(period, caption, xoffset, yoffset, lineheight, metrics, lwd=1.2, first_pass=True, debug=False, ellipsis=False):
 	(daywidth_function, textwidth_function, textheight_function, ypadding) = metrics
 	svg_out = ""
 	if debug:
@@ -384,27 +339,17 @@ def render_times(period, caption, xoffset, yoffset, lineheight, metrics, maxwidt
 		out += render_dummy(period, xoffset, yoffset, lineheight*2 + ypadding*3 + lineheight/6 + textheight_function("X"), metrics)
 
 	proc = extract_procedure(period, caption)
-	# print(f'\nperiod {period["caption"]}')
-	# print(proc)
-	# print(normalize_procedure(proc))
 	proc = normalize_procedure(proc)
 
 	if(len(proc)) > 0:
 		y = yoffset #+ lineheight/2 # center of the line
 		times = list(dict.fromkeys(extract_times(period, caption)))
-		# print(f'times: {times}')
 		scale_width = min(len(times) * textwidth_function("XX"), maxwidth-xoffset)
 
 		maxtime = max(times)
 		break_time = min(sorted(list([i for i in times if i<24]))[-1] + 2, 23)
 		times_below = len([i for i in times if i<=break_time])
 		times_above = len([i for i in times if i>break_time])
-
-		# temp = min([i for (i,t,rel) in normalize_procedure(proc)])
-		# print(f'render_times min index: {day_index(period, temp)}')
-		
-		# temp = max([i for (i,t,rel) in normalize_procedure(proc)])
-		# print(f'render_times max index: {temp}')
 
 		startx = period_day_starts(period, xoffset, daywidth_function)[day_index(period, min([i for (i, t, rel) in proc]))]
 
@@ -450,21 +395,17 @@ def render_times(period, caption, xoffset, yoffset, lineheight, metrics, maxwidt
 		out += render_scale(scale_startx, y, scale_break, scale_height, 0, break_time, range(0, int(break_time), 2))
 
 		out += render_scale(scale_startx+scale_break+scale_gap, y, scale_width - scale_gap - scale_break, scale_height, 24, maxtime, [i*24 for i in range(1, int(maxtime/24+1))])
-
 	return(out)
 
 
-def render_periods(periods, x, y, caption, height, render_function, metrics, periodspacing, **kwargs):
+def render_periods(periods, x, y, caption, height, render_function, metrics, periodspacing, *args, ellipsis=False, **kwargs):
 	(daywidth_function, textwidth_function, textheight_function, ypadding) = metrics
 	first = True
-	# timescales = []
 	out = ""
 	for p in periods:
-		out += render_function(p, caption, x, y, height, metrics, first_pass=first, **kwargs)
+		out += render_function(p, caption, x, y, height, metrics, first_pass=first, *args, ellipsis=ellipsis, **kwargs)
 		x += period_width(p, daywidth_function) + periodspacing
-		# timescales.append(has_timescale(p, caption))
 		first=False
-	# print(f'{caption}: {timescales}')
 	return(out)
 
 
@@ -480,13 +421,13 @@ def render_periods(periods, x, y, caption, height, render_function, metrics, per
 @click.option("--padding", "-p", type=int, default=1, help='y padding factor (default 1)')
 @click.option("--condensed", "-c", is_flag=True, help='condensed daygrid')
 @click.option("--timescale", "-t", is_flag=True, help='show time scale')
+@click.option("--ellipsis", "-e", is_flag=True, help='reduce symbols in condensed representation')
 @click.option("--debug", "-d", is_flag=True, help='debug output')
-def main(file, debug, fontsize, font, condensed, timescale, padding):
+def main(file, debug, fontsize, font, condensed, timescale, padding, ellipsis):
 	debug = debug
 	infile = pathlib.Path(file)
 	inpath = pathlib.Path(file).resolve().parent
 	outfile = inpath.joinpath(infile.stem + ".svg")
-	# print(outfile)
 
 	ypadding = fontsize/1.8 * padding
 
@@ -569,11 +510,11 @@ def main(file, debug, fontsize, font, condensed, timescale, padding):
 		y += lineheight + ypadding
 
 	for n in item_names(td, 'administrations'):
-		out += render_periods(periods, xoffset, y, n, lineheight, render_procedure, metrics, periodspacing, default_symbol="arrow", debug=debug, lwd=lwd)
+		out += render_periods(periods, xoffset, y, n, lineheight, render_procedure, metrics, periodspacing, default_symbol="arrow", debug=debug, lwd=lwd, ellipsis=ellipsis)
 		y += lineheight + ypadding
 
 	for n in item_names(td, 'procedures'):
-		out += render_periods(periods, xoffset, y, n, lineheight, render_procedure, metrics, periodspacing, default_symbol="diamond", debug=debug, lwd=lwd)
+		out += render_periods(periods, xoffset, y, n, lineheight, render_procedure, metrics, periodspacing, default_symbol="diamond", debug=debug, lwd=lwd, ellipsis=ellipsis)
 		y += lineheight + ypadding
 
 		# test whether to render timescale. Only the first period counts

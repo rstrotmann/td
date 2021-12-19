@@ -67,7 +67,7 @@
 			"caption": "Period 2",
 			"length": 12,
 			"start": 8,
-			"daylabels": [8, 11, 12, 15, 19],
+			"daylabels": [8, 11, "12-15", 18, 19],
 			"dayshading": [8, 15],
 			"intervals": [
 				{
