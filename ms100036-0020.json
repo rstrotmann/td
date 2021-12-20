@@ -16,8 +16,7 @@
 				{
 					"caption": "hospitalization",
 					"start": -1,
-					"duration": 5,
-					"decoration": "bracketed"
+					"duration": 5
 				}
 			],
 			"administrations": [
@@ -48,7 +47,7 @@
 			"caption": "Period 2",
 			"length": 25,
 			"start": 8,
-			"daylabels": [8, 15, 22, 25, 26, 29, 32],
+			"daylabels": [8, 15, 22, "25-29", 32],
 			"dayshading": [8, 15, 22, 29],
 			"intervals": [
 				{

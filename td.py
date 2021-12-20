@@ -6,14 +6,7 @@ import cairo
 import json
 import math
 import re
-#import sys
-from pprint import pprint
 
-
-# to do:#
-# implement time scale bracket
-# implement broken time axis for PK sampling times after rich period + 24 h
-# implement curly bracket start/stop at day center when QD
 
 def decode_daylist(daylist):
 	days = []
@@ -74,6 +67,21 @@ def normalize_procedure(procedure):
 			dd += 1
 	return(out)
 
+def unnormalize_procedure(procedure):
+	out = []
+	if len(procedure) != 0:
+		current_rel = procedure[0][2]
+		current_times = []
+		for (d, ts, r) in procedure:
+			for t in ts:
+				if r==current_rel:
+					current_times.append(t+(d-r)*24)
+				else:
+					out.append((current_rel, current_times, current_rel))
+					current_times = []
+					current_rel = r
+		out.append((current_rel, current_times, current_rel))
+	return(out)
 
 def has_timescale(period, caption):
 	temp = False
@@ -89,21 +97,17 @@ def has_timescale(period, caption):
 def extract_decorations(period, caption):
 	l = int(period['length'])
 	temp = [""] * period['length']
-
 	for x in ['procedures', 'administrations']:
 		if x in period.keys():
 			for proc in period[x]:
 				if proc['caption'] == caption:
 					if 'decoration' in proc.keys():
-						# print(f'{period["caption"]}, {caption} has decoration')
 						deco = proc['decoration']
 					else:
 						deco = ""
 					dd = [(d, deco) for d in decode_daylist(proc['days'])]
-					# print(dd)
 					for (day, dec) in dd:
 						temp[day_index(period, day)] = dec
-	# print(temp)
 	return(temp)
 
 def extract_interval(period, caption):
@@ -115,8 +119,7 @@ def extract_interval(period, caption):
 	return(out)
 
 def extract_times(period, caption):
-	temp = extract_procedure(period, caption)
-	temp = normalize_procedure(temp)
+	temp = normalize_procedure(extract_procedure(period, caption))
 	return([(d-rel)*24+t for (d, ts, rel) in temp for t in ts])
 
 def day_index(period, day):
@@ -154,7 +157,6 @@ def svg_text(x, y, text):
 
 def svg_path(x, y, points, lwd=1, size=1, fill=False, dashed=False, fill_color="none", title=""):
 	title=""
-	#fill_color = "black" if fill else "none"
 	dash = "stroke-dasharray: 2.5 2.5" if dashed else ""
 	(x1, y1) = points[-1]
 	out = f'<path d="M{x1*size+x}, {y1*size+y} '
@@ -257,7 +259,7 @@ def render_daygrid(period, caption, xoffset, yoffset, height, metrics, lwd=1.2, 
 	for start, width, center, label, shading in zip(period_day_starts(period, xoffset, daywidth_function), daywidth_function(period), period_day_centers(period, xoffset, daywidth_function), day_labels(period), day_shadings(period)):
 		if shading:
 			svg_out += svg_rect(start, y, width, height, lwd=0, fill_color="lightgray")
-		if width >textwidth_function("XX")/3:
+		if width > textwidth_function("XX")/3:
 			svg_out += svg_rect(start, y, width, height, lwd=lwd)
 		else:
 			svg_out += svg_line(start, y, start+width, y, lwd=lwd, dashed=True)
@@ -297,6 +299,7 @@ def render_procedure(period, caption, xoffset, yoffset, lineheight, metrics, def
 	for p, w, s, b, e in zip(centers, widths, symbols, brackets, ellipses):
 		if s != "":
 			if e==1 and b=="" and s=="arrow" and ellipsis==True:
+			#if e==1 and b=="" and ellipsis==True:
 				svg_out += svg_circle(p, y, lineheight/30, fill_color="black")
 			else:
 				svg_out += svg_symbol(p, y, w, s, size=textheight_function("X"), lwd=lwd, title=caption)
@@ -343,29 +346,25 @@ def render_times(period, caption, xoffset, yoffset, lineheight, metrics, maxwidt
 	if debug:
 		out += render_dummy(period, xoffset, yoffset, lineheight*2 + ypadding*3 + lineheight/6 + textheight_function("X"), metrics)
 
-	proc = extract_procedure(period, caption)
-	proc = normalize_procedure(proc)
-
+	proc = normalize_procedure(extract_procedure(period, caption))
 	if(len(proc)) > 0:
 		y = yoffset #+ lineheight/2 # center of the line
-		times = list(dict.fromkeys(extract_times(period, caption)))
-		scale_width = min(len(times) * textwidth_function("XX"), maxwidth-xoffset)
-
+		times = unnormalize_procedure(proc)[0][1]
 		maxtime = max(times)
 		break_time = min(sorted(list([i for i in times if i<24]))[-1] + 2, 23)
 		times_below = len([i for i in times if i<=break_time])
 		times_above = len([i for i in times if i>break_time])
 
-		startx = period_day_starts(period, xoffset, daywidth_function)[day_index(period, min([i for (i, t, rel) in proc]))]
-
-		endx = period_day_ends(period, xoffset, daywidth_function)[day_index(period, max([i for (i, t, rel) in proc]))]
+		firstrel = proc[0][2]
+		startx = period_day_starts(period, xoffset, daywidth_function)[day_index(period, min([i for (i, t, rel) in proc if rel==firstrel]))]
+		endx = period_day_ends(period, xoffset, daywidth_function)[day_index(period, max([i for (i, t, rel) in proc if rel==firstrel]))]
 
 		bracketheight = lineheight * 2/3
 		out += svg_curly_up(startx, endx, y, radius=bracketheight/2, lwd=lwd)
 		y += lineheight*2 + ypadding*1.5
 
-
 		scale_height = lineheight/3
+		scale_width = min(len(times) * textwidth_function("XX"), maxwidth-xoffset)
 		scale_break = scale_width * times_below/(times_below+times_above)
 		scale_gap = textwidth_function("m")
 
@@ -394,11 +393,9 @@ def render_times(period, caption, xoffset, yoffset, lineheight, metrics, maxwidt
 
 		out += render_points(scale_startx, y, scale_break, 0, break_time)
 		out += render_points(scale_startx+scale_break+scale_gap, y, scale_width - scale_gap - scale_break, 24, maxtime)
-
 		y += ypadding/2
 
 		out += render_scale(scale_startx, y, scale_break, scale_height, 0, break_time, range(0, int(break_time), 2))
-
 		out += render_scale(scale_startx+scale_break+scale_gap, y, scale_width - scale_gap - scale_break, scale_height, 24, maxtime, [i*24 for i in range(1, int(maxtime/24+1))])
 	return(out)
 
