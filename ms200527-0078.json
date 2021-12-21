@@ -20,8 +20,8 @@
 			"caption": "Intervention Period",
 			"length": 14,
 			"start": -1,
-			"daylabels": [-1, 1, 4, 8, "10-13"],
-			"dayshading": [1, 8],
+			"daylabels": [-1, "1-4", "10-13"],
+			"dayshading": [1],
 			"intervals": [
 				{
 					"caption": "hospitalization",

@@ -61,7 +61,18 @@
 				},
 				{
 					"caption": "carbamazepine BID",
-					"days": ["8-32"]
+					"days": ["8-14"],
+					"dose": 100
+				},
+				{
+					"caption": "carbamazepine BID",
+					"days": ["15-21"],
+					"dose": 200
+				},
+				{
+					"caption": "carbamazepine BID",
+					"days": ["22-32"],
+					"dose": 300
 				}
 			],
 			"procedures": [
