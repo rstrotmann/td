@@ -249,7 +249,7 @@ def render_dummy(period, xoffset, yoffset, lineheight, metrics):
 	(daywidth_function, textwidth_function, textheight_function, ypadding) = metrics
 	return(svg_rect(xoffset, yoffset, period_width(period, daywidth_function), lineheight, lwd=0, fill_color="cornsilk"))
 
-def render_daygrid(period, caption, xoffset, yoffset, height, metrics, lwd=1.2, first_pass=True, debug=False, ellipsis=False):
+def render_daygrid(period, caption, xoffset, yoffset, height, metrics, lwd=1.2, first_pass=True, last_period=False, debug=False, ellipsis=False):
 	"""renders the svg output for the day grid for a period"""
 	(daywidth_function, textwidth_function, textheight_function, ypadding) = metrics
 	svg_out = ""
@@ -267,18 +267,19 @@ def render_daygrid(period, caption, xoffset, yoffset, height, metrics, lwd=1.2, 
 		label = str(label)
 		delta = textwidth_function("1")*.5 if len(label)>0 and label[0] == "1" else 0
 		svg_out += svg_text(center - textwidth_function(str(label)) / 2-delta, yoffset + height - (height- textheight_function("X")) / 2, str(label))
-	return(svg_out)
+	return([svg_out, height+ypadding*2])
 
-def render_periodcaption(period, caption, xoffset, yoffset, height, metrics, lwd=1.2, first_pass=True, debug=False, ellipsis=False):
+def render_periodcaption(period, caption, xoffset, yoffset, height, metrics, lwd=1.2, first_pass=True, last_period=False, debug=False, ellipsis=False):
 	"""renders svg code for the header above the daygrid"""
 	(daywidth_function, textwidth_function, textheight_function, ypadding) = metrics
 	svg_out = ""
 	if debug:
 		svg_out += render_dummy(period, xoffset, yoffset, height, metrics)
 	xcenter = xoffset + period_width(period, daywidth_function)/2
-	return(svg_out + svg_text(xcenter - textwidth_function(str(period['caption']))/2, yoffset+ height - (height-textheight_function("X"))/2, str(period['caption'])))
+	svg_out += svg_text(xcenter - textwidth_function(str(period['caption']))/2, yoffset+ height - (height-textheight_function("X"))/2, str(period['caption']))
+	return([svg_out, height+ypadding/2])
 
-def render_procedure(period, caption, xoffset, yoffset, lineheight, metrics, default_symbol="diamond", lwd=1.2, first_pass=True, debug=False, ellipsis=False):
+def render_procedure(period, caption, xoffset, yoffset, lineheight, metrics, default_symbol="diamond", lwd=1.2, first_pass=True, last_period=False, debug=False, ellipsis=False):
 	(daywidth_function, textwidth_function, textheight_function, ypadding) = metrics
 	svg_out = ""
 	if debug:
@@ -306,9 +307,9 @@ def render_procedure(period, caption, xoffset, yoffset, lineheight, metrics, def
 				if b=="bracketed":
 					svg_out += svg_open_bracket(p, y, lineheight, w*.8, xpadding=0, radius=lineheight/8, lwd=lwd)
 					svg_out += svg_close_bracket(p, y, lineheight, w*.8, xpadding=0, radius=lineheight/8, lwd=lwd)
-	return(svg_out)
+	return([svg_out, lineheight+ypadding])
 
-def render_interval(period, caption, xoffset, yoffset, lineheight, metrics, lwd=1.2, first_pass=True, debug=False, ellipsis=False):
+def render_interval(period, caption, xoffset, yoffset, lineheight, metrics, lwd=1.2, first_pass=True, last_period=False, debug=False, ellipsis=False):
 	(daywidth_function, textwidth_function, textheight_function, ypadding) = metrics
 	svg_out = ""
 	if debug:
@@ -338,9 +339,9 @@ def render_interval(period, caption, xoffset, yoffset, lineheight, metrics, lwd=
 						svg_out += svg_open_bracket(startx, y, lineheight, wo*.6, xpadding=0, radius=lineheight/8, lwd=lwd)
 						svg_out += svg_close_bracket(endx, y, lineheight, wc*.6, xpadding=0, radius=lineheight/8, lwd=lwd)
 				svg_out += svg_rect(startx, y-height/2, endx-startx, height, lwd=lwd)
-	return(svg_out)
+	return([svg_out, lineheight+ypadding])
 
-def render_times(period, caption, xoffset, yoffset, lineheight, metrics, maxwidth=100, lwd=1.2, first_pass=True, debug=False, default_symbol="diamond"):
+def render_times(period, caption, xoffset, yoffset, lineheight, metrics, maxwidth=100, lwd=1.2, first_pass=True, last_period=False, debug=False, default_symbol="diamond"):
 	(daywidth_function, textwidth_function, textheight_function, ypadding) = metrics
 	out = ""
 	if debug:
@@ -348,7 +349,7 @@ def render_times(period, caption, xoffset, yoffset, lineheight, metrics, maxwidt
 
 	proc = normalize_procedure(extract_procedure(period, caption))
 	if(len(proc)) > 0:
-		y = yoffset #+ lineheight/2 # center of the line
+		y = yoffset # center of the line
 		times = unnormalize_procedure(proc)[0][1]
 		maxtime = max(times)
 		break_time = min(sorted(list([i for i in times if i<24]))[-1] + 2, 23)
@@ -397,18 +398,27 @@ def render_times(period, caption, xoffset, yoffset, lineheight, metrics, maxwidt
 
 		out += render_scale(scale_startx, y, scale_break, scale_height, 0, break_time, range(0, int(break_time), 2))
 		out += render_scale(scale_startx+scale_break+scale_gap, y, scale_width - scale_gap - scale_break, scale_height, 24, maxtime, [i*24 for i in range(1, int(maxtime/24+1))])
-	return(out)
+	return([out, lineheight*4 +ypadding])
 
+def add_output(old, new):
+	return([o+n for o, n in zip(old, new)])
 
-def render_periods(periods, x, y, caption, height, render_function, metrics, periodspacing, *args, ellipsis=False, **kwargs):
-	(daywidth_function, textwidth_function, textheight_function, ypadding) = metrics
+def render_periods(periods, x, y, caption, height, render_function, metrics, periodspacing, *args, ellipsis=False, dashes=False, lwd=1.2, **kwargs):
+	daywidth_function= metrics[0]
+	w = [period_width(i, daywidth_function) for i in periods]
 	first = True
+	last = False
 	out = ""
 	for p in periods:
-		out += render_function(p, caption, x, y, height, metrics, first_pass=first, *args, ellipsis=ellipsis, **kwargs)
+		if p==periods[-1]:
+			last=True
+		[svg_out, y_out] = render_function(p, caption, x, y, height, metrics, first_pass=first, last_period=last, *args, ellipsis=ellipsis, **kwargs)
+		out += svg_out
+		if dashes and not last:
+			out += svg_line(x+period_width(p, daywidth_function), y+height/2, x+period_width(p, daywidth_function)+periodspacing, y+height/2, lwd=lwd)
 		x += period_width(p, daywidth_function) + periodspacing
 		first=False
-	return(out)
+	return([out, y_out])
 
 
 ########################################
@@ -497,39 +507,25 @@ def main(file, debug, fontsize, font, condensed, timescale, padding, ellipsis):
 	yoffset = 10
 	lwd = fontsize/10
 
-	y = yoffset
-	out = ""
+	out = ["", yoffset]
+
 
 	# render header
-	out += render_periods(periods, xoffset, y, "", lineheight, render_periodcaption, metrics, periodspacing, debug=debug, lwd=lwd)
-	y += lineheight + ypadding/2
+	out = add_output(out, render_periods(periods, xoffset, out[1], "", lineheight, render_periodcaption, metrics, periodspacing, debug=debug, lwd=lwd))
 
-	out += render_periods(periods, xoffset, y, "", lineheight, render_daygrid, metrics, periodspacing, debug=debug, lwd=lwd)
-	y += lineheight
-
-	# render dashes between periods
-	xx = xoffset
-	w = [period_width(i, daywidth_function) for i in periods]
-	for i in w[:-1]:
-		xx += i
-		out += svg_line(xx, y-lineheight/2, xx + periodspacing, y-lineheight/2, lwd=lwd)
-		xx += periodspacing
-	y += ypadding*2
+	out = add_output(out, render_periods(periods, xoffset, out[1], "", lineheight, render_daygrid, metrics, periodspacing, debug=debug, dashes=True, lwd=lwd))
 
 	# render intervals, administrations, procedures
 	for n in item_names(td, 'intervals'):
-		out += render_periods(periods, xoffset, y, n, lineheight, render_interval, metrics, periodspacing, debug=debug, lwd=lwd)
-		y += lineheight + ypadding
+		out = add_output(out, render_periods(periods, xoffset, out[1], n, lineheight, render_interval, metrics, periodspacing, debug=debug, lwd=lwd))
 
 	for n in item_names(td, 'administrations'):
-		out += render_periods(periods, xoffset, y, n, lineheight, render_procedure, metrics, periodspacing, default_symbol="arrow", debug=debug, lwd=lwd, ellipsis=ellipsis)
-		y += lineheight + ypadding
+		out = add_output(out, render_periods(periods, xoffset, out[1], n, lineheight, render_procedure, metrics, periodspacing, default_symbol="arrow", debug=debug, lwd=lwd, ellipsis=ellipsis))
 
 	for n in item_names(td, 'procedures'):
-		out += render_periods(periods, xoffset, y, n, lineheight, render_procedure, metrics, periodspacing, default_symbol="diamond", debug=debug, lwd=lwd, ellipsis=ellipsis)
-		y += lineheight + ypadding
+		out = add_output(out, render_periods(periods, xoffset, out[1], n, lineheight, render_procedure, metrics, periodspacing, default_symbol="diamond", debug=debug, lwd=lwd, ellipsis=ellipsis))
 
-		# test whether to render timescale. Only the first period counts
+		# test whether to render timescale. Only the first period matters
 		if timescale:
 			ts = False
 			x = xoffset
@@ -540,17 +536,16 @@ def main(file, debug, fontsize, font, condensed, timescale, padding, ellipsis):
 				x += period_width(p, daywidth_function)
 				x += periodspacing
 			if ts:
-				out += render_times(p, n, x, y, lineheight, metrics, maxwidth=xoffset + sum([period_width(i, daywidth_function) for i in periods]) + (len(periods)-1) * periodspacing, debug=debug, lwd=lwd)
-				y += lineheight*4 + ypadding
+				out = add_output(out, render_times(p, n, x, out[1], lineheight, metrics, maxwidth=xoffset + sum([period_width(i, daywidth_function) for i in periods]) + (len(periods)-1) * periodspacing, debug=debug, lwd=lwd))
 
 	# re-calculate image dimensions, finalize svg
 	viewport_width = xoffset + sum([period_width(i, daywidth_function) for i in periods]) + (len(periods)) * periodspacing
-	viewport_height = y 
-	out = f'<svg width="{viewport_width}" height="{viewport_height}" xmlns="http://www.w3.org/2000/svg">\n<style>text {{font-family: {font}; font-size: {fontsize}px ;}}</style>\n<desc>Trial design autogenerated by td.py V2.0 (Dec-2021), author: Rainer Strotmann</desc><title>{infile.stem}</title>' + out
-	out += f'</svg>'
+	viewport_height = out[1]
+	svg_out = f'<svg width="{viewport_width}" height="{viewport_height}" xmlns="http://www.w3.org/2000/svg">\n<style>text {{font-family: {font}; font-size: {fontsize}px ;}}</style>\n<desc>Trial design autogenerated by td.py V2.0 (Dec-2021), author: Rainer Strotmann</desc><title>{infile.stem}</title>' + out[0]
+	svg_out += f'</svg>'
 
 	with open(outfile, "w") as f:
-		f.write(out)
+		f.write(svg_out)
 	return
 
 
