@@ -1,0 +1,75 @@
+{
+	"periods": [
+		{
+			"caption": "S",
+			"length": 1,
+			"start": 1,
+			"daylabels": [],
+			"procedures": [
+				{
+					"caption": "Safety lab",
+					"days": [1]
+				},
+				{
+					"caption": "ECG",
+					"days": [1]
+				}
+			]
+		},
+		{
+			"caption": "Intervention Period",
+			"length": 14,
+			"start": -1,
+			"daylabels": [-1, "1-4", "10-13"],
+			"dayshading": [1],
+			"intervals": [
+				{
+					"caption": "hospitalization",
+					"start": -1,
+					"duration": 14
+				}
+			],
+			"administrations": [
+				{
+					"caption": "evobrutinib BID",
+					"days": ["4-12"],
+					"freq": "BID"
+				},
+				{
+					"caption": "digoxin, metformin, rosuvastatin",
+					"days": [1, 10],
+					"freq": "QD"
+				}
+			],
+			"procedures": [
+				{
+					"caption": "Safety lab",
+					"days": [-1, 10]
+				},
+				{
+					"caption": "ECG",
+					"days": [-1, 1, 10]
+				},
+				{
+					"caption": "PK sampling evobrutinib",
+					"days": ["10-12"],
+					"times": [1]
+				},
+				{
+					"caption": "PK sampling digoxin, metformin, rosuvastatins",
+					"days": [1],
+					"times": [0, 0.33, 0.67, 1, 1.5, 2, 3, 3, 4, 6, 8, 10, 12, 16, 24, 36, 48, 60, 72],
+					"relative": 1,
+					"timescale": "show"
+				},
+				{
+					"caption": "PK sampling digoxin, metformin, rosuvastatins",
+					"days": [10],
+					"times": [0, 0.33, 0.67, 1, 1.5, 2, 3, 3, 4, 6, 8, 10, 12, 16, 24, 36, 48, 60, 72],
+					"relative": 10,
+					"timescale": "hide"
+				}
+			]
+		}
+	]
+}

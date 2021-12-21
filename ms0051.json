@@ -45,7 +45,7 @@
 			"caption": "Period 2",
 			"length": 25,
 			"start": 8,
-			"daylabels": [8, 15, 22, "25-32"],
+			"daylabels": ["8-12", 15, 22, "25-32"],
 			"dayshading": [8, 15, 22, 29],
 			"intervals": [
 				{
@@ -61,17 +61,17 @@
 				},
 				{
 					"caption": "carbamazepine BID",
-					"days": ["8-14"],
+					"days": ["8-9"],
 					"dose": 100
 				},
 				{
 					"caption": "carbamazepine BID",
-					"days": ["15-21"],
+					"days": ["10-11"],
 					"dose": 200
 				},
 				{
 					"caption": "carbamazepine BID",
-					"days": ["22-32"],
+					"days": ["12-32"],
 					"dose": 300
 				}
 			],

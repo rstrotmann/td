@@ -1,4 +1,4 @@
-#!/usr/local/bin/python3
+#!/opt/homebrew/bin/python3
 
 import click
 import pathlib
@@ -61,27 +61,51 @@ def normalize_procedure(procedure):
 	out = []
 	for (d, t, rel) in procedure:
 		dd = 0
-		while len(t)>0:
+		# while len(t)>0:
+		while t:
 			out.append((d+dd, [i for i in t if i<24], rel))
 			t = [i-24 for i in t if i>=24]
 			dd += 1
 	return(out)
 
+# def unnormalize_procedure(procedure):
+# 	out = []
+# 	if len(procedure) != 0:
+# 		current_rel = procedure[0][2]
+# 		current_times = []
+# 		for (d, ts, r) in procedure:
+# 			for t in ts:
+# 				if r==current_rel:
+# 					current_times.append(t+(d-r)*24)
+# 				else:
+# 					out.append((current_rel, current_times, current_rel))
+# 					current_times = []
+# 					current_rel = r
+# 		out.append((current_rel, current_times, current_rel))
+# 	return(out)
+
 def unnormalize_procedure(procedure):
 	out = []
-	if len(procedure) != 0:
-		current_rel = procedure[0][2]
-		current_times = []
-		for (d, ts, r) in procedure:
-			for t in ts:
-				if r==current_rel:
-					current_times.append(t+(d-r)*24)
-				else:
-					out.append((current_rel, current_times, current_rel))
-					current_times = []
-					current_rel = r
-		out.append((current_rel, current_times, current_rel))
+	# print(f'rels: {rels}')
+	# if len(procedure) != 0:
+	if procedure:
+		rels = set([r for (d, ts, r) in procedure])
+		#current_rel = procedure[0][2]
+		for rel in rels:
+			current_times = []
+			for (d, ts, r) in procedure:
+				for t in ts:
+					if r==rel:
+						current_times.append(t+(d-r)*24)
+					# else:
+					# 	out.append((current_rel, current_times, current_rel))
+					# 	current_times = []
+					# 	current_rel = r
+			out.append((rel, current_times, rel))	
+			# out.append((current_rel, current_times, current_rel))
+	print(f'unnormalize out: {out}')
 	return(out)
+
 
 def has_timescale(period, caption):
 	temp = False
@@ -95,7 +119,7 @@ def has_timescale(period, caption):
 	return(temp)
 
 def extract_decorations(period, caption):
-	l = int(period['length'])
+	# l = int(period['length'])
 	temp = [""] * period['length']
 	for x in ['procedures', 'administrations']:
 		if x in period.keys():
@@ -106,6 +130,21 @@ def extract_decorations(period, caption):
 					else:
 						deco = ""
 					dd = [(d, deco) for d in decode_daylist(proc['days'])]
+					for (day, dec) in dd:
+						temp[day_index(period, day)] = dec
+	return(temp)
+
+def extract_doses(period, caption):
+	temp = [""] * period['length']
+	for x in ['procedures', 'administrations']:
+		if x in period.keys():
+			for proc in period[x]:
+				if proc['caption'] == caption:
+					if 'dose' in proc.keys():
+						dose = proc['dose']
+					else:
+						dose = ""
+					dd = [(d, dose) for d in decode_daylist(proc['days'])]
 					for (day, dec) in dd:
 						temp[day_index(period, day)] = dec
 	return(temp)
@@ -249,7 +288,7 @@ def render_dummy(period, xoffset, yoffset, lineheight, metrics):
 	(daywidth_function, textwidth_function, textheight_function, ypadding) = metrics
 	return(svg_rect(xoffset, yoffset, period_width(period, daywidth_function), lineheight, lwd=0, fill_color="cornsilk"))
 
-def render_daygrid(period, caption, xoffset, yoffset, height, metrics, lwd=1.2, first_pass=True, last_period=False, debug=False, ellipsis=False):
+def render_daygrid(period, caption, xoffset, yoffset, height, metrics, lwd=1.2, first_pass=True, debug=False, ellipsis=False):
 	"""renders the svg output for the day grid for a period"""
 	(daywidth_function, textwidth_function, textheight_function, ypadding) = metrics
 	svg_out = ""
@@ -265,11 +304,12 @@ def render_daygrid(period, caption, xoffset, yoffset, height, metrics, lwd=1.2, 
 			svg_out += svg_line(start, y, start+width, y, lwd=lwd, dashed=True)
 			svg_out += svg_line(start, y+height, start+width, y+height, lwd=lwd, dashed=True)
 		label = str(label)
-		delta = textwidth_function("1")*.5 if len(label)>0 and label[0] == "1" else 0
+		# delta = textwidth_function("1")*.5 if len(label)>0 and label[0] == "1" else 0
+		delta = textwidth_function("1")*.5 if label and label[0] == "1" else 0
 		svg_out += svg_text(center - textwidth_function(str(label)) / 2-delta, yoffset + height - (height- textheight_function("X")) / 2, str(label))
 	return([svg_out, height+ypadding*2])
 
-def render_periodcaption(period, caption, xoffset, yoffset, height, metrics, lwd=1.2, first_pass=True, last_period=False, debug=False, ellipsis=False):
+def render_periodcaption(period, caption, xoffset, yoffset, height, metrics, lwd=1.2, first_pass=True, debug=False, ellipsis=False):
 	"""renders svg code for the header above the daygrid"""
 	(daywidth_function, textwidth_function, textheight_function, ypadding) = metrics
 	svg_out = ""
@@ -279,7 +319,7 @@ def render_periodcaption(period, caption, xoffset, yoffset, height, metrics, lwd
 	svg_out += svg_text(xcenter - textwidth_function(str(period['caption']))/2, yoffset+ height - (height-textheight_function("X"))/2, str(period['caption']))
 	return([svg_out, height+ypadding/2])
 
-def render_procedure(period, caption, xoffset, yoffset, lineheight, metrics, default_symbol="diamond", lwd=1.2, first_pass=True, last_period=False, debug=False, ellipsis=False):
+def render_procedure(period, caption, xoffset, yoffset, lineheight, metrics, default_symbol="diamond", lwd=1.2, first_pass=True, debug=False, ellipsis=False):
 	(daywidth_function, textwidth_function, textheight_function, ypadding) = metrics
 	svg_out = ""
 	if debug:
@@ -309,7 +349,43 @@ def render_procedure(period, caption, xoffset, yoffset, lineheight, metrics, def
 					svg_out += svg_close_bracket(p, y, lineheight, w*.8, xpadding=0, radius=lineheight/8, lwd=lwd)
 	return([svg_out, lineheight+ypadding])
 
-def render_interval(period, caption, xoffset, yoffset, lineheight, metrics, lwd=1.2, first_pass=True, last_period=False, debug=False, ellipsis=False):
+
+def render_dose_graph(period, caption, xoffset, yoffset, lineheight, metrics, default_symbol, lwd=1.2, first_pass=True, debug=False, **kwargs):
+	(daywidth_function, textwidth_function, textheight_function, ypadding) = metrics
+	svg_out = ""
+	if debug:
+		svg_out += render_dummy(period, xoffset, yoffset, lineheight+ textheight_function("X"), metrics)
+
+	startx = period_day_starts(period, xoffset, daywidth_function)
+	endx = period_day_ends(period, xoffset, daywidth_function)
+	doses = [i for i in extract_doses(period, caption)]
+
+	maxdose = max(doses)
+	mindose = min(doses)
+
+	def dosey(dose):
+		return(yoffset + lineheight*0.6 - (dose-mindose)/(maxdose-mindose)*lineheight*0.6)
+
+	# if len(doses) != 0:
+	if doses:
+		lastx, lasty, lastdose = 0, 0, 0
+		lastend = 0
+		for (s, e, d) in zip(startx, endx, doses):
+			if type(d)==int or type(d)==float:
+				svg_out += svg_line(s, dosey(d), e, dosey(d), lwd=lwd)
+				if lasty != 0:
+					svg_out += svg_line(lastx, lasty, s, dosey(d), lwd=lwd)
+				lastx, lasty = e, dosey(d)
+				if d != lastdose:
+					if lastend + textwidth_function("n") < s:
+						svg_out += svg_text(s, yoffset + lineheight + textheight_function("X"), str(d))
+						lastend = s + textwidth_function(str(d))
+					lastdose = d
+	return([svg_out, lineheight+textheight_function("X")+ypadding])
+
+
+
+def render_interval(period, caption, xoffset, yoffset, lineheight, metrics, lwd=1.2, first_pass=True, debug=False, ellipsis=False):
 	(daywidth_function, textwidth_function, textheight_function, ypadding) = metrics
 	svg_out = ""
 	if debug:
@@ -341,16 +417,19 @@ def render_interval(period, caption, xoffset, yoffset, lineheight, metrics, lwd=
 				svg_out += svg_rect(startx, y-height/2, endx-startx, height, lwd=lwd)
 	return([svg_out, lineheight+ypadding])
 
-def render_times(period, caption, xoffset, yoffset, lineheight, metrics, maxwidth=100, lwd=1.2, first_pass=True, last_period=False, debug=False, default_symbol="diamond"):
+
+def render_times(period, caption, xoffset, yoffset, lineheight, metrics, maxwidth=100, lwd=1.2, first_pass=True, debug=False, default_symbol="diamond"):
 	(daywidth_function, textwidth_function, textheight_function, ypadding) = metrics
 	out = ""
 	if debug:
 		out += render_dummy(period, xoffset, yoffset, lineheight*2 + ypadding*3 + lineheight/6 + textheight_function("X"), metrics)
 
 	proc = normalize_procedure(extract_procedure(period, caption))
-	if(len(proc)) > 0:
+	# if(len(proc)) > 0:
+	if proc:
 		y = yoffset # center of the line
 		times = unnormalize_procedure(proc)[0][1]
+		print(f'proc {caption}: {times}')
 		maxtime = max(times)
 		break_time = min(sorted(list([i for i in times if i<24]))[-1] + 2, 23)
 		times_below = len([i for i in times if i<=break_time])
@@ -393,11 +472,11 @@ def render_times(period, caption, xoffset, yoffset, lineheight, metrics, maxwidt
 		scale_startx = xoffset
 
 		out += render_points(scale_startx, y, scale_break, 0, break_time)
-		out += render_points(scale_startx+scale_break+scale_gap, y, scale_width - scale_gap - scale_break, 24, maxtime)
+		out += render_points(scale_startx+scale_break+scale_gap, y, scale_width - scale_gap - scale_break, 24, max(maxtime, 36))
 		y += ypadding/2
 
 		out += render_scale(scale_startx, y, scale_break, scale_height, 0, break_time, range(0, int(break_time), 2))
-		out += render_scale(scale_startx+scale_break+scale_gap, y, scale_width - scale_gap - scale_break, scale_height, 24, maxtime, [i*24 for i in range(1, int(maxtime/24+1))])
+		out += render_scale(scale_startx+scale_break+scale_gap, y, scale_width - scale_gap - scale_break, scale_height, 24, max(maxtime, 36), [i*24 for i in range(1, int(maxtime/24+1))])
 	return([out, lineheight*4 +ypadding])
 
 def add_output(old, new):
@@ -412,7 +491,7 @@ def render_periods(periods, x, y, caption, height, render_function, metrics, per
 	for p in periods:
 		if p==periods[-1]:
 			last=True
-		[svg_out, y_out] = render_function(p, caption, x, y, height, metrics, first_pass=first, last_period=last, *args, ellipsis=ellipsis, **kwargs)
+		[svg_out, y_out] = render_function(p, caption, x, y, height, metrics, first_pass=first, *args, ellipsis=ellipsis, lwd=lwd, **kwargs)
 		out += svg_out
 		if dashes and not last:
 			out += svg_line(x+period_width(p, daywidth_function), y+height/2, x+period_width(p, daywidth_function)+periodspacing, y+height/2, lwd=lwd)
@@ -521,6 +600,11 @@ def main(file, debug, fontsize, font, condensed, timescale, padding, ellipsis):
 
 	for n in item_names(td, 'administrations'):
 		out = add_output(out, render_periods(periods, xoffset, out[1], n, lineheight, render_procedure, metrics, periodspacing, default_symbol="arrow", debug=debug, lwd=lwd, ellipsis=ellipsis))
+
+		# temp = [i for p in periods for i in extract_doses(p, n) if i != ""]
+		# if len([i for p in periods for i in extract_doses(p, n) if i != ""]) != 0:
+		if [i for p in periods for i in extract_doses(p, n) if i != ""]:
+			out = add_output(out, render_periods(periods, xoffset, out[1], n, lineheight, render_dose_graph, metrics, periodspacing, default_symbol="", debug=debug, lwd=lwd, ellipsis=ellipsis))
 
 	for n in item_names(td, 'procedures'):
 		out = add_output(out, render_periods(periods, xoffset, out[1], n, lineheight, render_procedure, metrics, periodspacing, default_symbol="diamond", debug=debug, lwd=lwd, ellipsis=ellipsis))

@@ -33,18 +33,23 @@
 				},
 				{
 					"caption": "rich PK sampling (safety run-in)",
-					"days": [1, 15],
-					"times": [0, 0.25, 0.5, 1, 1.5, 2, 3, 4, 6, 8, 12]
+					"days": [1],
+					"times": [0, 0.25, 0.5, 1, 1.5, 2, 3, 4, 6, 8, 12, 24],
+					"relative":1,
+					"timescale": "show"
+				},
+				{
+					"caption": "rich PK sampling (safety run-in)",
+					"days": [15],
+					"times": [0, 0.25, 0.5, 1, 1.5, 2, 3, 4, 6, 8, 12, 24],
+					"relative":15,
+					"timescale": "hide"
 				},
 				{
 					"caption": "sparse PK sampling",
 					"days": [1],
-					"times": [0, 1.5, 4]
-				},
-				{
-					"caption": "rich PK sampling (safety run-in)",
-					"days": [2, 16],
-					"times": [0]
+					"times": [0, 1.5, 4],
+					"timescale": "show"
 				}
 			]
 		},
