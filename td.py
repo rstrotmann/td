@@ -64,7 +64,6 @@ def normalize_procedure(procedure):
 	out = []
 	for (d, t, rel) in procedure:
 		dd = 0
-		# while len(t)>0:
 		while t:
 			out.append((d+dd, [i for i in t if i<24], rel))
 			t = [i-24 for i in t if i>=24]
@@ -284,17 +283,19 @@ def period_day_ends(period, xoffset, daywidth_function):
 ####### functions that rely on the metrics
 
 def render_dummy(period, xoffset, yoffset, lineheight, metrics):
-	"""renders placeholder box for visual debugging purposes"""
+	"""renders placeholder box for visual debugging purposes. Output is svg code only."""
 	daywidth_function = metrics[0]
 	return(svg_rect(xoffset, yoffset, period_width(period, daywidth_function), lineheight, lwd=0, fill_color="cornsilk"))
 
 
 def render_daygrid(period, caption, xoffset, yoffset, height, metrics, style, first_pass=True):
-	"""renders the svg output for the day grid for a period"""
-	(daywidth_function, textwidth_function, textheight_function, ypadding) = metrics
+	"""renders the svg output for the day grid for a period. Output is [svg_output, height]"""
+	(daywidth_function, textwidth_function, textheight_function) = metrics
 	(periodspacing, lineheight, ypadding, lwd, ellipsis, debug) = style
+
 	svg_out = ""
 	y = yoffset
+
 	if debug:
 		svg_out += render_dummy(period, xoffset, yoffset, height, metrics)
 
@@ -313,8 +314,8 @@ def render_daygrid(period, caption, xoffset, yoffset, height, metrics, style, fi
 
 
 def render_periodcaption(period, caption, xoffset, yoffset, height, metrics, style, first_pass=True):
-	"""renders svg code for the header above the daygrid"""
-	(daywidth_function, textwidth_function, textheight_function, ypadding) = metrics
+	"""render caption for period. The 'caption' input is ignored and the caption field of the input period is used. Output is [svg_output, height]"""
+	(daywidth_function, textwidth_function, textheight_function) = metrics
 	(periodspacing, lineheight, ypadding, lwd, ellipsis, debug) = style
 
 	svg_out = ""
@@ -326,8 +327,9 @@ def render_periodcaption(period, caption, xoffset, yoffset, height, metrics, sty
 
 
 def render_procedure(period, caption, xoffset, yoffset, lineheight, metrics, style, default_symbol="diamond", first_pass=True):
+	"""render procedure. Output is [svg_output, height]"""
 
-	(daywidth_function, textwidth_function, textheight_function, ypadding) = metrics
+	(daywidth_function, textwidth_function, textheight_function) = metrics
 	(periodspacing, lineheight, ypadding, lwd, ellipsis, debug) = style
 
 	svg_out = ""
@@ -359,8 +361,9 @@ def render_procedure(period, caption, xoffset, yoffset, lineheight, metrics, sty
 
 
 def render_dose_graph(period, caption, xoffset, yoffset, lineheight, metrics, style, first_pass=True):
+	"""render dose over time for administration. Output is [svg_output, height]"""
 
-	(daywidth_function, textwidth_function, textheight_function, ypadding) = metrics
+	(daywidth_function, textwidth_function, textheight_function) = metrics
 	(periodspacing, lineheight, ypadding, lwd, ellipsis, debug) = style
 
 	svg_out = ""
@@ -371,8 +374,7 @@ def render_dose_graph(period, caption, xoffset, yoffset, lineheight, metrics, st
 	endx = period_day_ends(period, xoffset, daywidth_function)
 	doses = [i for i in extract_doses(period, caption)]
 
-	maxdose = max(doses)
-	mindose = min(doses)
+	maxdose, mindose = max(doses), min(doses)
 
 	def dosey(dose):
 		return(yoffset + lineheight*0.6 - (dose-mindose)/(maxdose-mindose)*lineheight*0.6)
@@ -395,8 +397,9 @@ def render_dose_graph(period, caption, xoffset, yoffset, lineheight, metrics, st
 
 
 def render_interval(period, caption, xoffset, yoffset, lineheight, metrics, style, first_pass=True):
+	"""render interval for procedure. Output is [svg_output, height]"""
 
-	(daywidth_function, textwidth_function, textheight_function, ypadding) = metrics
+	(daywidth_function, textwidth_function, textheight_function) = metrics
 	(periodspacing, lineheight, ypadding, lwd, ellipsis, debug) = style
 
 	svg_out = ""
@@ -432,8 +435,9 @@ def render_interval(period, caption, xoffset, yoffset, lineheight, metrics, styl
 
 
 def render_times(period, caption, xoffset, yoffset, lineheight, metrics, style, maxwidth=100):
+	"""render timescale for procedure. Output is [svg_output, height]"""
 
-	(daywidth_function, textwidth_function, textheight_function, ypadding) = metrics
+	(daywidth_function, textwidth_function, textheight_function) = metrics
 	(periodspacing, lineheight, ypadding, lwd, ellipsis, debug) = style
 
 	out = ""
@@ -538,11 +542,10 @@ def main(file, debug, fontsize, font, condensed, timescale, padding, ellipsis):
 	"""Clinical Trial design visualization
 
 
-	Schedule of assessments to be provided in json-formatted input FILE (see examples for guidance). Graphical output in svg vector format. Use below OPTIONS to manage output style.
+	Generates a 'schedule of assessments' overview figure based on a json-formatted input FILE (see examples for guidance). Graphical output is provided in svg vector format that can be rendered by any webbrowser or directly imported into Office applications. Use below OPTIONS to manage the output style.
 	
 
-	Version 2.0 (Dec-2021), Rainer Strotmann,
-	proudly written in functional Python."""
+	Version 2.0 (Dec-2021),	proudly written in functional Python by Rainer Strotmann"""
 
 	debug = debug
 	infile = pathlib.Path(file)
@@ -598,7 +601,7 @@ def main(file, debug, fontsize, font, condensed, timescale, padding, ellipsis):
 
 	daywidth_function = make_daywidth_function(textwidth_function, condensed)
 
-	metrics = (daywidth_function, textwidth_function, textheight_function, ypadding)
+	metrics = (daywidth_function, textwidth_function, textheight_function)
 
 	periodspacing = textwidth_function("XX")
 	lineheight = textheight_function("X") * 2
@@ -635,6 +638,9 @@ def main(file, debug, fontsize, font, condensed, timescale, padding, ellipsis):
 			x = xoffset
 			for p in periods:
 				if has_timescale(p, n):
+					# print(f'period {p["caption"]}, proc {n} has timescale')
+					# temp = unnormalize_procedure(normalize_procedure(extract_procedure(p, n)))
+					# print(temp)
 					ts = True
 					break
 				x += period_width(p, daywidth_function)
@@ -645,7 +651,7 @@ def main(file, debug, fontsize, font, condensed, timescale, padding, ellipsis):
 	# re-calculate image dimensions, finalize svg
 	viewport_width = xoffset + sum([period_width(i, daywidth_function) for i in periods]) + (len(periods)) * periodspacing
 	viewport_height = out[1]
-	
+
 	svg_out = f'<svg width="{viewport_width}" height="{viewport_height}" xmlns="http://www.w3.org/2000/svg">\n<style>text {{font-family: {font}; font-size: {fontsize}px ;}}</style>\n<desc>Trial design autogenerated by td.py V2.0 (Dec-2021), author: Rainer Strotmann</desc><title>{infile.stem}</title>' + out[0]
 	svg_out += f'</svg>'
 
