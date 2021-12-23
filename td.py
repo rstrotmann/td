@@ -6,10 +6,46 @@ import cairo
 import json
 import math
 import re
+import sys
+
+
+def assert_period_format(period):
+	try:
+		assert "caption" in period.keys()
+		assert "start" in period.keys() and type(period["start"])==int
+		assert "length" in period.keys() and type(period["length"])==int
+	except:
+		raise TypeError(f'Minimum required fields: Caption start and length')
+	try:
+		assert period["length"] >= 1
+	except:
+		raise TypeError(f'Length must be at least 1 day')
+
+
+def assert_procedure_format(procedure):
+	try:
+		assert "caption" in procedure.keys()
+		assert "days" in procedure.keys()
+	except:
+		raise TypeError(f'Minimum required fields: Caption and days')
+
+
+def assert_interval_format(interval):
+	try:
+		assert "caption" in interval.keys()
+		assert "start" in interval.keys()
+	except:
+		raise TypeError(f'Minimum required fields: Caption, start and duration')
+	try:
+		assert "duration" in interval.keys() and interval["duration"]>0
+	except:
+		raise IndexError(f'duration must be positive number')
 
 
 def decode_daylist(daylist):
 	days = []
+	if not isinstance(daylist, list):
+		daylist = [daylist]
 	for i in daylist:
 		if isinstance(i, int):
 			days.append(i)
@@ -147,6 +183,8 @@ def day_index(period, day):
 	temp = day - period['start']
 	if period['start'] < 0 and day > 0:
 		temp -= 1
+	if temp <0 or temp>period["length"]-1:
+		raise IndexError(f'day index {day} out of range ({period["start"]} to {period["start"]+period["length"]})')
 	return(temp)
 
 
@@ -161,8 +199,12 @@ def day_labels(period):
 def day_shadings(period):
 	temp = [False] * period['length']
 	if "dayshading" in period.keys():
-		for i in decode_daylist(period['dayshading'])	:
-			temp[day_index(period, i)] = True
+		for i in decode_daylist(period['dayshading']):
+			idx = day_index(period, i)
+			# if idx<0 or idx>len(temp)-1:
+			# 	raise IndexError(f'day shading ({i}) out of range in period {period["caption"]}')
+			# else:
+			temp[idx] = True
 	return(temp)
 
 
@@ -417,10 +459,15 @@ def render_interval(period, caption, xoffset, yoffset, lineheight, metrics, styl
 	height = 0.4 * lineheight
 	if 'intervals' in period.keys():
 		for intv in period['intervals']:
+			try:
+				assert_interval_format(intv)
+			except Exception as err:
+				raise TypeError(f'{period["caption"]}, interval "{intv["caption"]}": {err}')
 			if intv['caption'] == caption:
 				start, duration = intv['start'], intv['duration']
 				startx = starts[day_index(period, start)]
 				end = start + duration -1
+
 				if start <0 and end >0:
 					end += 1
 				endx = ends[day_index(period, end)]
@@ -475,6 +522,8 @@ def render_times(period, caption, xoffset, yoffset, lineheight, metrics, style, 
 				out += svg_line(xi, y-height/2, xi, y+height/2, lwd=lwd)
 				dxi = wi/2
 				if xi-dxi > last_label_end:
+					# if i == scale_labels[-1]:
+					# 	i = str(i) + " h"
 					out += svg_text(xi-dxi, y+height/2+textheight_function("X")+ypadding, str(i))
 					last_label_end = xi+dxi+textwidth_function(".")
 			return(out)
@@ -531,14 +580,17 @@ CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
 
 @click.command(context_settings=CONTEXT_SETTINGS)
 @click.argument("file")
+@click.option("--output", "-o", type=str, default="", help='Output file name. Default: INPUT.svg')
 @click.option("--fontsize", "-s", type=int, default=14, help='Output font size (default 11)')
 @click.option("--font", "-f", type=str, default="Arial", help='Output font type (default: Arial)')
 @click.option("--padding", "-p", type=float, default=1, help='Y-axis padding factor (default 1)')
 @click.option("--condensed", "-c", is_flag=True, help='Show condensed daygrid')
 @click.option("--timescale", "-t", is_flag=True, help='Show time scale')
+@click.option("--graph", "-g", is_flag=True, help='Show dose graph')
 @click.option("--ellipsis", "-e", is_flag=True, help='Reduce symbols in condensed output')
+@click.option("--all", "-A", is_flag=True, help='All options, equivalent to -ctge')
 @click.option("--debug", "-d", is_flag=True, help='Debug output')
-def main(file, debug, fontsize, font, condensed, timescale, padding, ellipsis):
+def main(file, debug, fontsize, output, font, condensed, timescale, padding, ellipsis, graph, all):
 	"""Clinical Trial design visualization
 
 
@@ -547,10 +599,18 @@ def main(file, debug, fontsize, font, condensed, timescale, padding, ellipsis):
 
 	Version 2.0 (Dec-2021),	proudly written in functional Python by Rainer Strotmann"""
 
-	debug = debug
+	if all:
+		condensed=True
+		timescale=True
+		graph=True
+		ellipsis=True
+
 	infile = pathlib.Path(file)
 	inpath = pathlib.Path(file).resolve().parent
-	outfile = inpath.joinpath(infile.stem + ".svg")
+	if output:
+		outfile = inpath.joinpath(output)
+	else:
+		outfile = inpath.joinpath(infile.stem + ".svg")
 
 	ypadding = fontsize/1.8 * padding
 
@@ -558,18 +618,33 @@ def main(file, debug, fontsize, font, condensed, timescale, padding, ellipsis):
 	canvas.select_font_face("Arial", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
 	canvas.set_font_size(fontsize)
 
-	if not file:
+	try:
+		with open(infile) as f:
+			td = json.load(f)
+	except json.decoder.JSONDecodeError as err:
+		print(f'Json syntax error in input file {infile}:\n{err}')
 		sys.exit()
-	with open(infile) as f:
-		td = json.load(f)
+	except:
+		print("Error loading input file")
+		sys.exit()
+
 	periods = []
 
 	if "periods" in td.keys():
 		for p in td["periods"]:
+			try:
+				assert_period_format(p)
+			except TypeError as err:
+				print(f'Syntax error in period {p["caption"]}: {err}')
 			periods.append(p)
+
 	if "cycles" in td.keys():
 		for c in td["cycles"]:
 			c["start"] = 1
+			try:
+				assert_period_format(c)
+			except TypeError as err:
+				print(f'Syntax error in cycle {p["caption"]}: {err}')
 			periods.append(c)
 
 	def make_textwidth(canvas):
@@ -617,17 +692,24 @@ def main(file, debug, fontsize, font, condensed, timescale, padding, ellipsis):
 	# render header
 	out = add_output(out, render_periods(periods, xoffset, out[1], "", lineheight, render_periodcaption, metrics, style))
 
-	out = add_output(out, render_periods(periods, xoffset, out[1], "", lineheight, render_daygrid, metrics, style, dashes=True))
+	try:
+		out = add_output(out, render_periods(periods, xoffset, out[1], "", lineheight, render_daygrid, metrics, style, dashes=True))
+	except Exception as err:
+		print(f'error rendering daygrid: {err}')
 
 	# render intervals, administrations, procedures
 	for n in item_names(td, 'intervals'):
-		out = add_output(out, render_periods(periods, xoffset, out[1], n, lineheight, render_interval, metrics, style))
+		try:
+			out = add_output(out, render_periods(periods, xoffset, out[1], n, lineheight, render_interval, metrics, style))
+		except Exception as err:
+			raise IndexError(f'error rendering intervals: {err}')
 
 	for n in item_names(td, 'administrations'):
 		out = add_output(out, render_periods(periods, xoffset, out[1], n, lineheight, render_procedure, metrics, style, default_symbol="arrow"))
 
-		if [i for p in periods for i in extract_doses(p, n) if i != ""]:
-			out = add_output(out, render_periods(periods, xoffset, out[1], n, lineheight, render_dose_graph, metrics, style))
+		if graph:
+			if [i for p in periods for i in extract_doses(p, n) if i != ""]:
+				out = add_output(out, render_periods(periods, xoffset, out[1], n, lineheight, render_dose_graph, metrics, style))
 
 	for n in item_names(td, 'procedures'):
 		out = add_output(out, render_periods(periods, xoffset, out[1], n, lineheight, render_procedure, metrics, style, default_symbol="diamond"))
@@ -638,9 +720,6 @@ def main(file, debug, fontsize, font, condensed, timescale, padding, ellipsis):
 			x = xoffset
 			for p in periods:
 				if has_timescale(p, n):
-					# print(f'period {p["caption"]}, proc {n} has timescale')
-					# temp = unnormalize_procedure(normalize_procedure(extract_procedure(p, n)))
-					# print(temp)
 					ts = True
 					break
 				x += period_width(p, daywidth_function)

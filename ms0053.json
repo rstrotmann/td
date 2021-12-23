@@ -1,10 +1,9 @@
 {
 	"periods": [
 		{
-			"caption": "S",
+			"caption": 1,
 			"length": 1,
-			"start": 1,
-			"daylabels": []
+			"start": 1
 		},
 		{
 			"caption": "Period 1",
