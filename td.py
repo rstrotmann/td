@@ -15,7 +15,7 @@ def assert_period_format(period):
 		assert "start" in period.keys() and type(period["start"])==int
 		assert "length" in period.keys() and type(period["length"])==int
 	except:
-		raise TypeError(f'Minimum required fields: Caption start and length')
+		raise TypeError(f'Period/cycle format error: Minimum required fields: Caption start and length')
 	try:
 		assert period["length"] >= 1
 	except:
@@ -27,7 +27,7 @@ def assert_procedure_format(procedure):
 		assert "caption" in procedure.keys()
 		assert "days" in procedure.keys()
 	except:
-		raise TypeError(f'Minimum required fields: Caption and days')
+		raise TypeError(f'Procedure error in {procedure}: Minimum required fields are caption and days')
 
 
 def assert_interval_format(interval):
@@ -35,7 +35,7 @@ def assert_interval_format(interval):
 		assert "caption" in interval.keys()
 		assert "start" in interval.keys()
 	except:
-		raise TypeError(f'Minimum required fields: Caption, start and duration')
+		raise TypeError(f'Interval error in {interval}: Minimum required fields are caption, start and duration')
 	try:
 		assert "duration" in interval.keys() and interval["duration"]>0
 	except:
@@ -201,9 +201,6 @@ def day_shadings(period):
 	if "dayshading" in period.keys():
 		for i in decode_daylist(period['dayshading']):
 			idx = day_index(period, i)
-			# if idx<0 or idx>len(temp)-1:
-			# 	raise IndexError(f'day shading ({i}) out of range in period {period["caption"]}')
-			# else:
 			temp[idx] = True
 	return(temp)
 
@@ -380,7 +377,7 @@ def render_procedure(period, caption, xoffset, yoffset, lineheight, metrics, sty
 
 	y = yoffset + lineheight/2 # center of the line
 	if first_pass:
-		svg_out += svg_text(5, y + textheight_function(caption) * (1/2 - 0.1), caption)
+		svg_out += svg_text(5, y + textheight_function(caption) * (1/2 - 0.1), caption)	
 
 	centers = period_day_centers(period, xoffset, daywidth_function)
 	widths = daywidth_function(period)
@@ -522,8 +519,6 @@ def render_times(period, caption, xoffset, yoffset, lineheight, metrics, style, 
 				out += svg_line(xi, y-height/2, xi, y+height/2, lwd=lwd)
 				dxi = wi/2
 				if xi-dxi > last_label_end:
-					# if i == scale_labels[-1]:
-					# 	i = str(i) + " h"
 					out += svg_text(xi-dxi, y+height/2+textheight_function("X")+ypadding, str(i))
 					last_label_end = xi+dxi+textwidth_function(".")
 			return(out)
@@ -605,19 +600,15 @@ def main(file, debug, fontsize, output, font, condensed, timescale, padding, ell
 		graph=True
 		ellipsis=True
 
+	ypadding = fontsize/1.8 * padding
+
+	# read input file
 	infile = pathlib.Path(file)
 	inpath = pathlib.Path(file).resolve().parent
 	if output:
 		outfile = inpath.joinpath(output)
 	else:
 		outfile = inpath.joinpath(infile.stem + ".svg")
-
-	ypadding = fontsize/1.8 * padding
-
-	canvas = cairo.Context(cairo.SVGSurface("temp.svg", 10, 10))
-	canvas.select_font_face("Arial", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
-	canvas.set_font_size(fontsize)
-
 	try:
 		with open(infile) as f:
 			td = json.load(f)
@@ -628,24 +619,37 @@ def main(file, debug, fontsize, output, font, condensed, timescale, padding, ell
 		print("Error loading input file")
 		sys.exit()
 
+	# parse input file
+	## read periods
 	periods = []
+	try:
+		for period_class in ["periods", "cycles"]:
+			if period_class in td.keys():
+				for p in td[period_class]:
+					assert_period_format(p)
+					periods.append(p)
+		if not len(periods):
+			raise KeyError("no period or cycle found in trial design")
+	except Exception as err:
+		print(err)
+		sys.exit()
 
-	if "periods" in td.keys():
-		for p in td["periods"]:
-			try:
-				assert_period_format(p)
-			except TypeError as err:
-				print(f'Syntax error in period {p["caption"]}: {err}')
-			periods.append(p)
+	## parse procedures
+	try:
+		for p in periods:
+			for (n, assert_func) in [("intervals", assert_interval_format), ("administrations", assert_procedure_format), ("procedures", assert_procedure_format)]:
+				if n in p.keys():
+					for i in p[n]:
+						# print(i["caption"])
+						assert_func(i)
+	except Exception as err:
+		print(err)
+		sys.exit()
 
-	if "cycles" in td.keys():
-		for c in td["cycles"]:
-			c["start"] = 1
-			try:
-				assert_period_format(c)
-			except TypeError as err:
-				print(f'Syntax error in cycle {p["caption"]}: {err}')
-			periods.append(c)
+	# make metrics
+	canvas = cairo.Context(cairo.SVGSurface("temp.svg", 10, 10))
+	canvas.select_font_face("Arial", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
+	canvas.set_font_size(fontsize)
 
 	def make_textwidth(canvas):
 		def textwidth_function(text):
@@ -675,15 +679,14 @@ def main(file, debug, fontsize, output, font, condensed, timescale, padding, ell
 		return(daywidth_function)
 
 	daywidth_function = make_daywidth_function(textwidth_function, condensed)
-
 	metrics = (daywidth_function, textwidth_function, textheight_function)
 
+	# make style
 	periodspacing = textwidth_function("XX")
 	lineheight = textheight_function("X") * 2
 	xoffset = max([textwidth_function(i) for i in item_names(td, 'procedures') + item_names(td, 'intervals') + item_names(td, 'admininstrations')]) + 30
 	yoffset = 10
 	lwd = fontsize/10
-
 	style = (periodspacing, lineheight, ypadding, lwd, ellipsis, debug)
 
 	## rendering:
@@ -696,6 +699,7 @@ def main(file, debug, fontsize, output, font, condensed, timescale, padding, ell
 		out = add_output(out, render_periods(periods, xoffset, out[1], "", lineheight, render_daygrid, metrics, style, dashes=True))
 	except Exception as err:
 		print(f'error rendering daygrid: {err}')
+		sys.exit()
 
 	# render intervals, administrations, procedures
 	for n in item_names(td, 'intervals'):
