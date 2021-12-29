@@ -133,36 +133,40 @@ def has_timescale(period, caption):
 	return(temp)
 
 
-def extract_decorations(period, caption):
+def _extract(period, caption, function):
 	temp = [""] * period['length']
 	for x in ['procedures', 'administrations']:
 		if x in period.keys():
 			for proc in period[x]:
 				if proc['caption'] == caption:
-					if 'decoration' in proc.keys():
-						deco = proc['decoration']
-					else:
-						deco = ""
-					dd = [(d, deco) for d in decode_daylist(proc['days'])]
-					for (day, dec) in dd:
-						temp[day_index(period, day)] = dec
+					temp = function(proc, temp)
 	return(temp)
+
+
+def extract_decorations(period, caption):
+	def f(proc, temp):
+		if 'decoration' in proc.keys():
+			deco = proc['decoration']
+		else:
+			deco = ""
+		dd = [(d, deco) for d in decode_daylist(proc['days'])]
+		for (day, dec) in dd:
+			temp[day_index(period, day)] = dec
+		return(temp)
+	return(_extract(period, caption, f))
 
 
 def extract_doses(period, caption):
-	temp = [""] * period['length']
-	for x in ['procedures', 'administrations']:
-		if x in period.keys():
-			for proc in period[x]:
-				if proc['caption'] == caption:
-					if 'dose' in proc.keys():
-						dose = proc['dose']
-					else:
-						dose = ""
-					dd = [(d, dose) for d in decode_daylist(proc['days'])]
-					for (day, dec) in dd:
-						temp[day_index(period, day)] = dec
-	return(temp)
+	def f(proc, temp):
+		if 'dose' in proc.keys():
+			dose = proc['dose']
+		else:
+			dose = ""
+		dd = [(d, dose) for d in decode_daylist(proc['days'])]
+		for (day, dec) in dd:
+			temp[day_index(period, day)] = dec
+		return(temp)
+	return(_extract(period, caption, f))
 
 
 def extract_interval(period, caption):

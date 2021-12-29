@@ -2,6 +2,7 @@
 	"periods": [
 		{
 			"caption": "S",
+			"start": 1,
 			"length": 1,
 			"daylabels": []
 		},
