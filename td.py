@@ -416,13 +416,12 @@ def render_dose_graph(period, caption, xoffset, yoffset, lineheight, metrics, st
 	startx = period_day_starts(period, xoffset, daywidth_function)
 	endx = period_day_ends(period, xoffset, daywidth_function)
 	doses = [i for i in extract_doses(period, caption)]
-
-	maxdose, mindose = max(doses), min(doses)
-
-	def dosey(dose):
-		return(yoffset + lineheight*0.6 - (dose-mindose)/(maxdose-mindose)*lineheight*0.6)
-
-	if doses:
+	doses_num = [i for i in doses if isinstance(i, int) or isinstance(i, float)]
+	if len(doses_num):
+		maxdose, mindose = max(doses_num), min(doses_num)
+		def dosey(dose):
+			return(yoffset + lineheight*0.6 - (dose-mindose)/(maxdose-mindose)*lineheight*0.6)
+		# if doses:
 		lastx, lasty, lastdose = 0, 0, 0
 		lastend = 0
 		for (s, e, d) in zip(startx, endx, doses):
