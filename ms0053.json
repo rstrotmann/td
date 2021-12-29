@@ -2,12 +2,12 @@
 	"periods": [
 		{
 			"caption": 1,
-			"length": 1,
+			"duration": 1,
 			"start": 1
 		},
 		{
 			"caption": "Period 1",
-			"length": 8,
+			"duration": 8,
 			"start": -1,
 			"daylabels": [-1, 1, 4, 7],
 			"dayshading": [1],
@@ -64,7 +64,7 @@
 		},
 		{
 			"caption": "Period 2",
-			"length": 12,
+			"duration": 12,
 			"start": 8,
 			"daylabels": [8, 11, "12-15", 18, 19],
 			"dayshading": [8, 15],
@@ -110,7 +110,7 @@
 		},
 		{
 			"caption": "F/U",
-			"length": 1,
+			"duration": 1,
 			"start": 20,
 			"daylabels": [20]
 		}

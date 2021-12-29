@@ -3,7 +3,7 @@
 		{
 			"name": "MS200095-0022",	
 			"caption": "S",
-			"length": 1,
+			"duration": 1,
 			"procedures": [
 				{
 					"caption": "RECIST",
@@ -13,7 +13,7 @@
 		},
 		{
 			"caption": "Cycle 1",
-			"length": 21,
+			"duration": 21,
 			"daylabels": [1, 21],
 			"dayshading": [1, 8, 15],
 			"administrations": [
@@ -48,7 +48,7 @@
 		},
 		{
 			"caption": "Cycle 2",
-			"length": 21,
+			"duration": 21,
 			"daylabels": [1, 21],
 			"dayshading": [1, 8, 15],
 			"administrations": [
@@ -78,7 +78,7 @@
 		},
 		{
 			"caption": "Cycles 3, 5, 7, etc.",
-			"length": 21,
+			"duration": 21,
 			"daylabels": [1, 21],
 			"dayshading": [1, 8, 15],
 			"decoration": "bracketed",
@@ -111,7 +111,7 @@
 		},
 		{
 			"caption": "Cycles 4, 6, 8, etc.",
-			"length": 21,
+			"duration": 21,
 			"daylabels": [1, 21],
 			"dayshading": [1, 8, 15],
 			"administrations": [
@@ -135,7 +135,7 @@
 		},
 		{
 			"caption": "EOT",
-			"length": 1,
+			"duration": 1,
 			"procedures": [
 				{
 					"caption": "RECIST",

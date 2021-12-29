@@ -12,14 +12,14 @@ import sys
 def assert_period_format(period):
 	try:
 		assert "caption" in period.keys()
-		assert "start" in period.keys() and type(period["start"])==int
-		assert "length" in period.keys() and type(period["length"])==int
+		# assert "start" in period.keys() and type(period["start"])==int
+		assert "duration" in period.keys() and type(period["duration"])==int
 	except:
-		raise TypeError(f'Period/cycle format error: Minimum required fields: Caption start and length')
+		raise TypeError(f'Period/cycle format error: Minimum required fields: Caption and duration')
 	try:
-		assert period["length"] >= 1
+		assert period["duration"] >= 1
 	except:
-		raise TypeError(f'Length must be at least 1 day')
+		raise TypeError(f'duration must be at least 1 day')
 
 
 def assert_procedure_format(procedure):
@@ -134,7 +134,7 @@ def has_timescale(period, caption):
 
 
 def _extract(period, caption, function):
-	temp = [""] * period['length']
+	temp = [""] * period['duration']
 	for x in ['procedures', 'administrations']:
 		if x in period.keys():
 			for proc in period[x]:
@@ -187,13 +187,13 @@ def day_index(period, day):
 	temp = day - period['start']
 	if period['start'] < 0 and day > 0:
 		temp -= 1
-	if temp <0 or temp>period["length"]-1:
-		raise IndexError(f'day index {day} out of range ({period["start"]} to {period["start"]+period["length"]})')
+	if temp <0 or temp>period["duration"]-1:
+		raise IndexError(f'day index {day} out of range ({period["start"]} to {period["start"]+period["duration"]})')
 	return(temp)
 
 
 def day_labels(period):
-	temp = [""] * period['length']
+	temp = [""] * period['duration']
 	if "daylabels" in period.keys():
 		for i in decode_daylist(period['daylabels']):
 			temp[day_index(period, i)] = i
@@ -201,7 +201,7 @@ def day_labels(period):
 
 
 def day_shadings(period):
-	temp = [False] * period['length']
+	temp = [False] * period['duration']
 	if "dayshading" in period.keys():
 		for i in decode_daylist(period['dayshading']):
 			idx = day_index(period, i)
@@ -288,7 +288,7 @@ def svg_curly_up(xstart, xend, y, radius=8, lwd=1.2):
 
 
 def procedure_symbols(period, caption, default="diamond"):
-	out = [""] * (period['length']+1)
+	out = [""] * (period['duration']+1)
 	for (d, t, rel) in normalize_procedure(extract_procedure(period, caption)):
 		if len(t) > 1:
 			symbol = "block"
@@ -630,6 +630,8 @@ def main(file, debug, fontsize, output, font, condensed, timescale, padding, ell
 		for period_class in ["periods", "cycles"]:
 			if period_class in td.keys():
 				for p in td[period_class]:
+					if period_class == "cycles" and not "start" in p.keys():
+						p["start"] = 1
 					assert_period_format(p)
 					periods.append(p)
 		if not len(periods):
@@ -679,7 +681,7 @@ def main(file, debug, fontsize, output, font, condensed, timescale, padding, ell
 				return(temp)
 		else:
 			def daywidth_function(period):
-				return([textwidth_function("XX")] * period['length'])
+				return([textwidth_function("XX")] * period['duration'])
 		return(daywidth_function)
 
 	daywidth_function = make_daywidth_function(textwidth_function, condensed)

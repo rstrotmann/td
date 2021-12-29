@@ -3,12 +3,12 @@
 		{
 			"caption": "S",
 			"start": 1,
-			"length": 1,
+			"duration": 1,
 			"daylabels": []
 		},
 		{
 			"caption": "Period 1",
-			"length": 9,
+			"duration": 9,
 			"start": -1,
 			"daylabels": [-1, "1-4", 8],
 			"dayshading": [1, 8],
@@ -47,7 +47,7 @@
 		},
 		{
 			"caption": "Period 2",
-			"length": 9,
+			"duration": 9,
 			"start": -1,
 			"daylabels": [-1, "1-4", 8],
 			"dayshading": [1, 8],

@@ -2,7 +2,7 @@
 	"periods": [
 		{
 			"caption": "S",
-			"length": 1,
+			"duration": 1,
 			"start": 1,
 			"daylabels": [],
 			"procedures": [
@@ -18,7 +18,7 @@
 		},
 		{
 			"caption": "Intervention Period",
-			"length": 14,
+			"duration": 14,
 			"start": -1,
 			"daylabels": [-1, "1-4", "10-13"],
 			"dayshading": [1],

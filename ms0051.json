@@ -3,13 +3,13 @@
 		{
 			"name": "MS200095-0051",
 			"caption": "S",
-			"length": 1,
+			"duration": 1,
 			"start": 1,
 			"daylabels": []
 		},
 		{
 			"caption": "Period 1",
-			"length": 8,
+			"duration": 8,
 			"start": -1,
 			"daylabels": [-1, "1-7"],
 			"dayshading": [1],
@@ -43,7 +43,7 @@
 		},
 		{
 			"caption": "Period 2",
-			"length": 25,
+			"duration": 25,
 			"start": 8,
 			"daylabels": ["8-12", 15, 22, "25-32"],
 			"dayshading": [8, 15, 22, 29],
@@ -103,7 +103,7 @@
 		},
 		{
 			"caption": "F/U",
-			"length": 1,
+			"duration": 1,
 			"start": 39,
 			"daylabels": [39]
 		}

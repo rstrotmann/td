@@ -2,13 +2,13 @@
 	"periods": [
 		{
 			"caption": "S",
-			"length": 1,
+			"duration": 1,
 			"start": 1,
 			"daylabels": []
 		},
 		{
 			"caption": "Treatment A",
-			"length": 7,
+			"duration": 7,
 			"start": 1,
 			"daylabels": [1, 2, 3, 7],
 			"dayshading": [1],
@@ -48,7 +48,7 @@
 		},
 		{
 			"caption": "Treatment B",
-			"length": 11,
+			"duration": 11,
 			"start": 1,
 			"daylabels": [1, 5, 6, 7, 8, 11],
 			"dayshading": [1, 8],
@@ -92,7 +92,7 @@
 		},
 		{
 			"caption": "Treatment C",
-			"length": 11,
+			"duration": 11,
 			"start": 1,
 			"daylabels": [1, 5, 6, 7, 8, 11],
 			"dayshading": [1, 8],

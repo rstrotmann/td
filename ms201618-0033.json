@@ -3,12 +3,12 @@
 		{
 			"caption": "S",
 			"start": 1,
-			"length": 1,
+			"duration": 1,
 			"daylabels": []
 		},
 		{
 			"caption": "Treatment phase",
-			"length": 29,
+			"duration": 29,
 			"start": 1,
 			"daylabels": ["1-8", 15, 22, 29],
 			"dayshading": [1, 8, 15, 22, 29],
@@ -90,7 +90,7 @@
 		},
 		{
 			"caption": "F/U",
-			"length": 1,
+			"duration": 1,
 			"start": 43,
 			"daylabels": [43],
 			"procedures": [

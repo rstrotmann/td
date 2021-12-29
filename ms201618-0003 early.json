@@ -2,13 +2,13 @@
 	"periods": [
 		{
 			"caption": "S",
-			"length": 1,
+			"duration": 1,
 			"start": 1,
 			"daylabels": []
 		},
 		{
 			"caption": "Treatment phase",
-			"length": 29,
+			"duration": 29,
 			"start": -1,
 			"daylabels": [-1, 1, 2, 8, 15, 22, 28],
 			"intervals": [
@@ -51,7 +51,7 @@
 		},
 		{
 			"caption": "F/U",
-			"length": 1,
+			"duration": 1,
 			"start": 33,
 			"daylabels": [33],
 			"procedures": [
