@@ -133,40 +133,42 @@ def has_timescale(period, caption):
 	return(temp)
 
 
-def _extract(period, caption, function):
+# def _extract(period, caption, function):
+# 	temp = [""] * period['duration']
+# 	for x in ['procedures', 'administrations']:
+# 		if x in period.keys():
+# 			for proc in period[x]:
+# 				if proc['caption'] == caption:
+# 					temp = function(proc, temp)
+# 	return(temp)
+
+
+def _extract_field(period, caption, field):
 	temp = [""] * period['duration']
 	for x in ['procedures', 'administrations']:
 		if x in period.keys():
 			for proc in period[x]:
 				if proc['caption'] == caption:
-					temp = function(proc, temp)
+					if field in proc.keys():
+						val = proc[field]
+					else:
+						val = ""
+					dd = [(d, val) for d in decode_daylist(proc['days'])]
+					for (day, val) in dd:
+						temp[day_index(period, day)] = val
 	return(temp)
 
 
 def extract_decorations(period, caption):
-	def f(proc, temp):
-		if 'decoration' in proc.keys():
-			deco = proc['decoration']
-		else:
-			deco = ""
-		dd = [(d, deco) for d in decode_daylist(proc['days'])]
-		for (day, dec) in dd:
-			temp[day_index(period, day)] = dec
-		return(temp)
-	return(_extract(period, caption, f))
+	return(_extract_field(period, caption, "decoration"))
 
 
 def extract_doses(period, caption):
-	def f(proc, temp):
-		if 'dose' in proc.keys():
-			dose = proc['dose']
-		else:
-			dose = ""
-		dd = [(d, dose) for d in decode_daylist(proc['days'])]
-		for (day, dec) in dd:
-			temp[day_index(period, day)] = dec
-		return(temp)
-	return(_extract(period, caption, f))
+	return(_extract_field(period, caption, "dose"))
+
+
+def extract_values(period, caption):
+	return(_extract_field(period, caption, "value"))
 
 
 def extract_interval(period, caption):
@@ -241,14 +243,16 @@ def svg_path(x, y, points, lwd=1, size=1, fill=False, dashed=False, fill_color="
 	return(out)	
 
 
-def svg_symbol(x, y, width, symbol, size=1, fill=False, fill_color="none", lwd=1.2, title=""):
+def svg_symbol(x, y, width, symbol, size=1, fill=False, fill_color="none", **kwargs):
 	if symbol == "diamond":
-		return svg_path(x, y, [(0,-0.5), (0.25, 0), (0, 0.5), (-0.25, 0)], size=size*1.4, lwd=lwd, fill=fill, title=title)
+		return svg_path(x, y, [(0,-0.5), (0.25, 0), (0, 0.5), (-0.25, 0)], size=size*1.4, fill=fill, fill_color=fill_color, **kwargs)
 	elif symbol == "block":
-		w = width/size/1.5*.6
-		return svg_path(x, y, [(w/-2, -.25), (w/2, -.25), (w/2, .25), (-w/2, .25)], size=size*1.5, lwd=lwd, fill=fill, title=title)
+		w = width/size/1.5*.7
+		return svg_path(x, y, [(w/-2, -.25), (w/2, -.25), (w/2, .25), (-w/2, .25)], size=size*1.5, fill=fill, fill_color=fill_color, **kwargs)
 	elif symbol == "arrow":
-		return svg_path(x, y, [(-0.03, -0.5), (0.03, -0.5), (0.03, 0), (0.1875, 0), (0.0, 0.5), (-0.1875, 0), (-0.03, 0)], size=size*1.2, lwd=lwd, fill=True, fill_color="black", title=title)
+		return svg_path(x, y, [(-0.03, -0.5), (0.03, -0.5), (0.03, 0), (0.1875, 0), (0.0, 0.5), (-0.1875, 0), (-0.03, 0)], size=size*1.2, fill=True, fill_color="black", **kwargs)
+	elif symbol == "circle":
+		return svg_circle(x, y, width/2*size, fill_color=fill_color, **kwargs)
 	return ""
 
 
@@ -289,6 +293,7 @@ def svg_curly_up(xstart, xend, y, radius=8, lwd=1.2):
 
 def procedure_symbols(period, caption, default="diamond"):
 	out = [""] * (period['duration']+1)
+	# print(f'proc_symbols: {normalize_procedure(extract_procedure(period, caption))}')
 	for (d, t, rel) in normalize_procedure(extract_procedure(period, caption)):
 		if len(t) > 1:
 			symbol = "block"
@@ -388,13 +393,19 @@ def render_procedure(period, caption, xoffset, yoffset, lineheight, metrics, sty
 	brackets = extract_decorations(period, caption)
 	symbols = procedure_symbols(period, caption, default_symbol)
 	dlabels = day_labels(period)
+	values = extract_values(period, caption)
 
 	ellipses = [1 if (s!="" and l == "" and len(symbols)>3) else 0 for (s,l) in zip(symbols, dlabels)]
 
-	for p, w, s, b, e in zip(centers, widths, symbols, brackets, ellipses):
+	for p, w, s, b, e, v in zip(centers, widths, symbols, brackets, ellipses, values):
 		if s:
 			if e==1 and b=="" and s=="arrow" and ellipsis:
 				svg_out += svg_circle(p, y, lineheight/30, fill_color="black")
+			elif v != "":
+				if v == 0:
+					svg_out += svg_symbol(p, y, w*.5, "circle", fill=False, fill_color="none")
+				else:
+					svg_out += svg_symbol(p, y, w*.5, "circle", fill=True, fill_color="black")
 			else:
 				svg_out += svg_symbol(p, y, w, s, size=textheight_function("X"), lwd=lwd, title=caption)
 				if b=="bracketed":
