@@ -143,7 +143,7 @@ def has_timescale(period, caption):
 # 	return(temp)
 
 
-def _extract_field(period, caption, field):
+def extract_field(period, caption, field):
 	temp = [""] * period['duration']
 	for x in ['procedures', 'administrations']:
 		if x in period.keys():
@@ -159,16 +159,16 @@ def _extract_field(period, caption, field):
 	return(temp)
 
 
-def extract_decorations(period, caption):
-	return(_extract_field(period, caption, "decoration"))
+# def extract_decorations(period, caption):
+# 	return(extract_field(period, caption, "decoration"))
 
 
-def extract_doses(period, caption):
-	return(_extract_field(period, caption, "dose"))
+# def extract_doses(period, caption):
+# 	return(extract_field(period, caption, "dose"))
 
 
-def extract_values(period, caption):
-	return(_extract_field(period, caption, "value"))
+# def extract_values(period, caption):
+# 	return(extract_field(period, caption, "value"))
 
 
 def extract_interval(period, caption):
@@ -390,10 +390,10 @@ def render_procedure(period, caption, xoffset, yoffset, lineheight, metrics, sty
 
 	centers = period_day_centers(period, xoffset, daywidth_function)
 	widths = daywidth_function(period)
-	brackets = extract_decorations(period, caption)
+	brackets = extract_field(period, caption, "decoration")
 	symbols = procedure_symbols(period, caption, default_symbol)
 	dlabels = day_labels(period)
-	values = extract_values(period, caption)
+	values = extract_field(period, caption, "value")
 
 	ellipses = [1 if (s!="" and l == "" and len(symbols)>3) else 0 for (s,l) in zip(symbols, dlabels)]
 
@@ -426,7 +426,7 @@ def render_dose_graph(period, caption, xoffset, yoffset, lineheight, metrics, st
 
 	startx = period_day_starts(period, xoffset, daywidth_function)
 	endx = period_day_ends(period, xoffset, daywidth_function)
-	doses = [i for i in extract_doses(period, caption)]
+	doses = [i for i in extract_field(period, caption, "dose")]
 	doses_num = [i for i in doses if isinstance(i, int) or isinstance(i, float)]
 	if len(doses_num):
 		maxdose, mindose = max(doses_num), min(doses_num)
@@ -499,61 +499,84 @@ def render_times(period, caption, xoffset, yoffset, lineheight, metrics, style, 
 	(periodspacing, lineheight, ypadding, lwd, ellipsis, debug) = style
 
 	out = ""
-	if debug:
-		out += render_dummy(period, xoffset, yoffset, lineheight*2 + ypadding*3 + lineheight/6 + textheight_function("X"), metrics)
-
 	proc = normalize_procedure(extract_procedure(period, caption))
-	if proc:
-		y = yoffset
-		times = unnormalize_procedure(proc)[0][1]
-		maxtime = max(times)
-		break_time = min(sorted(list([i for i in times if i<24]))[-1] + 2, 23)
-		times_below = len([i for i in times if i<=break_time])
-		times_above = len([i for i in times if i>break_time])
 
-		firstrel = proc[0][2]
-		startx = period_day_starts(period, xoffset, daywidth_function)[day_index(period, min([i for (i, t, rel) in proc if rel==firstrel]))]
-		endx = period_day_ends(period, xoffset, daywidth_function)[day_index(period, max([i for (i, t, rel) in proc if rel==firstrel]))]
+	ts_days = []
+	for x in ['procedures', 'administrations']:
+		if x in period.keys():
+			for p in period[x]:
+				if p['caption'] == caption:
+					if "timescale" in p.keys() and p["timescale"]=="show":
+						ts_days.append(p["relative"])
+	ts_days = set(ts_days)
 
-		bracketheight = lineheight * 2/3
-		out += svg_curly_up(startx, endx, y, radius=bracketheight/2, lwd=lwd)
-		y += lineheight*2 + ypadding*1.5
+	y = yoffset
+	bracketheight = lineheight * 2/3
 
-		scale_height = lineheight/3
-		scale_width = min(len(times) * textwidth_function("XX"), maxwidth-xoffset)
-		scale_break = scale_width * times_below/(times_below+times_above)
-		scale_gap = textwidth_function("m")
+	last_scale_end = 0
+	if ts_days:
+		## curly brackets
+		if debug:
+			out += render_dummy(period, xoffset, y, bracketheight, metrics)
+		for ts_d in ts_days:
+			times = unnormalize_procedure([i for i in proc if i[2]==ts_d])[0][1]
+			startx = period_day_starts(period, xoffset, daywidth_function)[day_index(period, min([i for (i, t, rel) in proc if rel==ts_d]))]
+			endx = period_day_ends(period, xoffset, daywidth_function)[day_index(period, max([i for (i, t, rel) in proc if rel==ts_d]))]
+			out += svg_curly_up(startx, endx, y, radius=bracketheight/2, lwd=lwd)			
+		y += bracketheight + ypadding*1.5
 
-		def render_scale(x, y, width, height, scale_min, scale_max, scale_labels):
-			out = svg_line(x, y, x+width, y, lwd=lwd)
-			label_widths = [textwidth_function(str(i)) for i in scale_labels]
-			last_label_end = 0
-			for i, wi in zip(scale_labels, label_widths):
-				xi = (i-scale_min) * width/(scale_max-scale_min) + x
-				out += svg_line(xi, y-height/2, xi, y+height/2, lwd=lwd)
-				dxi = wi/2
-				if xi-dxi > last_label_end:
-					out += svg_text(xi-dxi, y+height/2+textheight_function("X")+ypadding, str(i))
-					last_label_end = xi+dxi+textwidth_function(".")
-			return(out)
+		## timescales
+		if debug:
+			out += render_dummy(period, xoffset, y, lineheight*1.33 + ypadding*2 + textheight_function("X"), metrics)
+		for ts_d in ts_days:
+			times = unnormalize_procedure([i for i in proc if i[2]==ts_d])[0][1]
 
-		def render_points(x, y, width, scale_min, scale_max):
-			points = [t for t in times if t>=scale_min and t<=scale_max]
-			points_x = [(i-scale_min) * width/(scale_max-scale_min) + x for i in points]
-			out = ""
-			for p, xi in zip(points, points_x):
-				out += svg_symbol(xi, y - lineheight/2-ypadding/2, 0, "diamond", size=textheight_function("X"), lwd=lwd)
-			return(out)
+			maxtime = max(times)
+			break_time = min(sorted(list([i for i in times if i<24]))[-1] + 2, 23)
+			times_below = len([i for i in times if i<=break_time])
+			times_above = len([i for i in times if i>break_time])
 
-		scale_startx = xoffset
+			startx = period_day_starts(period, xoffset, daywidth_function)[day_index(period, min([i for (i, t, rel) in proc if rel==ts_d]))]
 
-		out += render_points(scale_startx, y, scale_break, 0, break_time)
-		out += render_points(scale_startx+scale_break+scale_gap, y, scale_width - scale_gap - scale_break, 24, max(maxtime, 36))
-		y += ypadding/2
+			### scale
+			scale_height = lineheight/3
+			scale_width = min(len(times) * textwidth_function("XX"), maxwidth-xoffset)
+			scale_break = scale_width * times_below/(times_below+times_above)
+			scale_gap = textwidth_function("m")
 
-		out += render_scale(scale_startx, y, scale_break, scale_height, 0, break_time, range(0, int(break_time), 2))
-		out += render_scale(scale_startx+scale_break+scale_gap, y, scale_width - scale_gap - scale_break, scale_height, 24, max(maxtime, 36), [i*24 for i in range(1, int(maxtime/24+1))])
-	return([out, lineheight*4 +ypadding])
+			scale_startx = max(min(startx, xoffset + period_width(period, daywidth_function) - scale_width), xoffset)
+			if scale_startx < last_scale_end:
+				y += lineheight*1.33 + ypadding*3 + textheight_function("X")
+
+			def render_scale(x, y, width, height, scale_min, scale_max, scale_labels):
+				out = svg_line(x, y, x+width, y, lwd=lwd)
+				label_widths = [textwidth_function(str(i)) for i in scale_labels]
+				last_label_end = 0
+				for i, wi in zip(scale_labels, label_widths):
+					xi = (i-scale_min) * width/(scale_max-scale_min) + x
+					out += svg_line(xi, y-height/2, xi, y+height/2, lwd=lwd)
+					dxi = wi/2
+					if xi-dxi > last_label_end:
+						out += svg_text(xi-dxi, y+height/2+textheight_function("X")+ypadding, str(i))
+						last_label_end = xi+dxi+textwidth_function(".")
+				return(out)
+
+			def render_points(x, y, width, scale_min, scale_max):
+				points = [t for t in times if t>=scale_min and t<=scale_max]
+				points_x = [(i-scale_min) * width/(scale_max-scale_min) + x for i in points]
+				out = ""
+				for p, xi in zip(points, points_x):
+					out += svg_symbol(xi, y + lineheight/2, 0, "diamond", size=textheight_function("X"), lwd=lwd)
+				return(out)
+
+			out += render_points(scale_startx, y, scale_break, 0, break_time)
+			out += render_points(scale_startx+scale_break+scale_gap, y, scale_width - scale_gap - scale_break, 24, max(maxtime, 36))
+
+			out += render_scale(scale_startx, y+lineheight+ypadding, scale_break, scale_height, 0, break_time, range(0, int(break_time), 2))
+			out += render_scale(scale_startx+scale_break+scale_gap, y+lineheight+ypadding, scale_width - scale_gap - scale_break, scale_height, 24, max(maxtime, 36), [i*24 for i in range(1, int(maxtime/24+1))])
+			last_scale_end = scale_startx + scale_width
+
+		return([out, y+lineheight*1.33 + ypadding*3 + textheight_function("X")-yoffset])
 
 
 def add_output(old, new):
@@ -728,7 +751,7 @@ def main(file, debug, fontsize, output, font, condensed, timescale, padding, ell
 		out = add_output(out, render_periods(periods, xoffset, out[1], n, lineheight, render_procedure, metrics, style, default_symbol="arrow"))
 
 		if graph:
-			if [i for p in periods for i in extract_doses(p, n) if i != ""]:
+			if [i for p in periods for i in extract_field(p, n, "dose") if i != ""]:
 				out = add_output(out, render_periods(periods, xoffset, out[1], n, lineheight, render_dose_graph, metrics, style))
 
 	for n in item_names(td, 'procedures'):

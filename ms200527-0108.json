@@ -1,0 +1,124 @@
+{
+	"periods": [
+		{
+			"caption": "S",
+			"duration": 1,
+			"start": 1,
+			"daylabels": [],
+			"procedures": [
+				{
+					"caption": "Safety lab",
+					"days": [1]
+				},
+				{
+					"caption": "ECG",
+					"days": [1]
+				}
+			]
+		},
+		{
+			"caption": "Intervention Period",
+			"duration": 26,
+			"start": -1,
+			"daylabels": [-1, "1-25"],
+			"dayshading": [1, 8, 15, 22],
+			"intervals": [
+				{
+					"caption": "hospitalization",
+					"start": -1,
+					"duration": 21
+				}
+			],
+			"administrations": [
+				{
+					"caption": "evobrutinib QD",
+					"days": [1, 19],
+					"freq": "QD"
+				},
+				{
+					"caption": "carbamazepine BID",
+					"days": [2, 3],
+					"freq": "BID",
+					"dose": 100
+				},
+				{
+					"caption": "carbamazepine BID",
+					"days": [4, 5],
+					"freq": "BID",
+					"dose": 200
+				},
+				{
+					"caption": "carbamazepine BID",
+					"days": ["6-19"],
+					"freq": "BID",
+					"dose": 300
+				},
+				{
+					"caption": "carbamazepine BID",
+					"days": ["20-22"],
+					"freq": "BID",
+					"dose": 200
+				},
+				{
+					"caption": "carbamazepine BID",
+					"days": ["23-25"],
+					"freq": "BID",
+					"dose": 100
+				}
+			],
+			"procedures": [
+				{
+					"caption": "Safety lab",
+					"days": [-1, "10-14", 18]
+				},
+				{
+					"caption": "ECG",
+					"days": [-1, "1-2", "18-20"]
+				},
+				{
+					"caption": "PK sampling carbamazepine",
+					"days": [19],
+					"times": [0, 1, 1.5, 2, 3, 4, 6, 8, 12],
+					"relative": 19,
+					"timescale": "hide"
+				},
+				{
+					"caption": "PK sampling carbamazepine",
+					"days": [18],
+					"times": [0],
+					"relative": 18
+				},
+				{
+					"caption": "PK sampling evobrutinib",
+					"days": [1],
+					"times": [0, 0.25, 0.5, 1, 1.5, 2, 2.5, 3, 4, 6, 8, 12, 16, 24],
+					"relative": 1,
+					"timescale": "show"
+				},
+				{
+					"caption": "PK sampling evobrutinib",
+					"days": [19],
+					"times": [0, 0.25, 0.5, 1, 1.5, 2, 2.5, 3, 4, 6, 8, 12, 16, 24],
+					"relative": 19,
+					"timescale": "hide"
+				}
+			]
+		},
+		{
+			"caption": "F/U",
+			"duration": 1,
+			"start": 26,
+			"daylabels": [26],
+			"procedures": [
+				{
+					"caption": "Safety lab",
+					"days": [26]
+				},
+				{
+					"caption": "ECG",
+					"days": [26]
+				}
+			]
+		}
+	]
+}
