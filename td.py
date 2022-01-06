@@ -12,7 +12,6 @@ import sys
 def assert_period_format(period):
 	try:
 		assert "caption" in period.keys()
-		# assert "start" in period.keys() and type(period["start"])==int
 		assert "duration" in period.keys() and type(period["duration"])==int
 	except:
 		raise TypeError(f'Period/cycle format error: Minimum required fields: Caption and duration')
@@ -133,16 +132,6 @@ def has_timescale(period, caption):
 	return(temp)
 
 
-# def _extract(period, caption, function):
-# 	temp = [""] * period['duration']
-# 	for x in ['procedures', 'administrations']:
-# 		if x in period.keys():
-# 			for proc in period[x]:
-# 				if proc['caption'] == caption:
-# 					temp = function(proc, temp)
-# 	return(temp)
-
-
 def extract_field(period, caption, field):
 	temp = [""] * period['duration']
 	for x in ['procedures', 'administrations']:
@@ -157,18 +146,6 @@ def extract_field(period, caption, field):
 					for (day, val) in dd:
 						temp[day_index(period, day)] = val
 	return(temp)
-
-
-# def extract_decorations(period, caption):
-# 	return(extract_field(period, caption, "decoration"))
-
-
-# def extract_doses(period, caption):
-# 	return(extract_field(period, caption, "dose"))
-
-
-# def extract_values(period, caption):
-# 	return(extract_field(period, caption, "value"))
 
 
 def extract_interval(period, caption):
@@ -293,7 +270,6 @@ def svg_curly_up(xstart, xend, y, radius=8, lwd=1.2):
 
 def procedure_symbols(period, caption, default="diamond"):
 	out = [""] * (period['duration']+1)
-	# print(f'proc_symbols: {normalize_procedure(extract_procedure(period, caption))}')
 	for (d, t, rel) in normalize_procedure(extract_procedure(period, caption)):
 		if len(t) > 1:
 			symbol = "block"
@@ -331,7 +307,7 @@ def period_day_ends(period, xoffset, daywidth_function):
 ####### functions that rely on the metrics
 
 def render_dummy(period, xoffset, yoffset, lineheight, metrics):
-	"""renders placeholder box for visual debugging purposes. Output is svg code only."""
+	"""render bounding box for visual debugging purposes. Output is svg code only."""
 	daywidth_function = metrics[0]
 	return(svg_rect(xoffset, yoffset, period_width(period, daywidth_function), lineheight, lwd=0, fill_color="cornsilk"))
 
@@ -376,7 +352,6 @@ def render_periodcaption(period, caption, xoffset, yoffset, height, metrics, sty
 
 def render_procedure(period, caption, xoffset, yoffset, lineheight, metrics, style, default_symbol="diamond", first_pass=True):
 	"""render procedure. Output is [svg_output, height]"""
-
 	(daywidth_function, textwidth_function, textheight_function) = metrics
 	(periodspacing, lineheight, ypadding, lwd, ellipsis, debug) = style
 
@@ -416,7 +391,6 @@ def render_procedure(period, caption, xoffset, yoffset, lineheight, metrics, sty
 
 def render_dose_graph(period, caption, xoffset, yoffset, lineheight, metrics, style, first_pass=True):
 	"""render dose over time for administration. Output is [svg_output, height]"""
-
 	(daywidth_function, textwidth_function, textheight_function) = metrics
 	(periodspacing, lineheight, ypadding, lwd, ellipsis, debug) = style
 
@@ -451,7 +425,6 @@ def render_dose_graph(period, caption, xoffset, yoffset, lineheight, metrics, st
 
 def render_interval(period, caption, xoffset, yoffset, lineheight, metrics, style, first_pass=True):
 	"""render interval for procedure. Output is [svg_output, height]"""
-
 	(daywidth_function, textwidth_function, textheight_function) = metrics
 	(periodspacing, lineheight, ypadding, lwd, ellipsis, debug) = style
 
@@ -494,7 +467,6 @@ def render_interval(period, caption, xoffset, yoffset, lineheight, metrics, styl
 
 def render_times(period, caption, xoffset, yoffset, lineheight, metrics, style, maxwidth=100):
 	"""render timescale for procedure. Output is [svg_output, height]"""
-
 	(daywidth_function, textwidth_function, textheight_function) = metrics
 	(periodspacing, lineheight, ypadding, lwd, ellipsis, debug) = style
 
@@ -580,11 +552,12 @@ def render_times(period, caption, xoffset, yoffset, lineheight, metrics, style, 
 
 
 def add_output(old, new):
+	"""add output of render functions"""
 	return([o+n for o, n in zip(old, new)])
 
 
 def render_periods(periods, x, y, caption, height, render_function, metrics, style, dashes=False, **kwargs):
-
+	"""applies rendering function to all periods"""
 	daywidth_function= metrics[0]
 	(periodspacing, lineheight, ypadding, lwd, ellipsis, debug) = style
 
@@ -623,13 +596,13 @@ CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
 @click.option("--all", "-A", is_flag=True, help='All options, equivalent to -ctge')
 @click.option("--debug", "-d", is_flag=True, help='Debug output')
 def main(file, debug, fontsize, output, font, condensed, timescale, padding, ellipsis, graph, all):
-	"""Clinical Trial design visualization
+	"""Clinical trial design visualization
 
 
-	Generates a 'schedule of assessments' overview figure based on a json-formatted input FILE (see examples for guidance). Graphical output is provided in svg vector format that can be rendered by any webbrowser or directly imported into Office applications. Use below OPTIONS to manage the output style.
+	Generates a 'schedule of assessments' overview for clinical trials, based on a json-formatted input FILE (see examples for guidance). Graphical output is provided in svg vector format that can be rendered by any webbrowser or directly imported into Office applications. Use below OPTIONS to manage the output style.
 	
 
-	Version 2.0 (Dec-2021),	proudly written in functional Python by Rainer Strotmann"""
+	Version 2.0, proudly written in functional Python (Rainer Strotmann, Dec-2021)"""
 
 	if all:
 		condensed=True
@@ -679,7 +652,6 @@ def main(file, debug, fontsize, output, font, condensed, timescale, padding, ell
 			for (n, assert_func) in [("intervals", assert_interval_format), ("administrations", assert_procedure_format), ("procedures", assert_procedure_format)]:
 				if n in p.keys():
 					for i in p[n]:
-						# print(i["caption"])
 						assert_func(i)
 	except Exception as err:
 		print(err)
@@ -728,7 +700,7 @@ def main(file, debug, fontsize, output, font, condensed, timescale, padding, ell
 	lwd = fontsize/10
 	style = (periodspacing, lineheight, ypadding, lwd, ellipsis, debug)
 
-	## rendering:
+	# render svg output
 	out = ["", yoffset]
 
 	# render header
@@ -757,7 +729,7 @@ def main(file, debug, fontsize, output, font, condensed, timescale, padding, ell
 	for n in item_names(td, 'procedures'):
 		out = add_output(out, render_periods(periods, xoffset, out[1], n, lineheight, render_procedure, metrics, style, default_symbol="diamond"))
 
-		# test whether to render timescale. Only the first period matters
+		# render timescale
 		if timescale:
 			ts = False
 			x = xoffset
@@ -770,13 +742,14 @@ def main(file, debug, fontsize, output, font, condensed, timescale, padding, ell
 			if ts:
 				out = add_output(out, render_times(p, n, x, out[1], lineheight, metrics, style, maxwidth=xoffset + sum([period_width(i, daywidth_function) for i in periods]) + (len(periods)-1) * periodspacing))
 
-	# re-calculate image dimensions, finalize svg
+	# re-calculate overall output dimensions, finalize svg
 	viewport_width = xoffset + sum([period_width(i, daywidth_function) for i in periods]) + (len(periods)) * periodspacing
 	viewport_height = out[1]
 
 	svg_out = f'<svg width="{viewport_width}" height="{viewport_height}" xmlns="http://www.w3.org/2000/svg">\n<style>text {{font-family: {font}; font-size: {fontsize}px ;}}</style>\n<desc>Trial design autogenerated by td.py V2.0 (Dec-2021), author: Rainer Strotmann</desc><title>{infile.stem}</title>' + out[0]
 	svg_out += f'</svg>'
 
+	# write to disk
 	with open(outfile, "w") as f:
 		f.write(svg_out)
 	return
@@ -784,3 +757,5 @@ def main(file, debug, fontsize, output, font, condensed, timescale, padding, ell
 
 if __name__ == "__main__":
 	main()
+
+	
