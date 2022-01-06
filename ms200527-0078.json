@@ -20,8 +20,8 @@
 			"caption": "Intervention Period",
 			"duration": 14,
 			"start": -1,
-			"daylabels": [-1, "1-4", "10-13"],
-			"dayshading": [1],
+			"daylabels": [-1, 1, 8, "1-4", "9-13"],
+			"dayshading": [1, 8],
 			"intervals": [
 				{
 					"caption": "hospitalization",
@@ -53,7 +53,7 @@
 				{
 					"caption": "PK sampling evobrutinib",
 					"days": ["10-12"],
-					"times": [1]
+					"times": [0]
 				},
 				{
 					"caption": "PK sampling digoxin, metformin, rosuvastatins",
