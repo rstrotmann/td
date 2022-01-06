@@ -42,6 +42,7 @@ def assert_interval_format(interval):
 
 
 def decode_daylist(daylist):
+	"""convert 'days' field (including day ranges) to list of individual days"""
 	days = []
 	if not isinstance(daylist, list):
 		daylist = [daylist]
@@ -63,6 +64,7 @@ def decode_daylist(daylist):
 
 
 def item_names(trial, item_class):
+	"""return list of interval/administration/procedure names for trial"""
 	out = []
 	unit = "cycles" if "cycles" in trial.keys() else "periods"
 	for p in trial[unit]:
@@ -75,6 +77,7 @@ def item_names(trial, item_class):
 
 
 def extract_procedure(period, caption):
+	"""get specified administration/procedure as list of tuples (day, [times], relative) for individual days"""
 	temp = []
 	for x in ['procedures', 'administrations']:
 		if x in period.keys():
@@ -95,7 +98,7 @@ def extract_procedure(period, caption):
 
 
 def normalize_procedure(procedure):
-	"""break down times to days"""
+	"""break down procedure times to subsequent days, if longer than 24 h"""
 	out = []
 	for (d, t, rel) in procedure:
 		dd = 0
@@ -107,6 +110,7 @@ def normalize_procedure(procedure):
 
 
 def unnormalize_procedure(procedure):
+	""" collate procedure times into single day, if relative to the same day"""
 	out = []
 	if procedure:
 		rels = set([r for (d, ts, r) in procedure])
@@ -121,6 +125,7 @@ def unnormalize_procedure(procedure):
 
 
 def has_timescale(period, caption):
+	"""test if procedure has timescale in the respective period"""
 	temp = False
 	for x in ['procedures', 'administrations']:
 		if x in period.keys():
@@ -163,6 +168,7 @@ def extract_times(period, caption):
 
 
 def day_index(period, day):
+	"""convert day to index within daylist"""
 	temp = day - period['start']
 	if period['start'] < 0 and day > 0:
 		temp -= 1
@@ -187,6 +193,8 @@ def day_shadings(period):
 			temp[idx] = True
 	return(temp)
 
+
+###### low-level rendering functions
 
 def svg_line(x1, y1, x2, y2, lwd=1, color="black", dashed=False):
 	dash = f'stroke-dasharray: {lwd*3} {lwd*3}' if dashed else ""
@@ -286,6 +294,7 @@ def period_width(period, day_width_function):
 
 
 def period_day_starts(period, xoffset, daywidth_function):
+	"""return list of x-coordinates for day starts"""
 	out=[xoffset]
 	acc = xoffset
 	for i in daywidth_function(period):
@@ -295,10 +304,12 @@ def period_day_starts(period, xoffset, daywidth_function):
 
 
 def period_day_centers(period, xoffset, daywidth_function):
+	"""return list of x-coordinates for day centers"""
 	return([start + width / 2 for start, width in zip(period_day_starts(period, xoffset, daywidth_function), daywidth_function(period))])
 
 
 def period_day_ends(period, xoffset, daywidth_function):
+	"""return list of x-coordinates for day ends"""
 	starts = period_day_starts(period, xoffset, daywidth_function)
 	widths = daywidth_function(period)
 	return([s+w for s, w in zip(starts, widths)])
@@ -313,7 +324,7 @@ def render_dummy(period, xoffset, yoffset, lineheight, metrics):
 
 
 def render_daygrid(period, caption, xoffset, yoffset, height, metrics, style, first_pass=True):
-	"""renders the svg output for the day grid for a period. Output is [svg_output, height]"""
+	"""render svg output for the day grid for a period. Output is [svg_output, height]"""
 	(daywidth_function, textwidth_function, textheight_function) = metrics
 	(periodspacing, lineheight, ypadding, lwd, ellipsis, debug) = style
 
@@ -758,4 +769,3 @@ def main(file, debug, fontsize, output, font, condensed, timescale, padding, ell
 if __name__ == "__main__":
 	main()
 
-	
