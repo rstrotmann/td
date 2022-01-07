@@ -10,7 +10,7 @@
 			"caption": "Treatment phase",
 			"duration": 29,
 			"start": -1,
-			"daylabels": [-1, "1-2", "6-9", 15, 22, 28],
+			"daylabels": [-1, "1-2", "6-8", 15, 20, 22, 24, 26, 28],
 			"dayshading": [8, 15, 22],
 			"intervals": [
 				{

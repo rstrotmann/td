@@ -378,6 +378,45 @@ def render_periodcaption(period, caption, xoffset, yoffset, height, metrics, sty
 	return([svg_out, height+ypadding/2])
 
 
+# def render_procedure(period, caption, xoffset, yoffset, lineheight, metrics, style, default_symbol="diamond", first_pass=True):
+# 	"""render procedure. Output is [svg_output, height]"""
+# 	(daywidth_function, textwidth_function, textheight_function) = metrics
+# 	(periodspacing, lineheight, ypadding, lwd, ellipsis, debug) = style
+
+# 	svg_out = ""
+# 	if debug:
+# 		svg_out += render_dummy(period, xoffset, yoffset, lineheight, metrics)
+
+# 	y = yoffset + lineheight/2 # center of the line
+# 	if first_pass:
+# 		svg_out += svg_text(5, y + textheight_function(caption) * (1/2 - 0.1), caption)	
+
+# 	centers = period_day_centers(period, xoffset, daywidth_function)
+# 	widths = daywidth_function(period)
+# 	brackets = extract_field(period, caption, "decoration")
+# 	symbols = procedure_symbols(period, caption, default_symbol)
+# 	dlabels = day_labels(period)
+# 	values = extract_field(period, caption, "value")
+
+# 	ellipses = [1 if (s!="" and l == "" and len(symbols)>3) else 0 for (s,l) in zip(symbols, dlabels)]
+
+# 	for p, w, s, b, e, v in zip(centers, widths, symbols, brackets, ellipses, values):
+# 		if s:
+# 			if e==1 and b=="" and s=="arrow" and ellipsis:
+# 				svg_out += svg_circle(p, y, lineheight/30, fill_color="black")
+# 			elif v != "":
+# 				if v == 0:
+# 					svg_out += svg_symbol(p, y, w*.5, "circle", fill=False, fill_color="none")
+# 				else:
+# 					svg_out += svg_symbol(p, y, w*.5, "circle", fill=True, fill_color="black")
+# 			else:
+# 				svg_out += svg_symbol(p, y, w, s, size=textheight_function("X"), lwd=lwd, title=caption)
+# 				if b=="bracketed":
+# 					svg_out += svg_open_bracket(p, y, lineheight, w*.8, xpadding=0, radius=lineheight/8, lwd=lwd)
+# 					svg_out += svg_close_bracket(p, y, lineheight, w*.8, xpadding=0, radius=lineheight/8, lwd=lwd)
+# 	return([svg_out, lineheight+ypadding])
+
+
 def render_procedure(period, caption, xoffset, yoffset, lineheight, metrics, style, default_symbol="diamond", first_pass=True):
 	"""render procedure. Output is [svg_output, height]"""
 	(daywidth_function, textwidth_function, textheight_function) = metrics
@@ -402,7 +441,8 @@ def render_procedure(period, caption, xoffset, yoffset, lineheight, metrics, sty
 
 	for p, w, s, b, e, v in zip(centers, widths, symbols, brackets, ellipses, values):
 		if s:
-			if e==1 and b=="" and s=="arrow" and ellipsis:
+			# if e==1 and b=="" and s=="arrow" and ellipsis:
+			if e==1 and b=="" and ellipsis:
 				svg_out += svg_circle(p, y, lineheight/30, fill_color="black")
 			elif v != "":
 				if v == 0:
