@@ -30,20 +30,12 @@ def assert_procedure_format(procedure):
 
 
 def assert_interval_format(interval):
-	# try:
-	# 	assert "caption" in interval.keys() and	assert "start" in interval.keys()
-	# except:
-	# 	raise TypeError(f'Interval error in {interval}: Minimum required fields are caption, start and duration')
-	# try:
-	# 	assert "duration" in interval.keys() and interval["duration"]>0
-	# except:
-	# 	raise IndexError(f'duration must be positive number')
 	assert "caption" in interval.keys()
 	if ("start" in interval.keys() and "duration" in interval.keys()) or "days" in interval.keys():
 		return
 	else:
 		raise TypeError(f'Interval error in {interval}: Minimum required fields are "caption", and either s"tart" and "duration", or "days"')
-	# pass
+
 
 def decode_daylist(daylist):
 	"""convert 'days' field (including day ranges) to list of individual days"""
@@ -101,23 +93,9 @@ def extract_procedure(period, caption):
 	return(temp)
 
 
-# def normalize_procedure(procedure):
-# 	"""break down procedure times to subsequent days, if longer than 24 h"""
-# 	out = []
-# 	print(f'\nnormalize before: {procedure}')
-# 	for (d, t, rel) in procedure:
-# 		dd = 0
-# 		while t:
-# 			out.append((d+dd, [i for i in t if i<24], rel))
-# 			t = [i-24 for i in t if i>=24]
-# 			dd += 1
-# 	print(f'normalize after: {out}')
-# 	return(out)
-
 def normalize_procedure(procedure):
 	"""break down procedure times to subsequent days, if longer than 24 h"""
 	out = []
-	# print(f'\nnormalize before: {procedure}')
 	for (d, t, rel) in procedure:
 		dd = 0
 		while t:
@@ -126,7 +104,6 @@ def normalize_procedure(procedure):
 				out.append((d+dd, temp, rel))
 			t = [i-24 for i in t if i>=24]
 			dd += 1
-	# print(f'normalize after: {out}')
 	return(out)
 
 
@@ -382,45 +359,6 @@ def render_periodcaption(period, caption, xoffset, yoffset, height, metrics, sty
 	return([svg_out, height+ypadding/2])
 
 
-# def render_procedure(period, caption, xoffset, yoffset, lineheight, metrics, style, default_symbol="diamond", first_pass=True):
-# 	"""render procedure. Output is [svg_output, height]"""
-# 	(daywidth_function, textwidth_function, textheight_function) = metrics
-# 	(periodspacing, lineheight, ypadding, lwd, ellipsis, debug) = style
-
-# 	svg_out = ""
-# 	if debug:
-# 		svg_out += render_dummy(period, xoffset, yoffset, lineheight, metrics)
-
-# 	y = yoffset + lineheight/2 # center of the line
-# 	if first_pass:
-# 		svg_out += svg_text(5, y + textheight_function(caption) * (1/2 - 0.1), caption)	
-
-# 	centers = period_day_centers(period, xoffset, daywidth_function)
-# 	widths = daywidth_function(period)
-# 	brackets = extract_field(period, caption, "decoration")
-# 	symbols = procedure_symbols(period, caption, default_symbol)
-# 	dlabels = day_labels(period)
-# 	values = extract_field(period, caption, "value")
-
-# 	ellipses = [1 if (s!="" and l == "" and len(symbols)>3) else 0 for (s,l) in zip(symbols, dlabels)]
-
-# 	for p, w, s, b, e, v in zip(centers, widths, symbols, brackets, ellipses, values):
-# 		if s:
-# 			if e==1 and b=="" and s=="arrow" and ellipsis:
-# 				svg_out += svg_circle(p, y, lineheight/30, fill_color="black")
-# 			elif v != "":
-# 				if v == 0:
-# 					svg_out += svg_symbol(p, y, w*.5, "circle", fill=False, fill_color="none")
-# 				else:
-# 					svg_out += svg_symbol(p, y, w*.5, "circle", fill=True, fill_color="black")
-# 			else:
-# 				svg_out += svg_symbol(p, y, w, s, size=textheight_function("X"), lwd=lwd, title=caption)
-# 				if b=="bracketed":
-# 					svg_out += svg_open_bracket(p, y, lineheight, w*.8, xpadding=0, radius=lineheight/8, lwd=lwd)
-# 					svg_out += svg_close_bracket(p, y, lineheight, w*.8, xpadding=0, radius=lineheight/8, lwd=lwd)
-# 	return([svg_out, lineheight+ypadding])
-
-
 def render_procedure(period, caption, xoffset, yoffset, lineheight, metrics, style, default_symbol="diamond", first_pass=True):
 	"""render procedure. Output is [svg_output, height]"""
 	(daywidth_function, textwidth_function, textheight_function) = metrics
@@ -495,50 +433,6 @@ def render_dose_graph(period, caption, xoffset, yoffset, lineheight, metrics, st
 	return([svg_out, lineheight+textheight_function("X")+ypadding])
 
 
-# def render_interval(period, caption, xoffset, yoffset, lineheight, metrics, style, first_pass=True):
-# 	"""render interval for procedure. Output is [svg_output, height]"""
-# 	(daywidth_function, textwidth_function, textheight_function) = metrics
-# 	(periodspacing, lineheight, ypadding, lwd, ellipsis, debug) = style
-
-# 	svg_out = ""
-# 	if debug:
-# 		svg_out += render_dummy(period, xoffset, yoffset, lineheight, metrics)
-
-# 	y = yoffset + lineheight/2
-# 	if first_pass:
-# 		svg_out += svg_text(5, y + textheight_function(caption) * (1/2 - 0.1), caption)
-
-# 	# render interval box
-# 	starts = period_day_starts(period, xoffset, daywidth_function)
-# 	ends = period_day_ends(period, xoffset, daywidth_function)
-# 	widths = daywidth_function(period)
-
-# 	height = 0.4 * lineheight
-# 	if 'intervals' in period.keys():
-# 		for intv in period['intervals']:
-# 			# try:
-# 			# 	assert_interval_format(intv)
-# 			# except Exception as err:
-# 			# 	raise TypeError(f'{period["caption"]}, interval "{intv["caption"]}": {err}')
-
-# 			if intv['caption'] == caption:
-# 				start, duration = intv['start'], intv['duration']
-# 				startx = starts[day_index(period, start)]
-# 				end = start + duration -1
-
-# 				if start <0 and end >0:
-# 					end += 1
-# 				endx = ends[day_index(period, end)]
-# 				if "decoration" in intv.keys():
-# 					if intv["decoration"] == "bracketed":
-# 						wo = widths[day_index(period, start)]
-# 						wc = widths[day_index(period, end)]
-# 						svg_out += svg_open_bracket(startx, y, lineheight, wo*.6, xpadding=0, radius=lineheight/8, lwd=lwd)
-# 						svg_out += svg_close_bracket(endx, y, lineheight, wc*.6, xpadding=0, radius=lineheight/8, lwd=lwd)
-# 				svg_out += svg_rect(startx, y-height/2, endx-startx, height, lwd=lwd)
-# 	return([svg_out, lineheight+ypadding])
-
-
 def render_interval(period, caption, xoffset, yoffset, lineheight, metrics, style, first_pass=True):
 	"""render interval for procedure. Output is [svg_output, height]"""
 	(daywidth_function, textwidth_function, textheight_function) = metrics
@@ -560,11 +454,6 @@ def render_interval(period, caption, xoffset, yoffset, lineheight, metrics, styl
 	height = 0.4 * lineheight
 	if 'intervals' in period.keys():
 		for intv in period['intervals']:
-			# try:
-			# 	assert_interval_format(intv)
-			# except Exception as err:
-			# 	raise TypeError(f'{period["caption"]}, interval "{intv["caption"]}": {err}')
-			
 			if intv['caption'] == caption:
 				if "start" in intv.keys() and "duration" in intv.keys():
 					start_list, duration_list = [intv['start']], [intv['duration']]
@@ -645,19 +534,6 @@ def render_times(period, caption, xoffset, yoffset, lineheight, metrics, style, 
 			if scale_startx < last_scale_end:
 				y += lineheight*1.33 + ypadding*3 + textheight_function("X")
 
-			# def render_scale(x, y, width, height, scale_min, scale_max, scale_labels):
-			# 	out = svg_line(x, y, x+width, y, lwd=lwd)
-			# 	label_widths = [textwidth_function(str(i)) for i in scale_labels]
-			# 	last_label_end = 0
-			# 	for i, wi in zip(scale_labels, label_widths):
-			# 		xi = (i-scale_min) * width/(scale_max-scale_min) + x
-			# 		out += svg_line(xi, y-height/2, xi, y+height/2, lwd=lwd)
-			# 		dxi = wi/2
-			# 		if xi-dxi > last_label_end:
-			# 			out += svg_text(xi-dxi, y+height/2+textheight_function("X")+ypadding, str(i))
-			# 			last_label_end = xi+dxi+textwidth_function("1")
-			# 	return(out)
-
 			def render_scale(x, y, width, height, scale_min, scale_max, scale_labels, show_unit=False):
 				out = svg_line(x, y, x+width, y, lwd=lwd)
 				label_widths = [textwidth_function(str(i)) for i in scale_labels]
@@ -665,12 +541,10 @@ def render_times(period, caption, xoffset, yoffset, lineheight, metrics, style, 
 				final_label_begin = x + width - label_widths[-1]/2
 				min_delta = textwidth_function(".")
 
-				# for i, wi in zip(scale_labels[:-1], label_widths[:-1]):
 				for i, wi in zip(scale_labels, label_widths):	
 					xi = (i-scale_min) * width/(scale_max-scale_min) + x
 					out += svg_line(xi, y-height/2, xi, y+height/2, lwd=lwd)
 					dxi = wi/2
-					# if xi-dxi > last_label_end:
 					if xi-dxi > last_label_end and xi+dxi < final_label_begin - min_delta:
 						out += svg_text(xi-dxi, y+height/2+textheight_function("X")+ypadding, str(i))
 						last_label_end = xi+dxi+min_delta
@@ -679,7 +553,6 @@ def render_times(period, caption, xoffset, yoffset, lineheight, metrics, style, 
 						if show_unit:
 							temp += " h"
 						out += svg_text(xi-dxi, y+height/2+textheight_function("X")+ypadding, temp)
-
 				return(out)
 
 			def render_points(x, y, width, scale_min, scale_max):
