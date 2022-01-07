@@ -7,67 +7,223 @@
 			"daylabels": [],
 			"procedures": [
 				{
-					"caption": "Safety lab",
+					"caption": "informed consent",
 					"days": [1]
 				},
 				{
-					"caption": "ECG",
-					"days": [1]
+					"caption": "ECG", 
+					"days": [1],
+					"frequency": "QD"
 				}
 			]
 		},
 		{
-			"caption": "Intervention Period",
-			"duration": 14,
+			"caption": "Periods 1-3",
+			"duration": 10,
 			"start": -1,
-			"daylabels": [-1, "1-4", "10-13"],
-			"dayshading": [1],
+			"daylabels": [-1, "1-9"],
+			"dayshading": [1, 8],
 			"intervals": [
 				{
 					"caption": "hospitalization",
 					"start": -1,
-					"duration": 14
+					"duration": 10
 				}
 			],
 			"administrations": [
 				{
-					"caption": "evobrutinib BID",
-					"days": ["4-12"],
+					"caption": "evobrutinib BID (12 h apart)",
+					"days": [1, 4, 7],
 					"freq": "BID"
-				},
-				{
-					"caption": "digoxin, metformin, rosuvastatin",
-					"days": [1, 10],
-					"freq": "QD"
 				}
 			],
 			"procedures": [
 				{
-					"caption": "Safety lab",
-					"days": [-1, 10]
+					"caption": "BTKO assay",
+					"days": [1, 2, 4, 5, 7, 8],
+					"frequency": "QD"
 				},
 				{
-					"caption": "ECG",
-					"days": [-1, 1, 10]
-				},
-				{
-					"caption": "PK sampling evobrutinib",
-					"days": ["10-12"],
-					"times": [1]
-				},
-				{
-					"caption": "PK sampling digoxin, metformin, rosuvastatins",
+					"caption": "ECG", 
 					"days": [1],
-					"times": [0, 0.33, 0.67, 1, 1.5, 2, 3, 3, 4, 6, 8, 10, 12, 16, 24, 36, 48, 60, 72],
+					"times": [0, 24, 30, 36],
+					"relative": 1,
+					"timescale": "hide"
+				},
+				{
+					"caption": "ECG", 
+					"days": [4],
+					"times": [0, 24, 30, 36],
+					"relative": 4,
+					"timescale": "hide"
+				},
+				{
+					"caption": "ECG", 
+					"days": [7],
+					"times": [0, 24, 30, 36],
+					"relative": 7,
+					"timescale": "hide"
+				},
+				{
+					"caption": "PK sampling",
+					"days": [1],
+					"times": [0, 0.25, 0.5, 1, 1.5, 2, 4, 6, 8, 12, 12.5, 13, 13.5, 14, 16, 18, 20, 24, 30, 36, 48, 60, 72],
 					"relative": 1,
 					"timescale": "show"
 				},
 				{
-					"caption": "PK sampling digoxin, metformin, rosuvastatins",
-					"days": [10],
-					"times": [0, 0.33, 0.67, 1, 1.5, 2, 3, 3, 4, 6, 8, 10, 12, 16, 24, 36, 48, 60, 72],
-					"relative": 10,
+					"caption": "PK sampling",
+					"days": [4],
+					"times": [0, 0.25, 0.5, 1, 1.5, 2, 4, 6, 8, 12, 12.5, 13, 13.5, 14, 16, 18, 20, 24, 30, 36, 48, 60, 72],
+					"relative": 4,
 					"timescale": "hide"
+				},
+				{
+					"caption": "PK sampling",
+					"days": [7],
+					"times": [0, 0.25, 0.5, 1, 1.5, 2, 4, 6, 8, 12, 12.5, 13, 13.5, 14, 16, 18, 20, 24, 30, 36, 48, 60],
+					"relative": 7,
+					"timescale": "hide"
+				}
+			]
+		},
+		{
+			"caption": "Period 4 (optional)",
+			"duration": 23,
+			"start": -1,
+			"daylabels": [-1, "1-4", 8, 15, 22],
+			"dayshading": [8, 15, 22],
+			"intervals": [
+				{
+					"caption": "hospitalization",
+					"start": -1,
+					"duration": 5
+				},
+				{
+					"caption": "ambulatory visit",
+					"start": 8,
+					"duration": 1
+				},
+				{
+					"caption": "ambulatory visit",
+					"start": 15,
+					"duration": 1
+				},
+				{
+					"caption": "ambulatory visit",
+					"start": 22,
+					"duration": 1
+				}
+			],
+			"administrations": [
+				{
+					"caption": "evobrutinib BID (12 h apart)",
+					"days": [1],
+					"freq": "BID"
+				}
+			],
+			"procedures": [
+				{
+					"caption": "BTKO assay",
+					"days": [1, 2, 8, 15, 22],
+					"frequency": "QD"
+				},
+				{
+					"caption": "ECG", 
+					"days": [-1],
+					"frequency": "QD"
+				},
+				{
+					"caption": "ECG", 
+					"days": [1],
+					"times": [0, 24, 30, 36],
+					"relative": 1,
+					"timescale": "hide"
+				},
+				{
+					"caption": "PK sampling",
+					"days": [1],
+					"times": [0, 0.25, 0.5, 1, 1.5, 2, 4, 6, 8, 12, 12.5, 13, 13.5, 14, 16, 18, 20, 24, 30, 36, 48, 60, 72],
+					"relative": 1
+				}
+			]
+		},
+		{
+			"caption": "Period 5 (optional)",
+			"duration": 23,
+			"start": -1,
+			"daylabels": [-1, "1-4", 8, 15, 22],
+			"dayshading": [8, 15, 22],
+			"intervals": [
+				{
+					"caption": "hospitalization",
+					"start": -1,
+					"duration": 5
+				},
+				{
+					"caption": "ambulatory visit",
+					"start": 8,
+					"duration": 1
+				},
+				{
+					"caption": "ambulatory visit",
+					"start": 15,
+					"duration": 1
+				},
+				{
+					"caption": "ambulatory visit",
+					"start": 22,
+					"duration": 1
+				}
+			],
+			"administrations": [
+				{
+					"caption": "evobrutinib BID (12 h apart)",
+					"days": [1],
+					"freq": "BID"
+				}
+			],
+			"procedures": [
+				{
+					"caption": "ECG", 
+					"days": [-1],
+					"frequency": "QD"
+				},
+				{
+					"caption": "ECG", 
+					"days": [1],
+					"times": [0, 24, 30, 36],
+					"relative": 1,
+					"timescale": "hide"
+				},
+				{
+					"caption": "BTKO assay",
+					"days": [1, 2, 8, 15, 22],
+					"frequency": "QD"
+				},
+				{
+					"caption": "PK sampling",
+					"days": [1],
+					"times": [0, 0.25, 0.5, 1, 1.5, 2, 4, 6, 8, 12, 12.5, 13, 13.5, 14, 16, 18, 20, 24, 30, 36, 48, 60, 72],
+					"relative": 1
+				}
+			]
+		},
+		{
+			"caption": "F/U",
+			"duration": 1,
+			"start": 29,
+			"daylabels": [29],
+			"procedures": [
+				{
+					"caption": "ECG", 
+					"days": [29],
+					"frequency": "QD"
+				},
+				{
+					"caption": "BTKO assay",
+					"days": [29],
+					"frequency": "QD"
 				}
 			]
 		}

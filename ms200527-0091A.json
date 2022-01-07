@@ -1,0 +1,149 @@
+{
+	"periods": [
+		{
+			"caption": "S",
+			"duration": 1,
+			"start": 1,
+			"daylabels": [],
+			"procedures": [
+				{
+					"caption": "informed consent",
+					"days": [1]
+				}
+			]
+		},
+		{
+			"caption": "Periods 1-3",
+			"duration": 10,
+			"start": -1,
+			"daylabels": [-1, "1-9"],
+			"dayshading": [1, 8],
+			"intervals": [
+				{
+					"caption": "hospitalization",
+					"start": -1,
+					"duration": 10
+				}
+			],
+			"administrations": [
+				{
+					"caption": "evobrutinib BID (12 h apart)",
+					"days": [1, 4, 7],
+					"freq": "BID"
+				}
+			],
+			"procedures": [
+				{
+					"caption": "Blood sampling", 
+					"days": ["1-9"],
+					"freq": "rich"
+				}
+			]
+		},
+		{
+			"caption": "Period 4 (optional)",
+			"duration": 23,
+			"start": -1,
+			"daylabels": [-1, "1-4", 8, 15, 22],
+			"dayshading": [8, 15, 22],
+			"intervals": [
+				{
+					"caption": "hospitalization",
+					"start": -1,
+					"duration": 5
+				},
+				{
+					"caption": "ambulatory visit",
+					"start": 8,
+					"duration": 1
+				},
+				{
+					"caption": "ambulatory visit",
+					"start": 15,
+					"duration": 1
+				},
+				{
+					"caption": "ambulatory visit",
+					"start": 22,
+					"duration": 1
+				}
+			],
+			"administrations": [
+				{
+					"caption": "evobrutinib BID (12 h apart)",
+					"days": [1],
+					"freq": "BID"
+				}
+			],
+			"procedures": [
+				{
+					"caption": "Blood sampling", 
+					"days": ["1-3"],
+					"freq": "rich"
+				},
+				{
+					"caption": "Blood sampling", 
+					"days": ["4"],
+					"freq": "QD"
+				}
+			]
+		},
+		{
+			"caption": "Period 5 (optional)",
+			"duration": 23,
+			"start": -1,
+			"daylabels": [-1, "1-4", 8, 15, 22],
+			"dayshading": [8, 15, 22],
+			"intervals": [
+				{
+					"caption": "hospitalization",
+					"start": -1,
+					"duration": 5
+				},
+				{
+					"caption": "ambulatory visit",
+					"start": 8,
+					"duration": 1
+				},
+				{
+					"caption": "ambulatory visit",
+					"start": 15,
+					"duration": 1
+				},
+				{
+					"caption": "ambulatory visit",
+					"start": 22,
+					"duration": 1
+				}
+			],
+			"administrations": [
+				{
+					"caption": "evobrutinib BID (12 h apart)",
+					"days": [1],
+					"freq": "BID"
+				}
+			],
+			"procedures": [
+				{
+					"caption": "Blood sampling", 
+					"days": ["1-3"],
+					"freq": "rich"
+				},
+				{
+					"caption": "Blood sampling", 
+					"days": ["4"],
+					"freq": "QD"
+				}
+			]
+		},
+		{
+			"caption": "F/U",
+			"duration": 1,
+			"start": 29,
+			"daylabels": [29],
+			"procedures": [
+
+			]
+		}
+	]
+}

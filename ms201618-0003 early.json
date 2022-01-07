@@ -10,7 +10,8 @@
 			"caption": "Treatment phase",
 			"duration": 29,
 			"start": -1,
-			"daylabels": [-1, 1, 2, 8, 15, 22, 28],
+			"daylabels": [-1, "1-2", "6-9", 15, 22, 28],
+			"dayshading": [8, 15, 22],
 			"intervals": [
 				{
 					"caption": "hospitalization",
@@ -39,13 +40,10 @@
 				},
 				{
 					"caption": "PK sampling",
-					"days": ["1"],
-					"freq": "rich"
-				},
-				{
-					"caption": "PK sampling",
-					"days": ["2, 6, 8, 9, 26"],
-					"freq": "QD"
+					"days": [1],
+					"times": [0, 0.5, 1, 2, 3, 6, 12, 24, 120, 144, 168],
+					"relative": 1,
+					"timescale": "show"
 				}
 			]
 		},

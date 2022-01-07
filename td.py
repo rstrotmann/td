@@ -97,15 +97,32 @@ def extract_procedure(period, caption):
 	return(temp)
 
 
+# def normalize_procedure(procedure):
+# 	"""break down procedure times to subsequent days, if longer than 24 h"""
+# 	out = []
+# 	print(f'\nnormalize before: {procedure}')
+# 	for (d, t, rel) in procedure:
+# 		dd = 0
+# 		while t:
+# 			out.append((d+dd, [i for i in t if i<24], rel))
+# 			t = [i-24 for i in t if i>=24]
+# 			dd += 1
+# 	print(f'normalize after: {out}')
+# 	return(out)
+
 def normalize_procedure(procedure):
 	"""break down procedure times to subsequent days, if longer than 24 h"""
 	out = []
+	# print(f'\nnormalize before: {procedure}')
 	for (d, t, rel) in procedure:
 		dd = 0
 		while t:
-			out.append((d+dd, [i for i in t if i<24], rel))
+			temp = [i for i in t if i<24]
+			if temp:
+				out.append((d+dd, temp, rel))
 			t = [i-24 for i in t if i>=24]
 			dd += 1
+	# print(f'normalize after: {out}')
 	return(out)
 
 
@@ -531,17 +548,41 @@ def render_times(period, caption, xoffset, yoffset, lineheight, metrics, style, 
 			if scale_startx < last_scale_end:
 				y += lineheight*1.33 + ypadding*3 + textheight_function("X")
 
-			def render_scale(x, y, width, height, scale_min, scale_max, scale_labels):
+			# def render_scale(x, y, width, height, scale_min, scale_max, scale_labels):
+			# 	out = svg_line(x, y, x+width, y, lwd=lwd)
+			# 	label_widths = [textwidth_function(str(i)) for i in scale_labels]
+			# 	last_label_end = 0
+			# 	for i, wi in zip(scale_labels, label_widths):
+			# 		xi = (i-scale_min) * width/(scale_max-scale_min) + x
+			# 		out += svg_line(xi, y-height/2, xi, y+height/2, lwd=lwd)
+			# 		dxi = wi/2
+			# 		if xi-dxi > last_label_end:
+			# 			out += svg_text(xi-dxi, y+height/2+textheight_function("X")+ypadding, str(i))
+			# 			last_label_end = xi+dxi+textwidth_function("1")
+			# 	return(out)
+
+			def render_scale(x, y, width, height, scale_min, scale_max, scale_labels, show_unit=False):
 				out = svg_line(x, y, x+width, y, lwd=lwd)
 				label_widths = [textwidth_function(str(i)) for i in scale_labels]
 				last_label_end = 0
-				for i, wi in zip(scale_labels, label_widths):
+				final_label_begin = x + width - label_widths[-1]/2
+				min_delta = textwidth_function(".")
+
+				# for i, wi in zip(scale_labels[:-1], label_widths[:-1]):
+				for i, wi in zip(scale_labels, label_widths):	
 					xi = (i-scale_min) * width/(scale_max-scale_min) + x
 					out += svg_line(xi, y-height/2, xi, y+height/2, lwd=lwd)
 					dxi = wi/2
-					if xi-dxi > last_label_end:
+					# if xi-dxi > last_label_end:
+					if xi-dxi > last_label_end and xi+dxi < final_label_begin - min_delta:
 						out += svg_text(xi-dxi, y+height/2+textheight_function("X")+ypadding, str(i))
-						last_label_end = xi+dxi+textwidth_function(".")
+						last_label_end = xi+dxi+min_delta
+					if i == scale_labels[-1]:
+						temp = str(i)
+						if show_unit:
+							temp += " h"
+						out += svg_text(xi-dxi, y+height/2+textheight_function("X")+ypadding, temp)
+
 				return(out)
 
 			def render_points(x, y, width, scale_min, scale_max):
@@ -556,7 +597,7 @@ def render_times(period, caption, xoffset, yoffset, lineheight, metrics, style, 
 			out += render_points(scale_startx+scale_break+scale_gap, y, scale_width - scale_gap - scale_break, 24, max(maxtime, 36))
 
 			out += render_scale(scale_startx, y+lineheight+ypadding, scale_break, scale_height, 0, break_time, range(0, int(break_time), 2))
-			out += render_scale(scale_startx+scale_break+scale_gap, y+lineheight+ypadding, scale_width - scale_gap - scale_break, scale_height, 24, max(maxtime, 36), [i*24 for i in range(1, int(maxtime/24+1))])
+			out += render_scale(scale_startx+scale_break+scale_gap, y+lineheight+ypadding, scale_width - scale_gap - scale_break, scale_height, 24, max(maxtime, 36), [i*24 for i in range(1, int(maxtime/24+1))], show_unit=True)
 			last_scale_end = scale_startx + scale_width
 
 		return([out, y+lineheight*1.33 + ypadding*3 + textheight_function("X")-yoffset])
