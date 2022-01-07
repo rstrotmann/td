@@ -30,16 +30,20 @@ def assert_procedure_format(procedure):
 
 
 def assert_interval_format(interval):
-	try:
-		assert "caption" in interval.keys()
-		assert "start" in interval.keys()
-	except:
-		raise TypeError(f'Interval error in {interval}: Minimum required fields are caption, start and duration')
-	try:
-		assert "duration" in interval.keys() and interval["duration"]>0
-	except:
-		raise IndexError(f'duration must be positive number')
-
+	# try:
+	# 	assert "caption" in interval.keys() and	assert "start" in interval.keys()
+	# except:
+	# 	raise TypeError(f'Interval error in {interval}: Minimum required fields are caption, start and duration')
+	# try:
+	# 	assert "duration" in interval.keys() and interval["duration"]>0
+	# except:
+	# 	raise IndexError(f'duration must be positive number')
+	assert "caption" in interval.keys()
+	if ("start" in interval.keys() and "duration" in interval.keys()) or "days" in interval.keys():
+		return
+	else:
+		raise TypeError(f'Interval error in {interval}: Minimum required fields are "caption", and either s"tart" and "duration", or "days"')
+	# pass
 
 def decode_daylist(daylist):
 	"""convert 'days' field (including day ranges) to list of individual days"""
@@ -491,6 +495,50 @@ def render_dose_graph(period, caption, xoffset, yoffset, lineheight, metrics, st
 	return([svg_out, lineheight+textheight_function("X")+ypadding])
 
 
+# def render_interval(period, caption, xoffset, yoffset, lineheight, metrics, style, first_pass=True):
+# 	"""render interval for procedure. Output is [svg_output, height]"""
+# 	(daywidth_function, textwidth_function, textheight_function) = metrics
+# 	(periodspacing, lineheight, ypadding, lwd, ellipsis, debug) = style
+
+# 	svg_out = ""
+# 	if debug:
+# 		svg_out += render_dummy(period, xoffset, yoffset, lineheight, metrics)
+
+# 	y = yoffset + lineheight/2
+# 	if first_pass:
+# 		svg_out += svg_text(5, y + textheight_function(caption) * (1/2 - 0.1), caption)
+
+# 	# render interval box
+# 	starts = period_day_starts(period, xoffset, daywidth_function)
+# 	ends = period_day_ends(period, xoffset, daywidth_function)
+# 	widths = daywidth_function(period)
+
+# 	height = 0.4 * lineheight
+# 	if 'intervals' in period.keys():
+# 		for intv in period['intervals']:
+# 			# try:
+# 			# 	assert_interval_format(intv)
+# 			# except Exception as err:
+# 			# 	raise TypeError(f'{period["caption"]}, interval "{intv["caption"]}": {err}')
+
+# 			if intv['caption'] == caption:
+# 				start, duration = intv['start'], intv['duration']
+# 				startx = starts[day_index(period, start)]
+# 				end = start + duration -1
+
+# 				if start <0 and end >0:
+# 					end += 1
+# 				endx = ends[day_index(period, end)]
+# 				if "decoration" in intv.keys():
+# 					if intv["decoration"] == "bracketed":
+# 						wo = widths[day_index(period, start)]
+# 						wc = widths[day_index(period, end)]
+# 						svg_out += svg_open_bracket(startx, y, lineheight, wo*.6, xpadding=0, radius=lineheight/8, lwd=lwd)
+# 						svg_out += svg_close_bracket(endx, y, lineheight, wc*.6, xpadding=0, radius=lineheight/8, lwd=lwd)
+# 				svg_out += svg_rect(startx, y-height/2, endx-startx, height, lwd=lwd)
+# 	return([svg_out, lineheight+ypadding])
+
+
 def render_interval(period, caption, xoffset, yoffset, lineheight, metrics, style, first_pass=True):
 	"""render interval for procedure. Output is [svg_output, height]"""
 	(daywidth_function, textwidth_function, textheight_function) = metrics
@@ -503,6 +551,7 @@ def render_interval(period, caption, xoffset, yoffset, lineheight, metrics, styl
 	y = yoffset + lineheight/2
 	if first_pass:
 		svg_out += svg_text(5, y + textheight_function(caption) * (1/2 - 0.1), caption)
+
 	# render interval box
 	starts = period_day_starts(period, xoffset, daywidth_function)
 	ends = period_day_ends(period, xoffset, daywidth_function)
@@ -511,25 +560,33 @@ def render_interval(period, caption, xoffset, yoffset, lineheight, metrics, styl
 	height = 0.4 * lineheight
 	if 'intervals' in period.keys():
 		for intv in period['intervals']:
-			try:
-				assert_interval_format(intv)
-			except Exception as err:
-				raise TypeError(f'{period["caption"]}, interval "{intv["caption"]}": {err}')
+			# try:
+			# 	assert_interval_format(intv)
+			# except Exception as err:
+			# 	raise TypeError(f'{period["caption"]}, interval "{intv["caption"]}": {err}')
+			
 			if intv['caption'] == caption:
-				start, duration = intv['start'], intv['duration']
-				startx = starts[day_index(period, start)]
-				end = start + duration -1
+				if "start" in intv.keys() and "duration" in intv.keys():
+					start_list, duration_list = [intv['start']], [intv['duration']]
+				elif "days" in intv.keys() and isinstance(intv["days"], list):
+					start_list, duration_list = intv["days"], [1 for i in intv["days"]]
+				else:
+					raise TypeError(f'{period["caption"]}, interval "{intv["caption"]}": {err}')
 
-				if start <0 and end >0:
-					end += 1
-				endx = ends[day_index(period, end)]
-				if "decoration" in intv.keys():
-					if intv["decoration"] == "bracketed":
-						wo = widths[day_index(period, start)]
-						wc = widths[day_index(period, end)]
-						svg_out += svg_open_bracket(startx, y, lineheight, wo*.6, xpadding=0, radius=lineheight/8, lwd=lwd)
-						svg_out += svg_close_bracket(endx, y, lineheight, wc*.6, xpadding=0, radius=lineheight/8, lwd=lwd)
-				svg_out += svg_rect(startx, y-height/2, endx-startx, height, lwd=lwd)
+				for start, duration in zip(start_list, duration_list):
+					startx = starts[day_index(period, start)]
+					end = start + duration -1
+
+					if start <0 and end >0:
+						end += 1
+					endx = ends[day_index(period, end)]
+					if "decoration" in intv.keys():
+						if intv["decoration"] == "bracketed":
+							wo = widths[day_index(period, start)]
+							wc = widths[day_index(period, end)]
+							svg_out += svg_open_bracket(startx, y, lineheight, wo*.6, xpadding=0, radius=lineheight/8, lwd=lwd)
+							svg_out += svg_close_bracket(endx, y, lineheight, wc*.6, xpadding=0, radius=lineheight/8, lwd=lwd)
+					svg_out += svg_rect(startx, y-height/2, endx-startx, height, lwd=lwd)
 	return([svg_out, lineheight+ypadding])
 
 
