@@ -38,7 +38,11 @@ def assert_interval_format(interval):
 
 
 def decode_daylist(daylist):
-	"""convert 'days' field (including day ranges) to list of individual days"""
+	"""convert 'days' field (including day ranges) to list of individual days
+	
+	Arguments:
+		daylist: list of period days, either in numerical format (e.g., -1, 1, 2), or as strings that may represent single days (e.g., "-1", "1") or day ranges (e.g., "1-3"). Day ranges can also include multiple segments (e.g., "1-3, 5-7", "1-3, 4, 5")
+	"""
 	days = []
 	if not isinstance(daylist, list):
 		daylist = [daylist]
@@ -460,7 +464,7 @@ def render_interval(period, caption, xoffset, yoffset, lineheight, metrics, styl
 				elif "days" in intv.keys() and isinstance(intv["days"], list):
 					start_list, duration_list = intv["days"], [1 for i in intv["days"]]
 				else:
-					raise TypeError(f'{period["caption"]}, interval "{intv["caption"]}": {err}')
+					raise TypeError(f'{period["caption"]}, interval "{intv["caption"]}"')
 
 				for start, duration in zip(start_list, duration_list):
 					startx = starts[day_index(period, start)]
@@ -567,7 +571,8 @@ def render_times(period, caption, xoffset, yoffset, lineheight, metrics, style, 
 			out += render_points(scale_startx+scale_break+scale_gap, y, scale_width - scale_gap - scale_break, 24, max(maxtime, 36))
 
 			out += render_scale(scale_startx, y+lineheight+ypadding, scale_break, scale_height, 0, break_time, range(0, int(break_time), 2))
-			out += render_scale(scale_startx+scale_break+scale_gap, y+lineheight+ypadding, scale_width - scale_gap - scale_break, scale_height, 24, max(maxtime, 36), [i*24 for i in range(1, int(maxtime/24+1))], show_unit=True)
+			if maxtime >=24:
+				out += render_scale(scale_startx+scale_break+scale_gap, y+lineheight+ypadding, scale_width - scale_gap - scale_break, scale_height, 24, max(maxtime, 36), [i*24 for i in range(1, int(maxtime/24+1))], show_unit=True)
 			last_scale_end = scale_startx + scale_width
 
 		return([out, y+lineheight*1.33 + ypadding*3 + textheight_function("X")-yoffset])
@@ -717,7 +722,10 @@ def main(file, debug, fontsize, output, font, condensed, timescale, padding, ell
 	# make style
 	periodspacing = textwidth_function("XX")
 	lineheight = textheight_function("X") * 2
-	xoffset = max([textwidth_function(i) for i in item_names(td, 'procedures') + item_names(td, 'intervals') + item_names(td, 'admininstrations')]) + 30
+	items = item_names(td, 'procedures') + item_names(td, 'intervals') + item_names(td, 'administrations')
+	xoffset = 30
+	if items:
+		xoffset += max([textwidth_function(i) for i in items])
 	yoffset = 10
 	lwd = fontsize/10
 	style = (periodspacing, lineheight, ypadding, lwd, ellipsis, debug)

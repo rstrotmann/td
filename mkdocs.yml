@@ -1,0 +1,17 @@
+site_name: TD
+nav:
+  - Home: index.md
+  - About: about.md
+  - Input: input.md
+  - Use: use.md
+  - Code documentation: td.md
+
+plugins:
+  - mkdocstrings:
+
+markdown_extensions:
+  - admonition
+
+#theme: readthedocs
+
+

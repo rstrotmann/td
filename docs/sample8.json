@@ -1,0 +1,25 @@
+{
+    "periods": [
+        {
+            "caption": "Period 1",
+            "start": -1,
+            "duration": 8,
+            "daylabels": [-1, "1-7"],
+            "procedures": [
+                {
+                    "caption": "PK sampling",
+                    "days": [1],
+                    "times": [0, 0.5, 1, 2, 4,
+                        6,
+                        8,
+                        12,
+                        24,
+                        36,
+                        48],
+                    "relative": 1,
+                    "timescale": "show"
+                }
+            ]
+        }
+    ]
+}
