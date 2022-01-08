@@ -1,0 +1,35 @@
+{
+    "periods": [
+        {
+            "caption": "Period 1",
+            "start": -1,
+            "duration": 8,
+            "daylabels": [
+                -1,
+                "1-7"
+            ],
+            "procedures": [
+                {
+                    "caption": "ECG",
+                    "days": [
+                        -1
+                    ],
+                    "freq": "QD"
+                },
+                {
+                    "caption": "ECG",
+                    "days": [
+                        5
+                    ]
+                },
+                {
+                    "caption": "ECG",
+                    "days": [
+                        7
+                    ],
+                    "freq": "rich"
+                }
+            ]
+        }
+    ]
+}

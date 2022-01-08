@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>Code documentation - TD</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/font-awesome.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css">
+        <link href="../assets/_mkdocstrings.css" rel="stylesheet">
+
+        <script src="../js/jquery-1.10.2.min.js" defer></script>
+        <script src="../js/bootstrap.min.js" defer></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="..">TD</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbar-collapse">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="navitem">
+                                <a href=".." class="nav-link">Home</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="../about/" class="nav-link">About</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="../input/" class="nav-link">Input</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="../use/" class="nav-link">Use</a>
+                            </li>
+                            <li class="navitem active">
+                                <a href="./" class="nav-link">Code documentation</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ml-auto">
+                            <li class="nav-item">
+                                <a rel="prev" href="../use/" class="nav-link">
+                                    <i class="fa fa-arrow-left"></i> Previous
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a rel="next" class="nav-link disabled">
+                                    Next <i class="fa fa-arrow-right"></i>
+                                </a>
+                            </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-light navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-level="1"><a href="#functions" class="nav-link">Functions</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-level="2"><a href="#td" class="nav-link">td</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#td.add_output" class="nav-link">add_output()</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#td.day_index" class="nav-link">day_index()</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#td.decode_daylist" class="nav-link">decode_daylist()</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#td.extract_procedure" class="nav-link">extract_procedure()</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#td.has_timescale" class="nav-link">has_timescale()</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#td.item_names" class="nav-link">item_names()</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#td.normalize_procedure" class="nav-link">normalize_procedure()</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#td.period_day_centers" class="nav-link">period_day_centers()</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#td.period_day_ends" class="nav-link">period_day_ends()</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#td.period_day_starts" class="nav-link">period_day_starts()</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#td.render_daygrid" class="nav-link">render_daygrid()</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#td.render_dose_graph" class="nav-link">render_dose_graph()</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#td.render_dummy" class="nav-link">render_dummy()</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#td.render_interval" class="nav-link">render_interval()</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#td.render_periodcaption" class="nav-link">render_periodcaption()</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#td.render_periods" class="nav-link">render_periods()</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#td.render_procedure" class="nav-link">render_procedure()</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#td.render_times" class="nav-link">render_times()</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#td.unnormalize_procedure" class="nav-link">unnormalize_procedure()</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="functions">Functions</h1>
+
+
+  <div class="doc doc-object doc-module">
+
+<a id="td"></a>
+    <div class="doc doc-contents first">
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h2 id="td.add_output" class="doc doc-heading">
+<code class="highlight language-python">add_output(old, new)</code>
+
+
+</h2>
+
+    <div class="doc doc-contents ">
+
+      <p>add output of render functions</p>
+
+        <details class="quote">
+          <summary>Source code in <code>trialdesign/td.py</code></summary>
+          <pre class="highlight"><code class="language-python">def add_output(old, new):
+	"""add output of render functions"""
+	return([o+n for o, n in zip(old, new)])
+</code></pre>
+        </details>
+    </div>
+
+  </div>
+
+
+
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h2 id="td.day_index" class="doc doc-heading">
+<code class="highlight language-python">day_index(period, day)</code>
+
+
+</h2>
+
+    <div class="doc doc-contents ">
+
+      <p>convert day to index within daylist</p>
+
+        <details class="quote">
+          <summary>Source code in <code>trialdesign/td.py</code></summary>
+          <pre class="highlight"><code class="language-python">def day_index(period, day):
+	"""convert day to index within daylist"""
+	temp = day - period['start']
+	if period['start'] &lt; 0 and day &gt; 0:
+		temp -= 1
+	if temp &lt;0 or temp&gt;period["duration"]-1:
+		raise IndexError(f'day index {day} out of range ({period["start"]} to {period["start"]+period["duration"]})')
+	return(temp)
+</code></pre>
+        </details>
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h2 id="td.decode_daylist" class="doc doc-heading">
+<code class="highlight language-python">decode_daylist(daylist)</code>
+
+
+</h2>
+
+    <div class="doc doc-contents ">
+
+      <p>convert 'days' field (including day ranges) to list of individual days</p>
+
+<dl>
+  <dt>Parameters:</dt>
+    <dd><p><strong>daylist:</strong> list of period days, either in numerical format (e.g., -1, 1, 2), or as strings that may represent single days (e.g., "-1", "1") or day ranges (e.g., "1-3"). Day ranges can also include multiple segments (e.g., "1-3, 5-7", "1-3, 4, 5")</p></dd>
+</dl>
+        <details class="quote">
+          <summary>Source code in <code>trialdesign/td.py</code></summary>
+          <pre class="highlight"><code class="language-python">def decode_daylist(daylist):
+	"""convert 'days' field (including day ranges) to list of individual days
+
+	Arguments:
+		daylist: list of period days, either in numerical format (e.g., -1, 1, 2), or as strings that may represent single days (e.g., "-1", "1") or day ranges (e.g., "1-3"). Day ranges can also include multiple segments (e.g., "1-3, 5-7", "1-3, 4, 5")
+	"""
+	days = []
+	if not isinstance(daylist, list):
+		daylist = [daylist]
+	for i in daylist:
+		if isinstance(i, int):
+			days.append(i)
+		elif isinstance(i, str):
+			pat_element = r'(\d+)(-(\d+))?'
+			pat = f'({pat_element}(, )*)'
+			m = re.findall(pat, i)
+			if m:
+				for mm in m:
+					if mm[3] == "":
+						days.append(int(mm[1]))
+					else:
+						for i in range(int(mm[1]), int(mm[3])+1):
+							days.append(i)
+	return(days)
+</code></pre>
+        </details>
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h2 id="td.extract_procedure" class="doc doc-heading">
+<code class="highlight language-python">extract_procedure(period, caption)</code>
+
+
+</h2>
+
+    <div class="doc doc-contents ">
+
+      <p>get specified administration/procedure as list of tuples (day, [times], relative) for individual days</p>
+
+        <details class="quote">
+          <summary>Source code in <code>trialdesign/td.py</code></summary>
+          <pre class="highlight"><code class="language-python">def extract_procedure(period, caption):
+	"""get specified administration/procedure as list of tuples (day, [times], relative) for individual days"""
+	temp = []
+	for x in ['procedures', 'administrations']:
+		if x in period.keys():
+			for proc in period[x]:
+				if proc['caption'] == caption:
+					if 'times' in proc.keys():
+						t = proc['times']
+					elif 'freq' in proc.keys() and proc['freq'] == 'rich':
+						t = [0, 0]
+					else: 
+						t = [0]
+					if 'relative' in proc.keys():
+						rel = proc['relative']
+					else:
+						rel = 1
+					temp += [(d, t, rel) for d in decode_daylist(proc['days'])]
+	return(temp)
+</code></pre>
+        </details>
+    </div>
+
+  </div>
+
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h2 id="td.has_timescale" class="doc doc-heading">
+<code class="highlight language-python">has_timescale(period, caption)</code>
+
+
+</h2>
+
+    <div class="doc doc-contents ">
+
+      <p>test if procedure has timescale in the respective period</p>
+
+        <details class="quote">
+          <summary>Source code in <code>trialdesign/td.py</code></summary>
+          <pre class="highlight"><code class="language-python">def has_timescale(period, caption):
+	"""test if procedure has timescale in the respective period"""
+	temp = False
+	for x in ['procedures', 'administrations']:
+		if x in period.keys():
+			for proc in period[x]:
+				if proc['caption'] == caption:
+					if 'timescale' in proc.keys():
+						if proc['timescale'] == 'show':
+							temp = True
+	return(temp)
+</code></pre>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h2 id="td.item_names" class="doc doc-heading">
+<code class="highlight language-python">item_names(trial, item_class)</code>
+
+
+</h2>
+
+    <div class="doc doc-contents ">
+
+      <p>return list of interval/administration/procedure names for trial</p>
+
+        <details class="quote">
+          <summary>Source code in <code>trialdesign/td.py</code></summary>
+          <pre class="highlight"><code class="language-python">def item_names(trial, item_class):
+	"""return list of interval/administration/procedure names for trial"""
+	out = []
+	unit = "cycles" if "cycles" in trial.keys() else "periods"
+	for p in trial[unit]:
+		if item_class in p.keys():
+			for proc in p[item_class]:
+				temp = proc['caption']
+				if not temp in out:
+					out.append(temp)
+	return(out)
+</code></pre>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h2 id="td.normalize_procedure" class="doc doc-heading">
+<code class="highlight language-python">normalize_procedure(procedure)</code>
+
+
+</h2>
+
+    <div class="doc doc-contents ">
+
+      <p>break down procedure times to subsequent days, if longer than 24 h</p>
+
+        <details class="quote">
+          <summary>Source code in <code>trialdesign/td.py</code></summary>
+          <pre class="highlight"><code class="language-python">def normalize_procedure(procedure):
+	"""break down procedure times to subsequent days, if longer than 24 h"""
+	out = []
+	for (d, t, rel) in procedure:
+		dd = 0
+		while t:
+			temp = [i for i in t if i&lt;24]
+			if temp:
+				out.append((d+dd, temp, rel))
+			t = [i-24 for i in t if i&gt;=24]
+			dd += 1
+	return(out)
+</code></pre>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h2 id="td.period_day_centers" class="doc doc-heading">
+<code class="highlight language-python">period_day_centers(period, xoffset, daywidth_function)</code>
+
+
+</h2>
+
+    <div class="doc doc-contents ">
+
+      <p>return list of x-coordinates for day centers</p>
+
+        <details class="quote">
+          <summary>Source code in <code>trialdesign/td.py</code></summary>
+          <pre class="highlight"><code class="language-python">def period_day_centers(period, xoffset, daywidth_function):
+	"""return list of x-coordinates for day centers"""
+	return([start + width / 2 for start, width in zip(period_day_starts(period, xoffset, daywidth_function), daywidth_function(period))])
+</code></pre>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h2 id="td.period_day_ends" class="doc doc-heading">
+<code class="highlight language-python">period_day_ends(period, xoffset, daywidth_function)</code>
+
+
+</h2>
+
+    <div class="doc doc-contents ">
+
+      <p>return list of x-coordinates for day ends</p>
+
+        <details class="quote">
+          <summary>Source code in <code>trialdesign/td.py</code></summary>
+          <pre class="highlight"><code class="language-python">def period_day_ends(period, xoffset, daywidth_function):
+	"""return list of x-coordinates for day ends"""
+	starts = period_day_starts(period, xoffset, daywidth_function)
+	widths = daywidth_function(period)
+	return([s+w for s, w in zip(starts, widths)])
+</code></pre>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h2 id="td.period_day_starts" class="doc doc-heading">
+<code class="highlight language-python">period_day_starts(period, xoffset, daywidth_function)</code>
+
+
+</h2>
+
+    <div class="doc doc-contents ">
+
+      <p>return list of x-coordinates for day starts</p>
+
+        <details class="quote">
+          <summary>Source code in <code>trialdesign/td.py</code></summary>
+          <pre class="highlight"><code class="language-python">def period_day_starts(period, xoffset, daywidth_function):
+	"""return list of x-coordinates for day starts"""
+	out=[xoffset]
+	acc = xoffset
+	for i in daywidth_function(period):
+		acc += i
+		out.append(acc)
+	return out[:-1]
+</code></pre>
+        </details>
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h2 id="td.render_daygrid" class="doc doc-heading">
+<code class="highlight language-python">render_daygrid(period, caption, xoffset, yoffset, height, metrics, style, first_pass=True)</code>
+
+
+</h2>
+
+    <div class="doc doc-contents ">
+
+      <p>render svg output for the day grid for a period. Output is [svg_output, height]</p>
+
+        <details class="quote">
+          <summary>Source code in <code>trialdesign/td.py</code></summary>
+          <pre class="highlight"><code class="language-python">def render_daygrid(period, caption, xoffset, yoffset, height, metrics, style, first_pass=True):
+	"""render svg output for the day grid for a period. Output is [svg_output, height]"""
+	(daywidth_function, textwidth_function, textheight_function) = metrics
+	(periodspacing, lineheight, ypadding, lwd, ellipsis, debug) = style
+
+	svg_out = ""
+	y = yoffset
+
+	if debug:
+		svg_out += render_dummy(period, xoffset, yoffset, height, metrics)
+
+	for start, width, center, label, shading in zip(period_day_starts(period, xoffset, daywidth_function), daywidth_function(period), period_day_centers(period, xoffset, daywidth_function), day_labels(period), day_shadings(period)):
+		if shading:
+			svg_out += svg_rect(start, y, width, height, lwd=0, fill_color="lightgray")
+		if width &gt; textwidth_function("XX")/3:
+			svg_out += svg_rect(start, y, width, height, lwd=lwd)
+		else:
+			svg_out += svg_line(start, y, start+width, y, lwd=lwd, dashed=True)
+			svg_out += svg_line(start, y+height, start+width, y+height, lwd=lwd, dashed=True)
+		label = str(label)
+		delta = textwidth_function("1")*.5 if label and label[0] == "1" else 0
+		svg_out += svg_text(center - textwidth_function(str(label)) / 2-delta, yoffset + height - (height- textheight_function("X")) / 2, str(label))
+	return([svg_out, height+ypadding*2])
+</code></pre>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h2 id="td.render_dose_graph" class="doc doc-heading">
+<code class="highlight language-python">render_dose_graph(period, caption, xoffset, yoffset, lineheight, metrics, style, first_pass=True)</code>
+
+
+</h2>
+
+    <div class="doc doc-contents ">
+
+      <p>render dose over time for administration. Output is [svg_output, height]</p>
+
+        <details class="quote">
+          <summary>Source code in <code>trialdesign/td.py</code></summary>
+          <pre class="highlight"><code class="language-python">def render_dose_graph(period, caption, xoffset, yoffset, lineheight, metrics, style, first_pass=True):
+	"""render dose over time for administration. Output is [svg_output, height]"""
+	(daywidth_function, textwidth_function, textheight_function) = metrics
+	(periodspacing, lineheight, ypadding, lwd, ellipsis, debug) = style
+
+	svg_out = ""
+	if debug:
+		svg_out += render_dummy(period, xoffset, yoffset, lineheight+ textheight_function("X"), metrics)
+
+	startx = period_day_starts(period, xoffset, daywidth_function)
+	endx = period_day_ends(period, xoffset, daywidth_function)
+	doses = [i for i in extract_field(period, caption, "dose")]
+	doses_num = [i for i in doses if isinstance(i, int) or isinstance(i, float)]
+	if len(doses_num):
+		maxdose, mindose = max(doses_num), min(doses_num)
+		def dosey(dose):
+			return(yoffset + lineheight*0.6 - (dose-mindose)/(maxdose-mindose)*lineheight*0.6)
+		# if doses:
+		lastx, lasty, lastdose = 0, 0, 0
+		lastend = 0
+		for (s, e, d) in zip(startx, endx, doses):
+			if type(d)==int or type(d)==float:
+				svg_out += svg_line(s, dosey(d), e, dosey(d), lwd=lwd)
+				if lasty:
+					svg_out += svg_line(lastx, lasty, s, dosey(d), lwd=lwd)
+				lastx, lasty = e, dosey(d)
+				if d != lastdose:
+					if lastend + textwidth_function("n") &lt; s:
+						svg_out += svg_text(s, yoffset + lineheight + textheight_function("X"), str(d))
+						lastend = s + textwidth_function(str(d))
+					lastdose = d
+	return([svg_out, lineheight+textheight_function("X")+ypadding])
+</code></pre>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h2 id="td.render_dummy" class="doc doc-heading">
+<code class="highlight language-python">render_dummy(period, xoffset, yoffset, lineheight, metrics)</code>
+
+
+</h2>
+
+    <div class="doc doc-contents ">
+
+      <p>render bounding box for visual debugging purposes. Output is svg code only.</p>
+
+        <details class="quote">
+          <summary>Source code in <code>trialdesign/td.py</code></summary>
+          <pre class="highlight"><code class="language-python">def render_dummy(period, xoffset, yoffset, lineheight, metrics):
+	"""render bounding box for visual debugging purposes. Output is svg code only."""
+	daywidth_function = metrics[0]
+	return(svg_rect(xoffset, yoffset, period_width(period, daywidth_function), lineheight, lwd=0, fill_color="cornsilk"))
+</code></pre>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h2 id="td.render_interval" class="doc doc-heading">
+<code class="highlight language-python">render_interval(period, caption, xoffset, yoffset, lineheight, metrics, style, first_pass=True)</code>
+
+
+</h2>
+
+    <div class="doc doc-contents ">
+
+      <p>render interval for procedure. Output is [svg_output, height]</p>
+
+        <details class="quote">
+          <summary>Source code in <code>trialdesign/td.py</code></summary>
+          <pre class="highlight"><code class="language-python">def render_interval(period, caption, xoffset, yoffset, lineheight, metrics, style, first_pass=True):
+	"""render interval for procedure. Output is [svg_output, height]"""
+	(daywidth_function, textwidth_function, textheight_function) = metrics
+	(periodspacing, lineheight, ypadding, lwd, ellipsis, debug) = style
+
+	svg_out = ""
+	if debug:
+		svg_out += render_dummy(period, xoffset, yoffset, lineheight, metrics)
+
+	y = yoffset + lineheight/2
+	if first_pass:
+		svg_out += svg_text(5, y + textheight_function(caption) * (1/2 - 0.1), caption)
+
+	# render interval box
+	starts = period_day_starts(period, xoffset, daywidth_function)
+	ends = period_day_ends(period, xoffset, daywidth_function)
+	widths = daywidth_function(period)
+
+	height = 0.4 * lineheight
+	if 'intervals' in period.keys():
+		for intv in period['intervals']:
+			if intv['caption'] == caption:
+				if "start" in intv.keys() and "duration" in intv.keys():
+					start_list, duration_list = [intv['start']], [intv['duration']]
+				elif "days" in intv.keys() and isinstance(intv["days"], list):
+					start_list, duration_list = intv["days"], [1 for i in intv["days"]]
+				else:
+					raise TypeError(f'{period["caption"]}, interval "{intv["caption"]}"')
+
+				for start, duration in zip(start_list, duration_list):
+					startx = starts[day_index(period, start)]
+					end = start + duration -1
+
+					if start &lt;0 and end &gt;0:
+						end += 1
+					endx = ends[day_index(period, end)]
+					if "decoration" in intv.keys():
+						if intv["decoration"] == "bracketed":
+							wo = widths[day_index(period, start)]
+							wc = widths[day_index(period, end)]
+							svg_out += svg_open_bracket(startx, y, lineheight, wo*.6, xpadding=0, radius=lineheight/8, lwd=lwd)
+							svg_out += svg_close_bracket(endx, y, lineheight, wc*.6, xpadding=0, radius=lineheight/8, lwd=lwd)
+					svg_out += svg_rect(startx, y-height/2, endx-startx, height, lwd=lwd)
+	return([svg_out, lineheight+ypadding])
+</code></pre>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h2 id="td.render_periodcaption" class="doc doc-heading">
+<code class="highlight language-python">render_periodcaption(period, caption, xoffset, yoffset, height, metrics, style, first_pass=True)</code>
+
+
+</h2>
+
+    <div class="doc doc-contents ">
+
+      <p>render caption for period. The 'caption' input is ignored and the caption field of the input period is used. Output is [svg_output, height]</p>
+
+        <details class="quote">
+          <summary>Source code in <code>trialdesign/td.py</code></summary>
+          <pre class="highlight"><code class="language-python">def render_periodcaption(period, caption, xoffset, yoffset, height, metrics, style, first_pass=True):
+	"""render caption for period. The 'caption' input is ignored and the caption field of the input period is used. Output is [svg_output, height]"""
+	(daywidth_function, textwidth_function, textheight_function) = metrics
+	(periodspacing, lineheight, ypadding, lwd, ellipsis, debug) = style
+
+	svg_out = ""
+	if debug:
+		svg_out += render_dummy(period, xoffset, yoffset, height, metrics)
+	xcenter = xoffset + period_width(period, daywidth_function)/2
+	svg_out += svg_text(xcenter - textwidth_function(str(period['caption']))/2, yoffset+ height - (height-textheight_function("X"))/2, str(period['caption']))
+	return([svg_out, height+ypadding/2])
+</code></pre>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h2 id="td.render_periods" class="doc doc-heading">
+<code class="highlight language-python">render_periods(periods, x, y, caption, height, render_function, metrics, style, dashes=False, **kwargs)</code>
+
+
+</h2>
+
+    <div class="doc doc-contents ">
+
+      <p>applies rendering function to all periods</p>
+
+        <details class="quote">
+          <summary>Source code in <code>trialdesign/td.py</code></summary>
+          <pre class="highlight"><code class="language-python">def render_periods(periods, x, y, caption, height, render_function, metrics, style, dashes=False, **kwargs):
+	"""applies rendering function to all periods"""
+	daywidth_function= metrics[0]
+	(periodspacing, lineheight, ypadding, lwd, ellipsis, debug) = style
+
+	w = [period_width(i, daywidth_function) for i in periods]
+	first = True
+	last = False
+	out = ""
+	for p in periods:
+		if p==periods[-1]:
+			last=True
+		[svg_out, y_out] = render_function(p, caption, x, y, height, metrics, style, first_pass=first, **kwargs)
+		out += svg_out
+		if dashes and not last:
+			out += svg_line(x+period_width(p, daywidth_function), y+height/2, x+period_width(p, daywidth_function)+periodspacing, y+height/2, lwd=lwd)
+		x += period_width(p, daywidth_function) + periodspacing
+		first=False
+	return([out, y_out])
+</code></pre>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h2 id="td.render_procedure" class="doc doc-heading">
+<code class="highlight language-python">render_procedure(period, caption, xoffset, yoffset, lineheight, metrics, style, default_symbol='diamond', first_pass=True)</code>
+
+
+</h2>
+
+    <div class="doc doc-contents ">
+
+      <p>render procedure. Output is [svg_output, height]</p>
+
+        <details class="quote">
+          <summary>Source code in <code>trialdesign/td.py</code></summary>
+          <pre class="highlight"><code class="language-python">def render_procedure(period, caption, xoffset, yoffset, lineheight, metrics, style, default_symbol="diamond", first_pass=True):
+	"""render procedure. Output is [svg_output, height]"""
+	(daywidth_function, textwidth_function, textheight_function) = metrics
+	(periodspacing, lineheight, ypadding, lwd, ellipsis, debug) = style
+
+	svg_out = ""
+	if debug:
+		svg_out += render_dummy(period, xoffset, yoffset, lineheight, metrics)
+
+	y = yoffset + lineheight/2 # center of the line
+	if first_pass:
+		svg_out += svg_text(5, y + textheight_function(caption) * (1/2 - 0.1), caption)	
+
+	centers = period_day_centers(period, xoffset, daywidth_function)
+	widths = daywidth_function(period)
+	brackets = extract_field(period, caption, "decoration")
+	symbols = procedure_symbols(period, caption, default_symbol)
+	dlabels = day_labels(period)
+	values = extract_field(period, caption, "value")
+
+	ellipses = [1 if (s!="" and l == "" and len(symbols)&gt;3) else 0 for (s,l) in zip(symbols, dlabels)]
+
+	for p, w, s, b, e, v in zip(centers, widths, symbols, brackets, ellipses, values):
+		if s:
+			# if e==1 and b=="" and s=="arrow" and ellipsis:
+			if e==1 and b=="" and ellipsis:
+				svg_out += svg_circle(p, y, lineheight/30, fill_color="black")
+			elif v != "":
+				if v == 0:
+					svg_out += svg_symbol(p, y, w*.5, "circle", fill=False, fill_color="none")
+				else:
+					svg_out += svg_symbol(p, y, w*.5, "circle", fill=True, fill_color="black")
+			else:
+				svg_out += svg_symbol(p, y, w, s, size=textheight_function("X"), lwd=lwd, title=caption)
+				if b=="bracketed":
+					svg_out += svg_open_bracket(p, y, lineheight, w*.8, xpadding=0, radius=lineheight/8, lwd=lwd)
+					svg_out += svg_close_bracket(p, y, lineheight, w*.8, xpadding=0, radius=lineheight/8, lwd=lwd)
+	return([svg_out, lineheight+ypadding])
+</code></pre>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h2 id="td.render_times" class="doc doc-heading">
+<code class="highlight language-python">render_times(period, caption, xoffset, yoffset, lineheight, metrics, style, maxwidth=100)</code>
+
+
+</h2>
+
+    <div class="doc doc-contents ">
+
+      <p>render timescale for procedure. Output is [svg_output, height]</p>
+
+        <details class="quote">
+          <summary>Source code in <code>trialdesign/td.py</code></summary>
+          <pre class="highlight"><code class="language-python">def render_times(period, caption, xoffset, yoffset, lineheight, metrics, style, maxwidth=100):
+	"""render timescale for procedure. Output is [svg_output, height]"""
+	(daywidth_function, textwidth_function, textheight_function) = metrics
+	(periodspacing, lineheight, ypadding, lwd, ellipsis, debug) = style
+
+	out = ""
+	proc = normalize_procedure(extract_procedure(period, caption))
+
+	ts_days = []
+	for x in ['procedures', 'administrations']:
+		if x in period.keys():
+			for p in period[x]:
+				if p['caption'] == caption:
+					if "timescale" in p.keys() and p["timescale"]=="show":
+						ts_days.append(p["relative"])
+	ts_days = set(ts_days)
+
+	y = yoffset
+	bracketheight = lineheight * 2/3
+
+	last_scale_end = 0
+	if ts_days:
+		## curly brackets
+		if debug:
+			out += render_dummy(period, xoffset, y, bracketheight, metrics)
+		for ts_d in ts_days:
+			times = unnormalize_procedure([i for i in proc if i[2]==ts_d])[0][1]
+			startx = period_day_starts(period, xoffset, daywidth_function)[day_index(period, min([i for (i, t, rel) in proc if rel==ts_d]))]
+			endx = period_day_ends(period, xoffset, daywidth_function)[day_index(period, max([i for (i, t, rel) in proc if rel==ts_d]))]
+			out += svg_curly_up(startx, endx, y, radius=bracketheight/2, lwd=lwd)			
+		y += bracketheight + ypadding*1.5
+
+		## timescales
+		if debug:
+			out += render_dummy(period, xoffset, y, lineheight*1.33 + ypadding*2 + textheight_function("X"), metrics)
+		for ts_d in ts_days:
+			times = unnormalize_procedure([i for i in proc if i[2]==ts_d])[0][1]
+
+			maxtime = max(times)
+			break_time = min(sorted(list([i for i in times if i&lt;24]))[-1] + 2, 23)
+			times_below = len([i for i in times if i&lt;=break_time])
+			times_above = len([i for i in times if i&gt;break_time])
+
+			startx = period_day_starts(period, xoffset, daywidth_function)[day_index(period, min([i for (i, t, rel) in proc if rel==ts_d]))]
+
+			### scale
+			scale_height = lineheight/3
+			scale_width = min(len(times) * textwidth_function("XX"), maxwidth-xoffset)
+			scale_break = scale_width * times_below/(times_below+times_above)
+			scale_gap = textwidth_function("m")
+
+			scale_startx = max(min(startx, xoffset + period_width(period, daywidth_function) - scale_width), xoffset)
+			if scale_startx &lt; last_scale_end:
+				y += lineheight*1.33 + ypadding*3 + textheight_function("X")
+
+			def render_scale(x, y, width, height, scale_min, scale_max, scale_labels, show_unit=False):
+				out = svg_line(x, y, x+width, y, lwd=lwd)
+				label_widths = [textwidth_function(str(i)) for i in scale_labels]
+				last_label_end = 0
+				final_label_begin = x + width - label_widths[-1]/2
+				min_delta = textwidth_function(".")
+
+				for i, wi in zip(scale_labels, label_widths):	
+					xi = (i-scale_min) * width/(scale_max-scale_min) + x
+					out += svg_line(xi, y-height/2, xi, y+height/2, lwd=lwd)
+					dxi = wi/2
+					if xi-dxi &gt; last_label_end and xi+dxi &lt; final_label_begin - min_delta:
+						out += svg_text(xi-dxi, y+height/2+textheight_function("X")+ypadding, str(i))
+						last_label_end = xi+dxi+min_delta
+					if i == scale_labels[-1]:
+						temp = str(i)
+						if show_unit:
+							temp += " h"
+						out += svg_text(xi-dxi, y+height/2+textheight_function("X")+ypadding, temp)
+				return(out)
+
+			def render_points(x, y, width, scale_min, scale_max):
+				points = [t for t in times if t&gt;=scale_min and t&lt;=scale_max]
+				points_x = [(i-scale_min) * width/(scale_max-scale_min) + x for i in points]
+				out = ""
+				for p, xi in zip(points, points_x):
+					out += svg_symbol(xi, y + lineheight/2, 0, "diamond", size=textheight_function("X"), lwd=lwd)
+				return(out)
+
+			out += render_points(scale_startx, y, scale_break, 0, break_time)
+			out += render_points(scale_startx+scale_break+scale_gap, y, scale_width - scale_gap - scale_break, 24, max(maxtime, 36))
+
+			out += render_scale(scale_startx, y+lineheight+ypadding, scale_break, scale_height, 0, break_time, range(0, int(break_time), 2))
+			if maxtime &gt;=24:
+				out += render_scale(scale_startx+scale_break+scale_gap, y+lineheight+ypadding, scale_width - scale_gap - scale_break, scale_height, 24, max(maxtime, 36), [i*24 for i in range(1, int(maxtime/24+1))], show_unit=True)
+			last_scale_end = scale_startx + scale_width
+
+		return([out, y+lineheight*1.33 + ypadding*3 + textheight_function("X")-yoffset])
+</code></pre>
+        </details>
+    </div>
+
+  </div>
+
+
+
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h2 id="td.unnormalize_procedure" class="doc doc-heading">
+<code class="highlight language-python">unnormalize_procedure(procedure)</code>
+
+
+</h2>
+
+    <div class="doc doc-contents ">
+
+      <p>collate procedure times into single day, if relative to the same day</p>
+
+        <details class="quote">
+          <summary>Source code in <code>trialdesign/td.py</code></summary>
+          <pre class="highlight"><code class="language-python">def unnormalize_procedure(procedure):
+	""" collate procedure times into single day, if relative to the same day"""
+	out = []
+	if procedure:
+		rels = set([r for (d, ts, r) in procedure])
+		for rel in rels:
+			current_times = []
+			for (d, ts, r) in procedure:
+				for t in ts:
+					if r==rel:
+						current_times.append(t+(d-r)*24)
+			out.append((rel, current_times, rel))	
+	return(out)
+</code></pre>
+        </details>
+    </div>
+
+  </div>
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div></div>
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js" defer></script>
+
+        <div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>
