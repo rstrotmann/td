@@ -82,16 +82,40 @@
             
             <li class="nav-item" data-level="1"><a href="#input-file-format" class="nav-link">Input file format</a>
               <ul class="nav flex-column">
-            <li class="nav-item" data-level="2"><a href="#overall-structure" class="nav-link">Overall structure</a>
+            <li class="nav-item" data-level="2"><a href="#periods" class="nav-link">Periods</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-level="3"><a href="#period-formatting" class="nav-link">Period formatting</a>
               <ul class="nav flex-column">
               </ul>
             </li>
-            <li class="nav-item" data-level="2"><a href="#period-formatting" class="nav-link">Period formatting</a>
-              <ul class="nav flex-column">
               </ul>
             </li>
             <li class="nav-item" data-level="2"><a href="#period-elements" class="nav-link">Period elements</a>
               <ul class="nav flex-column">
+            <li class="nav-item" data-level="3"><a href="#intervals" class="nav-link">Intervals</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="3"><a href="#administrations" class="nav-link">Administrations</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="3"><a href="#procedures" class="nav-link">Procedures</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#special-notation" class="nav-link">Special notation</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-level="3"><a href="#exact-procedure-times" class="nav-link">Exact procedure times</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="3"><a href="#exact-dose-information" class="nav-link">Exact dose information</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
               </ul>
             </li>
               </ul>
@@ -102,9 +126,17 @@
                     <div class="col-md-9" role="main">
 
 <h1 id="input-file-format">Input file format</h1>
-<p>The td.py tool expects a json-formatted input file (see <a href="../use/">Use</a>) that specifies the study elements to be rendered. The below overview specifies the format of this input file.</p>
-<h2 id="overall-structure">Overall structure</h2>
-<p>In general, clinical study elements within the input file are expected to be structured in <em>periods</em> or <em>cycles</em>. Both options are possible and essentially equivalent.</p>
+<p>The td.py tool expects a json-formatted input file (see <a href="../use/">Use</a>) that specifies the study elements to be rendered.</p>
+<p>In general, the <a href="https://en.wikipedia.org/w/index.php?title=JSON&amp;oldid=1065106487">json format</a> has specific syntactic requirements in order to be read correctly by TD:</p>
+<ul>
+<li>All json elements are enclosed in curly brackets, including the complete input file</li>
+<li>Fields within elements have a name that must be enclosed in quotes, e.g., "caption", followed by a colon and the respective value</li>
+<li>Values can be numerical, character (i.e., enclosed in quotes), other json elements, or lists (enclosed in square brackets) of any of the previous</li>
+<li>Fields must be separated by commas, but there is no comma after the respective last element</li>
+</ul>
+<p>The below overview specifies the specific expected format of the json-formatted input file to describe the trial design elements.</p>
+<h2 id="periods">Periods</h2>
+<p>On the highest level, clinical study elements within the input file are expected to be structured in <em>periods</em> or <em>cycles</em>. Both options are possible and essentially equivalent.</p>
 <p>As a minimum, each <em>period</em> or <em>cycle</em> element needs to have <em>caption</em>, <em>start</em> and <em>duration</em> fields. A minimum period "Period 1" that includes days 1 through 7 is described like this:</p>
 <pre><code class="language-json">{
     &quot;caption&quot;: &quot;Period 1&quot;,
@@ -146,7 +178,7 @@
 }
 </code></pre>
 <p><img alt="" src="../sample2.svg" /></p>
-<h2 id="period-formatting">Period formatting</h2>
+<h3 id="period-formatting">Period formatting</h3>
 <p>Additional fields can be added to the <em>period</em> elements to specify the visual output. Each <em>period</em> can have the following fields:</p>
 <ul>
 <li><em>daylabels</em>, a list of days for which daynumbers will be printed.</li>
@@ -277,7 +309,8 @@
 }
 </code></pre>
 <p><img alt="" src="../sample6.svg" /></p>
-<h4 id="exact-procedure-times">Exact procedure times</h4>
+<h2 id="special-notation">Special notation</h2>
+<h3 id="exact-procedure-times">Exact procedure times</h3>
 <p>As a more granular alternative to the rather coarse definition of the procedure frequency using the <em>freq</em> field, precise preocedure times can be noted for procedures, e.g., for PK samplings. The times (in hours) is to be provided as a list to the <em>times</em> field. In addition, a <em>relative</em> field must be provided to clearly indicate to which day the times refer:</p>
 <pre><code class="language-json">{
     &quot;periods&quot;: [
@@ -322,12 +355,34 @@
 }
 </code></pre>
 <p><img alt="" src="../sample8.svg" /></p>
-<p>(Created by invoking: <code>python td.py -t sample.jpg</code>)</p></div>
+<p>(Created by invoking: <code>python td.py -t sample.jpg</code>)</p>
+<h3 id="exact-dose-information">Exact dose information</h3>
+<p>In some cases, the dose for an IMP changes over time in a scheduled way, e.g. to phase in or out a sensitive drug. In this cases, the respective administration element can include specific dosing information using a numerical <em>dose</em> field. The below example shows a dose escalation for carbamazepine:</p>
+<pre><code class="language-json">&quot;administrations&quot;: [
+    {
+        &quot;caption&quot;: &quot;carbamazepine BID&quot;,
+        &quot;days&quot;: [&quot;8-9&quot;],
+        &quot;dose&quot;: 100
+    },
+    {
+        &quot;caption&quot;: &quot;carbamazepine BID&quot;,
+        &quot;days&quot;: [&quot;10-11&quot;],
+        &quot;dose&quot;: 200
+    },
+    {
+        &quot;caption&quot;: &quot;carbamazepine BID&quot;,
+        &quot;days&quot;: [&quot;12-32&quot;],
+        &quot;dose&quot;: 300
+    }
+]
+</code></pre>
+<p>As detailed under <a href="../use/#dose-graph">"use"</a>, a dose graph can then be displayed in the output to indicate the dose over time.</p></div>
             </div>
         </div>
 
         <footer class="col-md-12">
             <hr>
+                <p>Rainer Strotmann, Jan-2022</p>
             <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
         </footer>
         <script>

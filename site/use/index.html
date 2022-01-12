@@ -80,14 +80,42 @@
     <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
         <ul class="nav flex-column">
             
-            <li class="nav-item" data-level="1"><a href="#using-td" class="nav-link">Using td</a>
+            <li class="nav-item" data-level="1"><a href="#using-td" class="nav-link">Using TD</a>
               <ul class="nav flex-column">
             <li class="nav-item" data-level="2"><a href="#requirements" class="nav-link">Requirements</a>
               <ul class="nav flex-column">
               </ul>
             </li>
-            <li class="nav-item" data-level="2"><a href="#running-tdpy" class="nav-link">Running td.py</a>
+            <li class="nav-item" data-level="2"><a href="#running-td" class="nav-link">Running TD</a>
               <ul class="nav flex-column">
+            <li class="nav-item" data-level="3"><a href="#output-file" class="nav-link">Output file</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="3"><a href="#font-size-and-family" class="nav-link">Font size and family</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="3"><a href="#padding" class="nav-link">Padding</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="3"><a href="#condensed" class="nav-link">Condensed</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="3"><a href="#ellipsis" class="nav-link">Ellipsis</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="3"><a href="#timescale" class="nav-link">Timescale</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="3"><a href="#dose-graph" class="nav-link">Dose graph</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
               </ul>
             </li>
               </ul>
@@ -97,10 +125,11 @@
 </div></div>
                     <div class="col-md-9" role="main">
 
-<h1 id="using-td">Using td</h1>
+<h1 id="using-td">Using TD</h1>
 <p>This gives an overview on how to run the td tool from the command line.</p>
 <h2 id="requirements">Requirements</h2>
-<p>Td.py is written in python 3. In order to run the tool on your system, python 3 needs to be installed. In addition, td.py makes use of the below libraries:</p>
+<p>TD is written in python 3. In order to run the tool on your system, python 3 must be installed. You can find out which version of python is installed (or is the default) on your system with <code>python --version</code>.</p>
+<p>In addition, td.py makes use of the below libraries:</p>
 <ul>
 <li>click</li>
 <li>pathlib</li>
@@ -111,12 +140,109 @@
 <li>sys</li>
 </ul>
 <p>These packages need to be installed with <code>pip install [library]</code>.</p>
-<h2 id="running-tdpy">Running td.py</h2></div>
+<h2 id="running-td">Running TD</h2>
+<p>Generally, it is assumed that only python 3 is installed on the host system. TD can then be executed from the command line with: <code>python td.py [FLAGS] [INPUT]</code> where <em>INPUT</em> is the json-formatted input file (see <a href="../input/">Input</a> for details). The optional <em>FLAGS</em> can be used to further specify the visual output.</p>
+<p>In cases where both python 3 and python 2.7 are installed on the host system, it may be necessary to be specific about the python version to be used, this can be achieved using the <code>python3 td.py [FLAGS] [INPUT]</code> command.</p>
+<p>The available option flags can be shown with <code>python3 td.py --help</code>. In the current version of TD, they include:</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Alternative</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>--output TEXT</td>
+<td>-o</td>
+<td>Output file name. Default: INPUT.svg</td>
+</tr>
+<tr>
+<td>--fontsize INTEGER</td>
+<td>-s</td>
+<td>Output font size (default 11)</td>
+</tr>
+<tr>
+<td>--font TEXT</td>
+<td>-f</td>
+<td>Output font type (default: Arial)</td>
+</tr>
+<tr>
+<td>--padding FLOAT</td>
+<td>-p</td>
+<td>Y-axis padding factor (default 1)</td>
+</tr>
+<tr>
+<td>--condensed</td>
+<td>-c</td>
+<td>Show condensed daygrid</td>
+</tr>
+<tr>
+<td>--timescale</td>
+<td>-t</td>
+<td>Show time scale</td>
+</tr>
+<tr>
+<td>--graph</td>
+<td>-g</td>
+<td>Show dose graph</td>
+</tr>
+<tr>
+<td>--ellipsis</td>
+<td>-e</td>
+<td>Reduce symbols in condensed output</td>
+</tr>
+<tr>
+<td>--all</td>
+<td>-A</td>
+<td>All options, equivalent to -ctge</td>
+</tr>
+<tr>
+<td>--debug</td>
+<td>-d</td>
+<td>Debug output</td>
+</tr>
+<tr>
+<td>--help</td>
+<td>-h</td>
+<td>Show this message and exit.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="output-file">Output file</h3>
+<p>The default output file name is the input file name (e.g., "test.json") with the .svg extension (i.e., "test.svg"). This can be overridden with the <em>--output</em> or <em>-o</em> option.</p>
+<h3 id="font-size-and-family">Font size and family</h3>
+<p>The default font is Arial 11 point. Both font and size can be overridden using the <em>--font</em> (<em>-f</em>) and <em>--fontsize</em> (<em>-s</em>) options. The available font families depend on the fonts installed on the target system.</p>
+<p>In addition, the generated svg file can be scaled in the target application (e.g., MS PowerPoint), and any element can be reformatted separately.</p>
+<h3 id="padding">Padding</h3>
+<p>The parameter <em>--padding</em> (<em>-p</em>) increases or decreases the vertical space between period elements. The default of 1 should work in most cases.</p>
+<h3 id="condensed">Condensed</h3>
+<p>This option can be used to compress the output horizontally. Days that have no daylabel (<a href="../input/#period-formatting">see "period formatting"</a>) assigned will be rendered narrower. As an example, the following figure was rendered normally (using <code>python td.py test.json</code>):</p>
+<p><img alt="" src="../normal.svg" /></p>
+<p>The below version was rendered with the <em>--condensed</em> option (<code>python td.py --condensed test.json</code>):</p>
+<p><img alt="" src="../condensed.svg" /></p>
+<h3 id="ellipsis">Ellipsis</h3>
+<p>In addition to condensed output, daily recurring procedure symbols that visually clutter the output can be reduced using the <em>--ellipsis</em> or <em>-e</em> option. This is only done for days that have no daylabel. </p>
+<p>The below version was rendered using <code>python td.py -ce test.json</code> for a combination of condensed and ellipsis output:</p>
+<p><img alt="" src="../ellipsis.svg" /></p>
+<h3 id="timescale">Timescale</h3>
+<p>Procedures that have exact time information included in the input file, e.g., PK samplings (see <a href="../input/#exact-procedure-times">"exact procedure times"</a>), can be displayed with an inset figure underneath that shows the timescale detail.</p>
+<p>The following output was generated using the <code>python td.py --condensed --timescale test.json</code> command:</p>
+<p><img alt="" src="../timescale.svg" /></p>
+<p>Note that that there must be the <code>"timescale": "show"</code> line included in the json input file for this procedure (see <a href="../input/#exact-procedure-times">"exact procedure times"</a>).</p>
+<p>For visual clarity, display of a timescale should be limited to the last element (the one at the bottom) of a trial design visualization.</p>
+<h3 id="dose-graph">Dose graph</h3>
+<p>In cases where intraindividual dose escalation is applied, e.g., to phase in or out a drug, a small dose graph can be shown underneath the respective administration symbols to indicate the dose over time.</p>
+<p>A prerequisite is that the respective dosing information is included per day in the input file (see <a href="../input/#exact-dose-information">"input"</a>).</p>
+<p>The following output was created using the <code>python td.py --condensed --graph test.json</code> command to include a dose graph for carbamazepine:</p>
+<p><img alt="" src="../graph.svg" /></p></div>
             </div>
         </div>
 
         <footer class="col-md-12">
             <hr>
+                <p>Rainer Strotmann, Jan-2022</p>
             <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
         </footer>
         <script>
