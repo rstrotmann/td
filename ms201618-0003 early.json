@@ -10,13 +10,17 @@
 			"caption": "Treatment phase",
 			"duration": 29,
 			"start": -1,
-			"daylabels": [-1, "1-2", "6-8", 15, 20, 22, 24, 26, 28],
-			"dayshading": [8, 15, 22],
+			"daylabels": [-1, "1-28"],
+			"dayshading": [1, 8, 15, 22],
 			"intervals": [
 				{
 					"caption": "hospitalization",
 					"start": -1,
 					"duration": 3
+				},
+				{
+					"caption": "ambulatory visit",
+					"days": ["6-11", "13-17", "19-20", 22, 24, 26, 28]
 				}
 			],
 			"administrations": [
@@ -41,9 +45,16 @@
 				{
 					"caption": "PK sampling",
 					"days": [1],
-					"times": [0, 0.5, 1, 2, 3, 6, 12, 24, 120, 144, 168],
+					"times": [0, 0.5, 1, 2, 3, 6, 12, 24, 120, 168, 192],
 					"relative": 1,
 					"timescale": "show"
+				},
+				{
+					"caption": "PK sampling",
+					"days": [26],
+					"freq": "QD",
+					"relative": 26,
+					"decoration": "bracketed"
 				}
 			]
 		},

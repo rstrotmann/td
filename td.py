@@ -384,6 +384,7 @@ def render_procedure(period, caption, xoffset, yoffset, lineheight, metrics, sty
 	values = extract_field(period, caption, "value")
 
 	ellipses = [1 if (s!="" and l == "" and len(symbols)>3) else 0 for (s,l) in zip(symbols, dlabels)]
+	# ellipses = [1 if (s!="" and len(symbols)>3) else 0 for (s,l) in zip(symbols, dlabels)]
 
 	for p, w, s, b, e, v in zip(centers, widths, symbols, brackets, ellipses, values):
 		if s:
@@ -462,7 +463,9 @@ def render_interval(period, caption, xoffset, yoffset, lineheight, metrics, styl
 				if "start" in intv.keys() and "duration" in intv.keys():
 					start_list, duration_list = [intv['start']], [intv['duration']]
 				elif "days" in intv.keys() and isinstance(intv["days"], list):
-					start_list, duration_list = intv["days"], [1 for i in intv["days"]]
+					# start_list, duration_list = intv["days"], [1 for i in intv["days"]]
+					start_list = decode_daylist(intv["days"])
+					duration_list = [1 for i in decode_daylist(intv["days"])]
 				else:
 					raise TypeError(f'{period["caption"]}, interval "{intv["caption"]}"')
 
