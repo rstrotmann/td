@@ -1,10 +1,19 @@
 # Input file format
 
-The td.py tool expects a json-formatted input file (see [Use](use.md)) that specifies the study elements to be rendered. The below overview specifies the format of this input file.
+The td.py tool expects a json-formatted input file (see [Use](use.md)) that specifies the study elements to be rendered.
 
-## Overall structure
+In general, the [json format](https://en.wikipedia.org/w/index.php?title=JSON&oldid=1065106487) has specific syntactic requirements in order to be read correctly by TD:
 
-In general, clinical study elements within the input file are expected to be structured in _periods_ or _cycles_. Both options are possible and essentially equivalent.
+* All json elements are enclosed in curly brackets, including the complete input file
+* Fields within elements have a name that must be enclosed in quotes, e.g., "caption", followed by a colon and the respective value
+* Values can be numerical, character (i.e., enclosed in quotes), other json elements, or lists (enclosed in square brackets) of any of the previous
+* Fields must be separated by commas, but there is no comma after the respective last element
+
+The below overview specifies the specific expected format of the json-formatted input file to describe the trial design elements.
+
+## Periods
+
+On the highest level, clinical study elements within the input file are expected to be structured in _periods_ or _cycles_. Both options are possible and essentially equivalent.
 
 As a minimum, each _period_ or _cycle_ element needs to have _caption_, _start_ and _duration_ fields. A minimum period "Period 1" that includes days 1 through 7 is described like this:
 
@@ -57,7 +66,7 @@ Further periods can be added as more members to _periods_, e.g.:
 ```
 ![](sample2.svg)
 
-## Period formatting
+### Period formatting
 
 Additional fields can be added to the _period_ elements to specify the visual output. Each _period_ can have the following fields:
 
@@ -217,7 +226,9 @@ In general, study procedures may be conducted once per day or multiple times per
 
 ![](sample6.svg)
 
-#### Exact procedure times
+## Special notation
+
+### Exact procedure times
 
 As a more granular alternative to the rather coarse definition of the procedure frequency using the _freq_ field, precise preocedure times can be noted for procedures, e.g., for PK samplings. The times (in hours) is to be provided as a list to the _times_ field. In addition, a _relative_ field must be provided to clearly indicate to which day the times refer:
 
@@ -274,3 +285,27 @@ Sometimes, it is desirable to print a more detailed timeline for a procedure (e.
 
 (Created by invoking: `python td.py -t sample.jpg`)
 
+### Exact dose information
+
+In some cases, the dose for an IMP changes over time in a scheduled way, e.g. to phase in or out a sensitive drug. In this cases, the respective administration element can include specific dosing information using a numerical _dose_ field. The below example shows a dose escalation for carbamazepine:
+
+```json
+"administrations": [
+    {
+        "caption": "carbamazepine BID",
+        "days": ["8-9"],
+        "dose": 100
+    },
+    {
+        "caption": "carbamazepine BID",
+        "days": ["10-11"],
+        "dose": 200
+    },
+    {
+        "caption": "carbamazepine BID",
+        "days": ["12-32"],
+        "dose": 300
+    }
+]
+```
+As detailed under ["use"](use.md#dose-graph), a dose graph can then be displayed in the output to indicate the dose over time.

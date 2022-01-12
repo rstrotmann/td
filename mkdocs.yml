@@ -6,6 +6,10 @@ nav:
   - Use: use.md
   - Code documentation: td.md
 
+theme:
+  name: mkdocs
+  navigation_depth: 3
+
 plugins:
   - mkdocstrings:
 
@@ -13,5 +17,6 @@ markdown_extensions:
   - admonition
 
 #theme: readthedocs
+copyright: Rainer Strotmann, Jan-2022
 
 
