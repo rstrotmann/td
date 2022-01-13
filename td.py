@@ -384,7 +384,6 @@ def render_procedure(period, caption, xoffset, yoffset, lineheight, metrics, sty
 	values = extract_field(period, caption, "value")
 
 	ellipses = [1 if (s!="" and l == "" and len(symbols)>3) else 0 for (s,l) in zip(symbols, dlabels)]
-	# ellipses = [1 if (s!="" and len(symbols)>3) else 0 for (s,l) in zip(symbols, dlabels)]
 
 	for p, w, s, b, e, v in zip(centers, widths, symbols, brackets, ellipses, values):
 		if s:
@@ -393,7 +392,7 @@ def render_procedure(period, caption, xoffset, yoffset, lineheight, metrics, sty
 				svg_out += svg_circle(p, y, lineheight/30, fill_color="black")
 			elif v != "":
 				if v == 0:
-					svg_out += svg_symbol(p, y, w*.5, "circle", fill=False, fill_color="none")
+					svg_out += svg_symbol(p, y, w*.5, "circle", fill=False, fill_color="none", lwd=lwd)
 				else:
 					svg_out += svg_symbol(p, y, w*.5, "circle", fill=True, fill_color="black")
 			else:
@@ -484,6 +483,14 @@ def render_interval(period, caption, xoffset, yoffset, lineheight, metrics, styl
 							svg_out += svg_close_bracket(endx, y, lineheight, wc*.6, xpadding=0, radius=lineheight/8, lwd=lwd)
 					svg_out += svg_rect(startx, y-height/2, endx-startx, height, lwd=lwd)
 	return([svg_out, lineheight+ypadding])
+
+
+def timescale_height(lineheight, metrics, style):
+	(daywidth_function, textwidth_function, textheight_function) = metrics
+	(periodspacing, lineheight, ypadding, lwd, ellipsis, debug) = style
+	bracket_h = lineheight * 2/3
+	timescale_h = lineheight * 1.33 + ypadding * 2
+	return(bracket_h + ypadding * 1.5 + timescale_h + ypadding * 2)
 
 
 def render_times(period, caption, xoffset, yoffset, lineheight, metrics, style, maxwidth=100):
@@ -745,6 +752,7 @@ def main(file, debug, fontsize, output, font, condensed, timescale, padding, ell
 		print(f'error rendering daygrid: {err}')
 		sys.exit()
 
+
 	# render intervals, administrations, procedures
 	for n in item_names(td, 'intervals'):
 		try:
@@ -759,9 +767,9 @@ def main(file, debug, fontsize, output, font, condensed, timescale, padding, ell
 			if [i for p in periods for i in extract_field(p, n, "dose") if i != ""]:
 				out = add_output(out, render_periods(periods, xoffset, out[1], n, lineheight, render_dose_graph, metrics, style))
 
+	last_proc_has_timescale = False
 	for n in item_names(td, 'procedures'):
 		out = add_output(out, render_periods(periods, xoffset, out[1], n, lineheight, render_procedure, metrics, style, default_symbol="diamond"))
-
 		# render timescale
 		if timescale:
 			ts = False
@@ -773,7 +781,28 @@ def main(file, debug, fontsize, output, font, condensed, timescale, padding, ell
 				x += period_width(p, daywidth_function)
 				x += periodspacing
 			if ts:
+				if n == item_names(td, 'procedures')[-1]:
+					last_proc_has_timescale = True
 				out = add_output(out, render_times(p, n, x, out[1], lineheight, metrics, style, maxwidth=xoffset + sum([period_width(i, daywidth_function) for i in periods]) + (len(periods)-1) * periodspacing))
+
+
+	# apply period decorations
+	x = xoffset
+	height = out[1] - yoffset - ypadding/2
+	if last_proc_has_timescale:
+		height -= timescale_height(lineheight, metrics, style)
+
+	if "periods" in td.keys():
+		for p in td["periods"]:
+			if "decoration" in p.keys():
+				if p["decoration"] == "highlighted":
+					out[0] = svg_rect(x-periodspacing/4, yoffset, period_width(p, daywidth_function)+periodspacing/2, height, lwd=0, fill_color="#eee") + out[0]
+				if p["decoration"] == "bracketed":
+					temp = svg_open_bracket(x-periodspacing/4, yoffset+height/2, height, lineheight/4, xpadding=0, radius=lineheight/4, lwd=lwd)
+					temp += svg_close_bracket(x+period_width(p, daywidth_function)+periodspacing/4, yoffset+height/2, height, lineheight/4, xpadding=0, radius=lineheight/4, lwd=lwd)
+					out[0] = temp + out[0]
+			x += period_width(p, daywidth_function) + periodspacing
+
 
 	# re-calculate overall output dimensions, finalize svg
 	viewport_width = xoffset + sum([period_width(i, daywidth_function) for i in periods]) + (len(periods)) * periodspacing
