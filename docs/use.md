@@ -87,7 +87,7 @@ For visual clarity, display of a timescale should be limited to the last element
 
 ### Dose graph
 
-In cases where intraindividual dose escalation is applied, e.g., to phase in or out a drug, a small dose graph can be shown underneath the respective administration symbols to indicate the dose over time.
+In cases where intraindividual dose escalation occurs, e.g., to phase a drug in or out, a dose graph can be shown underneath the administration symbols to indicate dose over time.
 
 A prerequisite is that the respective dosing information is included per day in the input file (see ["input"](input.md#exact-dose-information)).
 

@@ -78,13 +78,10 @@
 			"procedures": [
 				{
 					"caption": "PK sampling tepotinib",
-					"days": ["26-28"],
-					"freq": "rich"
-				},
-				{
-					"caption": "PK sampling tepotinib",
-					"days": ["29-32"],
-					"freq": "QD"
+					"days": [26],
+					"times": [0, 1, 1.5, 2, 3, 4, 6, 8, 12, 16, 24, 30, 38, 48, 60, 72, 96, 120, 144],
+					"relative": 1,
+					"timescale": "show"
 				},
 				{
 					"caption": "PK sampling carbamazepine",

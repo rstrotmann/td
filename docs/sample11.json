@@ -1,0 +1,42 @@
+{
+    "periods": [
+        {
+            "caption": "Period 1",
+            "start": -1,
+            "duration": 5,
+            "daylabels": [-1, "1-4"],
+            "decoration": "highlighted",
+            "procedures": [
+                {
+                    "caption": "massage",
+                    "days": ["1-2"]
+                }
+            ]
+        },
+        {
+            "caption": "Period 2",
+            "start": 1,
+            "duration": 4,
+            "daylabels": ["1-4"],
+            "procedures": [
+                {
+                    "caption": "massage",
+                    "days": ["1-2"]
+                }
+            ]
+        },
+        {
+            "caption": "Period 3",
+            "start": 1,
+            "duration": 4,
+            "daylabels": ["1-4"],
+            "decoration": "bracketed",
+            "procedures": [
+                {
+                    "caption": "massage",
+                    "days": [ "1-2"]
+                }
+            ]
+        }
+    ]
+}

@@ -24,9 +24,8 @@ As a minimum, each _period_ or _cycle_ element needs to have _caption_, _start_ 
     "duration": 7
 }
 ```
-!!! Note
 
-    Note that the period definition is enclosed in curly brackets. In the json format used here, this is used to structure elements. You will see below that objects can themselves contain objects. In additino, some elements are grouped together in a list. Lists are delimited in square brackets. 
+Note that the period definition is enclosed in curly brackets. In the json format, this is used to structure elements. You will see below that objects can themselves contain objects. In additino, some elements are grouped together in a list. Lists are delimited in square brackets. 
 
 
 In the input file, periods, even if only one is defined, are expected as a _periods_ list. A minimal viable input file could look like this:
@@ -226,7 +225,7 @@ In general, study procedures may be conducted once per day or multiple times per
 
 ![](sample6.svg)
 
-## Special notation
+## Advanced notation
 
 ### Exact procedure times
 
@@ -309,3 +308,85 @@ In some cases, the dose for an IMP changes over time in a scheduled way, e.g. to
 ]
 ```
 As detailed under ["use"](use.md#dose-graph), a dose graph can then be displayed in the output to indicate the dose over time.
+
+### Other procedure symbols
+
+In cases where prodecure symbols should indicate different conditions (e.g., fasted vs. fed), a _value_ field can be included in the procedure element. Procedures with a _value_ field are not shown as diamonds but as hollow circles if the value is zero, and filled circles for any value other than zero:
+
+``` json
+{
+    "periods": [
+        {
+            "caption": "Period 1",
+            "start": -1,
+            "duration": 8,
+            "daylabels": [-1, "1-7"],
+            "procedures": [
+                {
+                    "caption": "food",
+                    "days": [1],
+                    "value": 0
+                },
+                {
+                    "caption": "food",
+                    "days": [5],
+                    "value": 1
+                }
+            ]
+        }
+    ]
+}
+```
+
+![](sample9.svg)
+
+### Period highlighting
+
+To visually make a period stand out, the _period_ element can include a _decoration_ field. Possible values are "highlighted" for a shaded background or "bracketed" to indicate, e.g., optional periods. Setting the value to "none" removes the effect, this can be used for quick testing purposes.
+
+```json
+{
+    "periods": [
+        {
+            "caption": "Period 1",
+            "start": -1,
+            "duration": 5,
+            "daylabels": [-1, "1-4"],
+            "decoration": "highlighted",
+            "procedures": [
+                {
+                    "caption": "massage",
+                    "days": ["1-2"]
+                }
+            ]
+        },
+        {
+            "caption": "Period 2",
+            "start": 1,
+            "duration": 4,
+            "daylabels": ["1-4"],
+            "procedures": [
+                {
+                    "caption": "massage",
+                    "days": ["1-2"]
+                }
+            ]
+        },
+        {
+            "caption": "Period 3",
+            "start": 1,
+            "duration": 4,
+            "daylabels": ["1-4"],
+            "decoration": "bracketed",
+            "procedures": [
+                {
+                    "caption": "massage",
+                    "days": [ "1-2"]
+                }
+            ]
+        }
+    ]
+}
+```
+
+![](sample11.svg)

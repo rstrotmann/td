@@ -78,7 +78,7 @@ def item_names(trial, item_class):
 
 def extract_procedure(period, caption):
 	"""get specified administration/procedure as list of tuples (day, [times], relative) for individual days"""
-	temp = []
+	out = []
 	for x in ['procedures', 'administrations']:
 		if x in period.keys():
 			for proc in period[x]:
@@ -93,7 +93,58 @@ def extract_procedure(period, caption):
 						rel = proc['relative']
 					else:
 						rel = 1
-					temp += [(d, t, rel) for d in decode_daylist(proc['days'])]
+					out += [(d, t, rel) for d in decode_daylist(proc['days'])]
+	if out:
+		temp = [d for (d, t, rel) in out]
+	return(out)
+
+
+def extract_start_end(daylist):
+	"""from day list, extract start and end days of trains of days"""
+	last_day = 0
+	out = []
+	if daylist:
+		daylist.sort()
+		for i in daylist:
+			if i == daylist[0] or i != last_day+1 and not (last_day == -1 and i == 1):
+				out += [last_day, i]
+			last_day = i
+		out += [i]
+	out = list(dict.fromkeys(out))
+	if 0 in out:
+		out.remove(0)
+	return(out)
+
+
+def activity_days(period):
+	"""returns a list of boolean values per day to indicate whether there are procedures on the day"""
+	start = period["start"]
+	duration = period["duration"]
+	if start <0 and start+duration >0:
+		duration+=1
+	out = [start, start+duration-1]
+	for x in ["administrations", "procedures"]:
+		if x in period.keys():
+			for i in period[x]:
+				if "days" in i.keys():
+					temp = decode_daylist(i["days"])
+					out += extract_start_end(temp)
+	if "intervals" in period.keys():
+		for i in period["intervals"]:
+			if "start" in i.keys() and "duration" in i.keys():
+				start = i["start"]
+				duration = i["duration"]
+				if start <0 and start+duration>0:
+					duration += 1
+				temp = list(range(start, start+duration))
+				if 0 in temp:
+					temp.remove(0)
+				out += extract_start_end(temp)
+	out.sort()
+	# out = list(dict.fromkeys(out))
+	temp = [False] * period['duration']
+	for i in list(dict.fromkeys(out)):
+		temp[day_index(period, i)] = True
 	return(temp)
 
 
@@ -346,7 +397,8 @@ def render_daygrid(period, caption, xoffset, yoffset, height, metrics, style, fi
 			svg_out += svg_line(start, y+height, start+width, y+height, lwd=lwd, dashed=True)
 		label = str(label)
 		delta = textwidth_function("1")*.5 if label and label[0] == "1" else 0
-		svg_out += svg_text(center - textwidth_function(str(label)) / 2-delta, yoffset + height - (height- textheight_function("X")) / 2, str(label))
+		if width>textwidth_function(str(label)):
+			svg_out += svg_text(center - textwidth_function(str(label)) / 2-delta, yoffset + height - (height- textheight_function("X")) / 2, str(label))
 	return([svg_out, height+ypadding*2])
 
 
@@ -627,12 +679,14 @@ CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
 @click.option("--font", "-f", type=str, default="Arial", help='Output font type (default: Arial)')
 @click.option("--padding", "-p", type=float, default=1, help='Y-axis padding factor (default 1)')
 @click.option("--condensed", "-c", is_flag=True, help='Show condensed daygrid')
+@click.option("--autocompress", "-a", is_flag=True, help='Automatic compression of daygrid')
+
 @click.option("--timescale", "-t", is_flag=True, help='Show time scale')
 @click.option("--graph", "-g", is_flag=True, help='Show dose graph')
 @click.option("--ellipsis", "-e", is_flag=True, help='Reduce symbols in condensed output')
 @click.option("--all", "-A", is_flag=True, help='All options, equivalent to -ctge')
 @click.option("--debug", "-d", is_flag=True, help='Debug output')
-def main(file, debug, fontsize, output, font, condensed, timescale, padding, ellipsis, graph, all):
+def main(file, debug, fontsize, output, font, condensed, autocompress, timescale, padding, ellipsis, graph, all):
 	"""Clinical trial design visualization
 
 
@@ -720,6 +774,10 @@ def main(file, debug, fontsize, output, font, condensed, timescale, padding, ell
 				temp=[textwidth_function("XX") if i!="" else textwidth_function("XX")/3 for i in day_labels(period)]
 				if len(temp)==1:
 					temp=[textwidth_function("XX")]
+				return(temp)
+		elif autocompress:
+			def daywidth_function(period):
+				temp = [textwidth_function("XX") if i else textwidth_function("XX")/3 for i in activity_days(period)]
 				return(temp)
 		else:
 			def daywidth_function(period):

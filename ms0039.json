@@ -52,7 +52,7 @@
 			"start": 1,
 			"daylabels": [1, 5, 6, 7, 8, 11],
 			"dayshading": [1, 8],
-			"decoration": "bracketed",
+			"decoration": "highlighted",
 			"intervals": [
 				{
 					"caption": "hospitalization",
@@ -97,7 +97,7 @@
 			"start": 1,
 			"daylabels": [1, 5, 6, 7, 8, 11],
 			"dayshading": [1, 8],
-			"decoration": "highlighted",
+			"decoration": "none",
 			"intervals": [
 				{
 					"caption": "hospitalization",
@@ -112,11 +112,7 @@
 				},
 				{
 					"caption": "omeprazole",
-					"days": ["1,2,4,5"]
-				},
-				{
-					"caption": "omeprazole",
-					"days": ["3"]
+					"days": ["1,2,3,4,5"]
 				}
 			],
 			"procedures": [
