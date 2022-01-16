@@ -390,3 +390,37 @@ To visually make a period stand out, the _period_ element can include a _decorat
 ```
 
 ![](sample11.svg)
+
+### Procedure labels
+
+To annotate individual procedure instances, e.g., to give visits a unique identifier (see below) or to add details to a procedure on a certain day, the _labels_ field can be added to a procedure. Its value is expected to be a list of labels corresponding to the list of _days_ of that procedure. Labels are rendered in the output above the respective days. Lables can be added to intervals, administrations or procedures.
+
+Note: If the procedure is an interval that is defined using _start_ and _duration_, that list is expected to contain only one label which is then displayed above the start day of the interval:
+
+```json
+{
+    "periods": [
+        {
+            "caption": "Period 1",
+            "start": -1,
+            "duration": 10,
+            "daylabels": [-1, "1-9"],
+            "intervals": [
+                {
+                    "caption": "hospitalization",
+                    "start": -1,
+                    "duration": 4,
+                    "labels": ["V1"]
+                },
+                {
+                    "caption": "ambulatory visit",
+                    "days": [5, 7, 9],
+                    "labels": ["V2", "V3", "V4"]
+                }
+            ]
+        }
+    ]
+}
+```
+
+![](sample12.svg)

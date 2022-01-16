@@ -86,6 +86,10 @@
               <ul class="nav flex-column">
               </ul>
             </li>
+            <li class="nav-item" data-level="2"><a href="#td.activity_days" class="nav-link">activity_days()</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
             <li class="nav-item" data-level="2"><a href="#td.add_output" class="nav-link">add_output()</a>
               <ul class="nav flex-column">
               </ul>
@@ -98,7 +102,15 @@
               <ul class="nav flex-column">
               </ul>
             </li>
+            <li class="nav-item" data-level="2"><a href="#td.extract_labels" class="nav-link">extract_labels()</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
             <li class="nav-item" data-level="2"><a href="#td.extract_procedure" class="nav-link">extract_procedure()</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#td.extract_start_end" class="nav-link">extract_start_end()</a>
               <ul class="nav flex-column">
               </ul>
             </li>
@@ -187,6 +199,60 @@
 
 
 
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h2 id="td.activity_days" class="doc doc-heading">
+<code class="highlight language-python">activity_days(period)</code>
+
+
+</h2>
+
+    <div class="doc doc-contents ">
+
+      <p>returns a list of boolean values per day to indicate whether there are procedures on the day</p>
+
+        <details class="quote">
+          <summary>Source code in <code>trialdesign/td.py</code></summary>
+          <pre class="highlight"><code class="language-python">def activity_days(period):
+	"""returns a list of boolean values per day to indicate whether there are procedures on the day"""
+	start = period["start"]
+	duration = period["duration"]
+	if start &lt;0 and start+duration &gt;0:
+		duration+=1
+	out = [start, start+duration-1]
+	for x in ["administrations", "procedures"]:
+		if x in period.keys():
+			for i in period[x]:
+				if "days" in i.keys():
+					temp = decode_daylist(i["days"])
+					out += extract_start_end(temp)
+	if "intervals" in period.keys():
+		for i in period["intervals"]:
+			if "start" in i.keys() and "duration" in i.keys():
+				start = i["start"]
+				duration = i["duration"]
+				if start &lt;0 and start+duration&gt;0:
+					duration += 1
+				temp = list(range(start, start+duration))
+				if 0 in temp:
+					temp.remove(0)
+				out += extract_start_end(temp)
+	out.sort()
+	# out = list(dict.fromkeys(out))
+	temp = [False] * period['duration']
+	for i in list(dict.fromkeys(out)):
+		temp[day_index(period, i)] = True
+	return(temp)
+</code></pre>
+        </details>
+    </div>
+
+  </div>
 
 
 
@@ -312,6 +378,45 @@
 
 
 
+<h2 id="td.extract_labels" class="doc doc-heading">
+<code class="highlight language-python">extract_labels(period, caption)</code>
+
+
+</h2>
+
+    <div class="doc doc-contents ">
+
+      <p>extract labels for procedures by day, if applicable</p>
+
+        <details class="quote">
+          <summary>Source code in <code>trialdesign/td.py</code></summary>
+          <pre class="highlight"><code class="language-python">def extract_labels(period, caption):
+	"""extract labels for procedures by day, if applicable"""
+	out = []
+	for x in ['intervals', 'administrations', 'procedures']:
+		if x in period.keys():
+			for proc in period[x]:
+				if proc['caption'] == caption:
+					if 'labels' in proc.keys():
+						out = [""] * period['duration']
+						if 'days' in proc.keys():
+							for d,l in zip(decode_daylist(proc['days']), proc['labels']):
+								out[day_index(period, d)] = l
+						elif 'start' in proc.keys() and 'duration' in proc.keys():
+							out[day_index(period, proc["start"])] = proc['labels'][0]
+	return(out)
+</code></pre>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
 <h2 id="td.extract_procedure" class="doc doc-heading">
 <code class="highlight language-python">extract_procedure(period, caption)</code>
 
@@ -326,7 +431,7 @@
           <summary>Source code in <code>trialdesign/td.py</code></summary>
           <pre class="highlight"><code class="language-python">def extract_procedure(period, caption):
 	"""get specified administration/procedure as list of tuples (day, [times], relative) for individual days"""
-	temp = []
+	out = []
 	for x in ['procedures', 'administrations']:
 		if x in period.keys():
 			for proc in period[x]:
@@ -341,8 +446,49 @@
 						rel = proc['relative']
 					else:
 						rel = 1
-					temp += [(d, t, rel) for d in decode_daylist(proc['days'])]
-	return(temp)
+					out += [(d, t, rel) for d in decode_daylist(proc['days'])]
+	if out:
+		temp = [d for (d, t, rel) in out]
+	return(out)
+</code></pre>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h2 id="td.extract_start_end" class="doc doc-heading">
+<code class="highlight language-python">extract_start_end(daylist)</code>
+
+
+</h2>
+
+    <div class="doc doc-contents ">
+
+      <p>from day list, extract start and end days of trains of days</p>
+
+        <details class="quote">
+          <summary>Source code in <code>trialdesign/td.py</code></summary>
+          <pre class="highlight"><code class="language-python">def extract_start_end(daylist):
+	"""from day list, extract start and end days of trains of days"""
+	last_day = 0
+	out = []
+	if daylist:
+		daylist.sort()
+		for i in daylist:
+			if i == daylist[0] or i != last_day+1 and not (last_day == -1 and i == 1):
+				out += [last_day, i]
+			last_day = i
+		out += [i]
+	out = list(dict.fromkeys(out))
+	if 0 in out:
+		out.remove(0)
+	return(out)
 </code></pre>
         </details>
     </div>
@@ -585,7 +731,8 @@
 			svg_out += svg_line(start, y+height, start+width, y+height, lwd=lwd, dashed=True)
 		label = str(label)
 		delta = textwidth_function("1")*.5 if label and label[0] == "1" else 0
-		svg_out += svg_text(center - textwidth_function(str(label)) / 2-delta, yoffset + height - (height- textheight_function("X")) / 2, str(label))
+		if width&gt;textwidth_function(str(label)):
+			svg_out += svg_text(center - textwidth_function(str(label)) / 2-delta, yoffset + height - (height- textheight_function("X")) / 2, str(label))
 	return([svg_out, height+ypadding*2])
 </code></pre>
         </details>
@@ -701,10 +848,10 @@
 	(periodspacing, lineheight, ypadding, lwd, ellipsis, debug) = style
 
 	svg_out = ""
+	y = yoffset + lineheight/2
 	if debug:
 		svg_out += render_dummy(period, xoffset, yoffset, lineheight, metrics)
 
-	y = yoffset + lineheight/2
 	if first_pass:
 		svg_out += svg_text(5, y + textheight_function(caption) * (1/2 - 0.1), caption)
 
@@ -720,7 +867,9 @@
 				if "start" in intv.keys() and "duration" in intv.keys():
 					start_list, duration_list = [intv['start']], [intv['duration']]
 				elif "days" in intv.keys() and isinstance(intv["days"], list):
-					start_list, duration_list = intv["days"], [1 for i in intv["days"]]
+					# start_list, duration_list = intv["days"], [1 for i in intv["days"]]
+					start_list = decode_daylist(intv["days"])
+					duration_list = [1 for i in decode_daylist(intv["days"])]
 				else:
 					raise TypeError(f'{period["caption"]}, interval "{intv["caption"]}"')
 
@@ -744,6 +893,7 @@
     </div>
 
   </div>
+
 
 
 
@@ -806,17 +956,33 @@
 	w = [period_width(i, daywidth_function) for i in periods]
 	first = True
 	last = False
+	h = 0
 	out = ""
+
+	# render labels, if applicable
+	has_labels = [i for ii in [extract_labels(p, caption) for p in periods] for i in ii]
+	if has_labels:
+		xx = x
+		for p in periods:
+			[svg_out, y_out] = render_labels(p, caption, xx, y, height, metrics, style)
+			out += svg_out
+			xx += period_width(p, daywidth_function) + periodspacing
+		h += lineheight
+		y += h
+
+	# render procedure
 	for p in periods:
 		if p==periods[-1]:
 			last=True
+
 		[svg_out, y_out] = render_function(p, caption, x, y, height, metrics, style, first_pass=first, **kwargs)
 		out += svg_out
+
 		if dashes and not last:
 			out += svg_line(x+period_width(p, daywidth_function), y+height/2, x+period_width(p, daywidth_function)+periodspacing, y+height/2, lwd=lwd)
 		x += period_width(p, daywidth_function) + periodspacing
 		first=False
-	return([out, y_out])
+	return(add_output(["", h], [out, y_out]))
 </code></pre>
         </details>
     </div>
@@ -870,7 +1036,7 @@
 				svg_out += svg_circle(p, y, lineheight/30, fill_color="black")
 			elif v != "":
 				if v == 0:
-					svg_out += svg_symbol(p, y, w*.5, "circle", fill=False, fill_color="none")
+					svg_out += svg_symbol(p, y, w*.5, "circle", fill=False, fill_color="none", lwd=lwd)
 				else:
 					svg_out += svg_symbol(p, y, w*.5, "circle", fill=True, fill_color="black")
 			else:
@@ -1001,6 +1167,7 @@
     </div>
 
   </div>
+
 
 
 
