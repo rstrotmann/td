@@ -1,5 +1,7 @@
 #!/opt/homebrew/bin/python3
 
+from opcode import haslocal
+from textwrap import TextWrapper
 import click
 import pathlib
 import cairo
@@ -96,6 +98,23 @@ def extract_procedure(period, caption):
 					out += [(d, t, rel) for d in decode_daylist(proc['days'])]
 	if out:
 		temp = [d for (d, t, rel) in out]
+	return(out)
+
+
+def extract_labels(period, caption):
+	"""extract labels for procedures by day, if applicable"""
+	out = []
+	for x in ['intervals', 'administrations', 'procedures']:
+		if x in period.keys():
+			for proc in period[x]:
+				if proc['caption'] == caption:
+					if 'labels' in proc.keys():
+						out = [""] * period['duration']
+						if 'days' in proc.keys():
+							for d,l in zip(decode_daylist(proc['days']), proc['labels']):
+								out[day_index(period, d)] = l
+						elif 'start' in proc.keys() and 'duration' in proc.keys():
+							out[day_index(period, proc["start"])] = proc['labels'][0]
 	return(out)
 
 
@@ -455,6 +474,24 @@ def render_procedure(period, caption, xoffset, yoffset, lineheight, metrics, sty
 	return([svg_out, lineheight+ypadding])
 
 
+def render_labels(period, caption, xoffset, yoffset, linheight, metrics, style):
+	(daywidth_function, textwidth_function, textheight_function) = metrics
+	(periodspacing, lineheight, ypadding, lwd, ellipsis, debug) = style
+
+	y = yoffset + lineheight - textheight_function("X")/2
+	lbl = extract_labels(period, caption)
+	svg_out = ""
+
+	if lbl:
+		if debug:
+			svg_out += render_dummy(period, xoffset, yoffset, lineheight, metrics)
+		centers = period_day_centers(period, xoffset, daywidth_function)
+		widths = daywidth_function(period)
+		for l, c, w in zip(lbl, centers, widths):
+			svg_out += svg_text(c-textwidth_function(str(l))/2, y, str(l))
+	return([svg_out, linheight+ypadding])
+
+
 def render_dose_graph(period, caption, xoffset, yoffset, lineheight, metrics, style, first_pass=True):
 	"""render dose over time for administration. Output is [svg_output, height]"""
 	(daywidth_function, textwidth_function, textheight_function) = metrics
@@ -495,10 +532,10 @@ def render_interval(period, caption, xoffset, yoffset, lineheight, metrics, styl
 	(periodspacing, lineheight, ypadding, lwd, ellipsis, debug) = style
 
 	svg_out = ""
+	y = yoffset + lineheight/2
 	if debug:
 		svg_out += render_dummy(period, xoffset, yoffset, lineheight, metrics)
 
-	y = yoffset + lineheight/2
 	if first_pass:
 		svg_out += svg_text(5, y + textheight_function(caption) * (1/2 - 0.1), caption)
 
@@ -653,17 +690,33 @@ def render_periods(periods, x, y, caption, height, render_function, metrics, sty
 	w = [period_width(i, daywidth_function) for i in periods]
 	first = True
 	last = False
+	h = 0
 	out = ""
+
+	# render labels, if applicable
+	has_labels = [i for ii in [extract_labels(p, caption) for p in periods] for i in ii]
+	if has_labels:
+		xx = x
+		for p in periods:
+			[svg_out, y_out] = render_labels(p, caption, xx, y, height, metrics, style)
+			out += svg_out
+			xx += period_width(p, daywidth_function) + periodspacing
+		h += lineheight
+		y += h
+
+	# render procedure
 	for p in periods:
 		if p==periods[-1]:
 			last=True
+
 		[svg_out, y_out] = render_function(p, caption, x, y, height, metrics, style, first_pass=first, **kwargs)
 		out += svg_out
+
 		if dashes and not last:
 			out += svg_line(x+period_width(p, daywidth_function), y+height/2, x+period_width(p, daywidth_function)+periodspacing, y+height/2, lwd=lwd)
 		x += period_width(p, daywidth_function) + periodspacing
 		first=False
-	return([out, y_out])
+	return(add_output(["", h], [out, y_out]))
 
 
 ########################################
