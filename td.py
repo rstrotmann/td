@@ -103,19 +103,38 @@ def extract_procedure(period, caption):
 
 def extract_labels(period, caption):
 	"""extract labels for procedures by day, if applicable"""
-	out = []
+	out = [""] * period['duration']
+	# out = []
 	for x in ['intervals', 'administrations', 'procedures']:
 		if x in period.keys():
 			for proc in period[x]:
 				if proc['caption'] == caption:
 					if 'labels' in proc.keys():
-						out = [""] * period['duration']
 						if 'days' in proc.keys():
 							for d,l in zip(decode_daylist(proc['days']), proc['labels']):
 								out[day_index(period, d)] = l
 						elif 'start' in proc.keys() and 'duration' in proc.keys():
 							out[day_index(period, proc["start"])] = proc['labels'][0]
 	return(out)
+
+def extract_footnotes(period, caption):
+	"""extract footnotes for procedures by day, if applicable"""
+	d = [False] * period['duration']
+	s = [''] * period['duration']
+	t = []
+	for x in ['intervals', 'administrations', 'procedures']:
+		if x in period.keys():
+			for proc in period[x]:
+				if proc['caption'] == caption:
+					if 'footnotes' in proc.keys():
+						for f in proc["footnotes"]:
+							i = day_index(period, f['day'])
+							d[i] = True
+							if s[i]:
+								s[i] += ","
+							s[i] += f['symbol']
+							t.append([f['symbol'], f['text']])
+	return([d, s, t])
 
 
 def extract_start_end(daylist):
@@ -474,21 +493,48 @@ def render_procedure(period, caption, xoffset, yoffset, lineheight, metrics, sty
 	return([svg_out, lineheight+ypadding])
 
 
-def render_labels(period, caption, xoffset, yoffset, linheight, metrics, style):
+# def render_labels(period, caption, xoffset, yoffset, linheight, metrics, style):
+# 	(daywidth_function, textwidth_function, textheight_function) = metrics
+# 	(periodspacing, lineheight, ypadding, lwd, ellipsis, debug) = style
+
+# 	y = yoffset + lineheight - textheight_function("X")/2
+# 	lbl = extract_labels(period, caption)
+# 	svg_out = ""
+
+# 	if lbl:
+# 		if debug:
+# 			svg_out += render_dummy(period, xoffset, yoffset, lineheight, metrics)
+# 		centers = period_day_centers(period, xoffset, daywidth_function)
+# 		widths = daywidth_function(period)
+# 		for l, c, w in zip(lbl, centers, widths):
+# 			svg_out += svg_text(c-textwidth_function(str(l))/2, y, str(l))
+# 	return([svg_out, linheight+ypadding])
+
+
+def render_labels_footnotes(period, caption, xoffset, yoffset, linheight, metrics, style):
 	(daywidth_function, textwidth_function, textheight_function) = metrics
 	(periodspacing, lineheight, ypadding, lwd, ellipsis, debug) = style
 
 	y = yoffset + lineheight - textheight_function("X")/2
+
 	lbl = extract_labels(period, caption)
+	has_lbl = True in [i != '' for i in lbl]
+	[fnt_days, fnt_symbols, fnt_text] = extract_footnotes(period, caption)	
+	has_fnt = True in fnt_days
 	svg_out = ""
 
-	if lbl:
+	if has_lbl or has_fnt:
 		if debug:
 			svg_out += render_dummy(period, xoffset, yoffset, lineheight, metrics)
+
 		centers = period_day_centers(period, xoffset, daywidth_function)
 		widths = daywidth_function(period)
-		for l, c, w in zip(lbl, centers, widths):
-			svg_out += svg_text(c-textwidth_function(str(l))/2, y, str(l))
+
+		for l, c, w, fd, fs in zip(lbl, centers, widths, fnt_days, fnt_symbols):
+			temp = str(l)
+			if fd:
+				temp += f' ({fs})'
+			svg_out += svg_text(c-textwidth_function(temp)/2, y, temp)
 	return([svg_out, linheight+ypadding])
 
 
@@ -694,15 +740,33 @@ def render_periods(periods, x, y, caption, height, render_function, metrics, sty
 	out = ""
 
 	# render labels, if applicable
-	has_labels = [i for ii in [extract_labels(p, caption) for p in periods] for i in ii]
-	if has_labels:
+	# has_labels = len([i for ii in [extract_labels(p, caption) for p in periods] for i in ii]) != 0
+	has_labels = len([i for ii in [extract_labels(p, caption) for p in periods] for i in ii if i != '']) != 0
+	# print(f'{caption} has labels: {has_labels}')
+
+	# has_footnotes = max([len(extract_footnotes(p, caption)[0]) for p in periods]) > 0
+	# temp = [i for ii in [extract_footnotes(p, caption)[0] for p in periods] for i in ii]
+	# print(f'footnotes: {temp}')
+	# has_footnotes = True in [extract_footnotes(p, caption)[0] for p in periods]
+	has_footnotes = True in [i for ii in [extract_footnotes(p, caption)[0] for p in periods] for i in ii]
+	# print(f'{caption} has footnotes: {has_footnotes}')
+
+	#####################
+	if has_labels or has_footnotes:
 		xx = x
 		for p in periods:
-			[svg_out, y_out] = render_labels(p, caption, xx, y, height, metrics, style)
+			[svg_out, y_out] = render_labels_footnotes(p, caption, xx, y, height, metrics, style)
+			# [svg_out, y_out] = render_labels(p, caption, xx, y, height, metrics, style)
 			out += svg_out
 			xx += period_width(p, daywidth_function) + periodspacing
 		h += lineheight
 		y += h
+
+	###### test
+	# for p in periods:
+	# 	temp = extract_footnotes(p, caption)
+	# 	print(temp)
+	######
 
 	# render procedure
 	for p in periods:

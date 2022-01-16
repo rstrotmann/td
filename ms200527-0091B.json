@@ -57,7 +57,14 @@
 				{
 					"caption": "ambulatory visit",
 					"days": [8, 15, 22],
-					"labels": ["V3", "V4", "V5"]
+					"labels": ["V3", "V4", "V5"],
+					"footnotes": [
+						{
+							"day":8,
+							"symbol": "d",
+							"text": "footnote d"
+						}
+					]
 
 				}
 			],
@@ -65,14 +72,40 @@
 				{
 					"caption": "evobrutinib BID (12 h apart)",
 					"days": [1],
-					"freq": "BID"
+					"freq": "BID",
+					"footnotes": [
+						{
+							"day": 1,
+							"symbol": "a",
+							"text": "sample footnote"
+						}
+						
+
+					]
 				}
 			],
 			"procedures": [
 				{
 					"caption": "Blood sampling", 
 					"days": ["1-4"],
-					"freq": "QD"
+					"freq": "QD", 
+					"footnotes": [
+						{
+							"day": 1,
+							"symbol": "a",
+							"text": "text a"
+						},
+						{
+							"day": 4,
+							"symbol": "b",
+							"text": "text b"
+						},
+						{
+							"day": 1,
+							"symbol": "c",
+							"text": "text c"
+						}
+					]
 				}
 			]
 		},
