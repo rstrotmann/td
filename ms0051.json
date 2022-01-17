@@ -87,7 +87,14 @@
 					"caption": "PK sampling carbamazepine",
 					"days": [25],
 					"times": [0],
-					"relative": 25
+					"relative": 25,
+					"footnotes": [
+						{
+							"day": 25,
+							"symbol": "1",
+							"text": "predose"
+						}
+					]
 				},
 				{
 					"caption": "PK sampling carbamazepine",

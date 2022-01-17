@@ -179,7 +179,6 @@ def activity_days(period):
 					temp.remove(0)
 				out += extract_start_end(temp)
 	out.sort()
-	# out = list(dict.fromkeys(out))
 	temp = [False] * period['duration']
 	for i in list(dict.fromkeys(out)):
 		temp[day_index(period, i)] = True
@@ -493,25 +492,7 @@ def render_procedure(period, caption, xoffset, yoffset, lineheight, metrics, sty
 	return([svg_out, lineheight+ypadding])
 
 
-# def render_labels(period, caption, xoffset, yoffset, linheight, metrics, style):
-# 	(daywidth_function, textwidth_function, textheight_function) = metrics
-# 	(periodspacing, lineheight, ypadding, lwd, ellipsis, debug) = style
-
-# 	y = yoffset + lineheight - textheight_function("X")/2
-# 	lbl = extract_labels(period, caption)
-# 	svg_out = ""
-
-# 	if lbl:
-# 		if debug:
-# 			svg_out += render_dummy(period, xoffset, yoffset, lineheight, metrics)
-# 		centers = period_day_centers(period, xoffset, daywidth_function)
-# 		widths = daywidth_function(period)
-# 		for l, c, w in zip(lbl, centers, widths):
-# 			svg_out += svg_text(c-textwidth_function(str(l))/2, y, str(l))
-# 	return([svg_out, linheight+ypadding])
-
-
-def render_labels_footnotes(period, caption, xoffset, yoffset, linheight, metrics, style):
+def render_labels_footnotes(period, caption, xoffset, yoffset, linheight, metrics, style, footnotes=False):
 	(daywidth_function, textwidth_function, textheight_function) = metrics
 	(periodspacing, lineheight, ypadding, lwd, ellipsis, debug) = style
 
@@ -521,6 +502,9 @@ def render_labels_footnotes(period, caption, xoffset, yoffset, linheight, metric
 	has_lbl = True in [i != '' for i in lbl]
 	[fnt_days, fnt_symbols, fnt_text] = extract_footnotes(period, caption)	
 	has_fnt = True in fnt_days
+	if not footnotes:
+		has_fnt = False
+
 	svg_out = ""
 
 	if has_lbl or has_fnt:
@@ -532,10 +516,18 @@ def render_labels_footnotes(period, caption, xoffset, yoffset, linheight, metric
 
 		for l, c, w, fd, fs in zip(lbl, centers, widths, fnt_days, fnt_symbols):
 			temp = str(l)
-			if fd:
+			if fd and footnotes:
 				temp += f' ({fs})'
 			svg_out += svg_text(c-textwidth_function(temp)/2, y, temp)
 	return([svg_out, linheight+ypadding])
+
+
+def render_footnote_text(footnote, x, y, linehight, metrics, style):
+	(daywidth_function, textwidth_function, textheight_function) = metrics
+	(periodspacing, lineheight, ypadding, lwd, ellipsis, debug) = style
+
+	svg_out = svg_text(x, y, f'({footnote[0]})\t{footnote[1]}')
+	return([svg_out, textheight_function("XX")+ypadding])
 
 
 def render_dose_graph(period, caption, xoffset, yoffset, lineheight, metrics, style, first_pass=True):
@@ -597,7 +589,6 @@ def render_interval(period, caption, xoffset, yoffset, lineheight, metrics, styl
 				if "start" in intv.keys() and "duration" in intv.keys():
 					start_list, duration_list = [intv['start']], [intv['duration']]
 				elif "days" in intv.keys() and isinstance(intv["days"], list):
-					# start_list, duration_list = intv["days"], [1 for i in intv["days"]]
 					start_list = decode_daylist(intv["days"])
 					duration_list = [1 for i in decode_daylist(intv["days"])]
 				else:
@@ -728,7 +719,7 @@ def add_output(old, new):
 	return([o+n for o, n in zip(old, new)])
 
 
-def render_periods(periods, x, y, caption, height, render_function, metrics, style, dashes=False, **kwargs):
+def render_periods(periods, x, y, caption, height, render_function, metrics, style, dashes=False, footnotes=False, **kwargs):
 	"""applies rendering function to all periods"""
 	daywidth_function= metrics[0]
 	(periodspacing, lineheight, ypadding, lwd, ellipsis, debug) = style
@@ -740,33 +731,19 @@ def render_periods(periods, x, y, caption, height, render_function, metrics, sty
 	out = ""
 
 	# render labels, if applicable
-	# has_labels = len([i for ii in [extract_labels(p, caption) for p in periods] for i in ii]) != 0
 	has_labels = len([i for ii in [extract_labels(p, caption) for p in periods] for i in ii if i != '']) != 0
-	# print(f'{caption} has labels: {has_labels}')
-
-	# has_footnotes = max([len(extract_footnotes(p, caption)[0]) for p in periods]) > 0
-	# temp = [i for ii in [extract_footnotes(p, caption)[0] for p in periods] for i in ii]
-	# print(f'footnotes: {temp}')
-	# has_footnotes = True in [extract_footnotes(p, caption)[0] for p in periods]
 	has_footnotes = True in [i for ii in [extract_footnotes(p, caption)[0] for p in periods] for i in ii]
-	# print(f'{caption} has footnotes: {has_footnotes}')
+	if not footnotes:
+		has_footnotes = False
 
-	#####################
 	if has_labels or has_footnotes:
 		xx = x
 		for p in periods:
-			[svg_out, y_out] = render_labels_footnotes(p, caption, xx, y, height, metrics, style)
-			# [svg_out, y_out] = render_labels(p, caption, xx, y, height, metrics, style)
+			[svg_out, y_out] = render_labels_footnotes(p, caption, xx, y, height, metrics, style, footnotes=footnotes)
 			out += svg_out
 			xx += period_width(p, daywidth_function) + periodspacing
 		h += lineheight
 		y += h
-
-	###### test
-	# for p in periods:
-	# 	temp = extract_footnotes(p, caption)
-	# 	print(temp)
-	######
 
 	# render procedure
 	for p in periods:
@@ -801,9 +778,10 @@ CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
 @click.option("--timescale", "-t", is_flag=True, help='Show time scale')
 @click.option("--graph", "-g", is_flag=True, help='Show dose graph')
 @click.option("--ellipsis", "-e", is_flag=True, help='Reduce symbols in condensed output')
-@click.option("--all", "-A", is_flag=True, help='All options, equivalent to -ctge')
+@click.option("--footnotes", "-n", is_flag=True, help='Show footnotes')
+@click.option("--all", "-A", is_flag=True, help='All options, equivalent to -ctgen')
 @click.option("--debug", "-d", is_flag=True, help='Debug output')
-def main(file, debug, fontsize, output, font, condensed, autocompress, timescale, padding, ellipsis, graph, all):
+def main(file, debug, fontsize, output, font, condensed, autocompress, timescale, padding, ellipsis, footnotes, graph, all):
 	"""Clinical trial design visualization
 
 
@@ -817,6 +795,7 @@ def main(file, debug, fontsize, output, font, condensed, autocompress, timescale
 		timescale=True
 		graph=True
 		ellipsis=True
+		footnotes=True
 
 	ypadding = fontsize/1.8 * padding
 
@@ -915,36 +894,38 @@ def main(file, debug, fontsize, output, font, condensed, autocompress, timescale
 	lwd = fontsize/10
 	style = (periodspacing, lineheight, ypadding, lwd, ellipsis, debug)
 
-	# render svg output
+	# RENDER SVG OUTPUT
 	out = ["", yoffset]
 
 	# render header
 	out = add_output(out, render_periods(periods, xoffset, out[1], "", lineheight, render_periodcaption, metrics, style))
-
 	try:
 		out = add_output(out, render_periods(periods, xoffset, out[1], "", lineheight, render_daygrid, metrics, style, dashes=True))
 	except Exception as err:
 		print(f'error rendering daygrid: {err}')
 		sys.exit()
 
-
-	# render intervals, administrations, procedures
+	# render intervals
 	for n in item_names(td, 'intervals'):
 		try:
-			out = add_output(out, render_periods(periods, xoffset, out[1], n, lineheight, render_interval, metrics, style))
+			out = add_output(out, render_periods(periods, xoffset, out[1], n, lineheight, render_interval, metrics, style, footnotes=footnotes))
 		except Exception as err:
 			raise IndexError(f'error rendering intervals: {err}')
 
+	# render administrations
 	for n in item_names(td, 'administrations'):
-		out = add_output(out, render_periods(periods, xoffset, out[1], n, lineheight, render_procedure, metrics, style, default_symbol="arrow"))
+		out = add_output(out, render_periods(periods, xoffset, out[1], n, lineheight, render_procedure, metrics, style, default_symbol="arrow", footnotes=footnotes))
 
+		# render dose graph
 		if graph:
 			if [i for p in periods for i in extract_field(p, n, "dose") if i != ""]:
 				out = add_output(out, render_periods(periods, xoffset, out[1], n, lineheight, render_dose_graph, metrics, style))
 
+	# render procedures
 	last_proc_has_timescale = False
 	for n in item_names(td, 'procedures'):
-		out = add_output(out, render_periods(periods, xoffset, out[1], n, lineheight, render_procedure, metrics, style, default_symbol="diamond"))
+		out = add_output(out, render_periods(periods, xoffset, out[1], n, lineheight, render_procedure, metrics, style, default_symbol="diamond", footnotes=footnotes))
+
 		# render timescale
 		if timescale:
 			ts = False
@@ -959,7 +940,6 @@ def main(file, debug, fontsize, output, font, condensed, autocompress, timescale
 				if n == item_names(td, 'procedures')[-1]:
 					last_proc_has_timescale = True
 				out = add_output(out, render_times(p, n, x, out[1], lineheight, metrics, style, maxwidth=xoffset + sum([period_width(i, daywidth_function) for i in periods]) + (len(periods)-1) * periodspacing))
-
 
 	# apply period decorations
 	x = xoffset
@@ -978,12 +958,27 @@ def main(file, debug, fontsize, output, font, condensed, autocompress, timescale
 					out[0] = temp + out[0]
 			x += period_width(p, daywidth_function) + periodspacing
 
+	# makes footnote list
+	if footnotes:
+		cpt = []
+		for n in ['intervals', 'administrations', 'procedures']:
+			cpt += item_names(td, n)
+		fn = []
+		for c in cpt:
+			for p in periods:
+				f = extract_footnotes(p, c)[2]
+				for ff in f:
+					fn.append(ff)
+		if fn:
+			out[1] += ypadding * 4
+			for ff in sorted(fn):
+				out = add_output(out, render_footnote_text(ff, xoffset,out[1], lineheight, metrics, style))
 
 	# re-calculate overall output dimensions, finalize svg
 	viewport_width = xoffset + sum([period_width(i, daywidth_function) for i in periods]) + (len(periods)) * periodspacing
 	viewport_height = out[1]
 
-	svg_out = f'<svg width="{viewport_width}" height="{viewport_height}" xmlns="http://www.w3.org/2000/svg">\n<style>text {{font-family: {font}; font-size: {fontsize}px ;}}</style>\n<desc>Trial design autogenerated by td.py V2.0 (Dec-2021), author: Rainer Strotmann</desc><title>{infile.stem}</title>' + out[0]
+	svg_out = f'<svg width="{viewport_width}" height="{viewport_height}" xmlns="http://www.w3.org/2000/svg">\n<style>text {{font-family: {font}; font-size: {fontsize}px ;}}</style>\n<desc>Trial design autogenerated by td.py V2.0 (Jan-2022), author: Rainer Strotmann</desc><title>{infile.stem}</title>' + out[0]
 	svg_out += f'</svg>'
 
 	# write to disk
