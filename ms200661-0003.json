@@ -1,69 +1,112 @@
 {
 	"periods": [
 		{
+			"caption": "P",
+			"duration": 1,
+			"start": -1,
+			"daylabels": [],
+			"procedures": [
+				{
+					"caption": "urine filtration",
+					"days": [-1]
+				},
+				{
+					"caption": "stool examination",
+					"days": [-1],
+					"footnotes": [
+						{
+						"day": -1,
+						"symbol": "b", 
+						"text": "Cohorts 1-3 only, second sample within 5 days."
+						}
+					]
+				}
+			]
+		},
+		{
 			"caption": "S",
 			"duration": 1,
 			"start": 1,
 			"daylabels": []
 		},
 		{
-			"caption": "Treatment phase",
-			"duration": 29,
-			"start": -1,
-			"daylabels": [-1, 1, 2, "6-8", 15, "20-28"],
-			"dayshading": [1, 8, 15, 22],
+			"caption": "Treatment",
+			"duration": 4,
+			"start": 1,
+			"daylabels": ["1-4"],
+			"dayshading": [1],
 			"intervals": [
 				{
-					"caption": "hospitalization",
-					"start": -1,
-					"duration": 3
+					"caption": "confinement visit",
+					"start": 1,
+					"duration": 1
 				}
 			],
 			"administrations": [
 				{
-					"caption": "DVI PfSPZ",
+					"caption": "praziquantel",
 					"days": [1]
-				},
-				{
-					"caption": "M5717",
-					"days": [1]
-				},
-				{
-					"caption": "rescue medication",
-					"days": [28]
 				}
 			],
 			"procedures": [
 				{
-					"caption": "parasitemia by qPCR",
-					"days": ["6-20, 22, 24, 26, 28"]
-				},
-				{
-					"caption": "PK sampling",
-					"days": ["1"],
+					"caption": "vital signs",
+					"days": [1],
 					"freq": "rich"
 				},
 				{
 					"caption": "PK sampling",
-					"days": ["2, 6, 8, 9, 26"],
-					"freq": "QD"
+					"days": ["1"],
+					"times": [0, 0.5, 1, 2, 3, 4, 6, 12],
+					"relative": 1,
+					"timescale": "show"
+				}
+			]
+		},
+		{
+			"caption": "EoS",
+			"duration": 1,
+			"start": 17,
+			"daylabels": [17],
+			"procedures": [
+				{
+					"caption": "vital signs",
+					"days": [17]
+				},
+				{
+					"caption": "urine filtration",
+					"days": [17],
+					"footnotes": [
+						{
+						"day": 17,
+						"symbol": "a", 
+						"text": "Cohorts 4 when treated with 60 mg/kg only"
+						}
+					]
+				},
+				{
+					"caption": "stool examination",
+					"days": [17],
+					"footnotes": [
+						{
+						"day": 17,
+						"symbol": "b", 
+						"text": "Cohorts 1-3 only, second sample within 5 days."
+						}
+					]
 				}
 			]
 		},
 		{
 			"caption": "F/U",
 			"duration": 1,
-			"start": 33,
-			"daylabels": [33],
+			"start": 35,
+			"daylabels": [35],
+			"decoration": "bracketed",
 			"procedures": [
 				{
-					"caption": "parasitemia by qPCR",
-					"days": ["33"]
-				},
-				{
-					"caption": "PK sampling",
-					"days": ["33"],
-					"freq": "QD"
+					"caption": "urine filtration",
+					"days": [35]
 				}
 			]
 		}	

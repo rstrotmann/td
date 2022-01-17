@@ -424,3 +424,38 @@ Note: If the procedure is an interval that is defined using _start_ and _duratio
 ```
 
 ![](sample12.svg)
+
+### Footnotes
+
+``` json
+{
+    "periods": [
+        {
+            "caption": "Periods 1-3",
+            "start": -1,
+            "duration": 8,
+            "daylabels": [-1, "1-7"],
+            "procedures": [
+                {
+                    "caption": "ECG",
+                    "days": [1, 2, 3, 7],
+                    "footnotes": [
+                        {
+                            "day": 2,
+                            "symbol": "a",
+                            "text": "Period 1 only"
+                        },
+                        {
+                            "day": 7,
+                            "symbol": "b",
+                            "text": "Before discharge"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
+```
+
+![](sample13.svg)
