@@ -37,6 +37,7 @@ The available option flags can be shown with `python3 td.py --help`. In the curr
 | --timescale        | -t | Show time scale |
 | --graph            | -g | Show dose graph |
 | --ellipsis         | -e | Reduce symbols in condensed output |
+| --footnotes        | -n | Show footnotes |
 | --all              | -A | All options, equivalent to -ctge |
 | --debug            | -d | Debug output |
 | --help             | -h | Show this message and exit. |
@@ -89,9 +90,12 @@ For visual clarity, display of a timescale should be limited to the last element
 
 In cases where intraindividual dose escalation occurs, e.g., to phase a drug in or out, a dose graph can be shown underneath the administration symbols to indicate dose over time.
 
-A prerequisite is that the respective dosing information is included per day in the input file (see ["input"](input.md#exact-dose-information)).
+A prerequisite is that the respective dosing information is included per day in the input file (see [Input](input.md#exact-dose-information)).
 
 The following output was created using the `python td.py --condensed --graph test.json` command to include a dose graph for carbamazepine:
 
 ![](graph.svg)
 
+### Footnotes
+
+If footnotes have been defined in the input file (see [Input](input.md#footnotes)), they can be rendered in the output using the "--footnotes" (or "-n") option.

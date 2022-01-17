@@ -1,7 +1,7 @@
 {
 	"periods": [
 		{
-			"caption": 1,
+			"caption": "S",
 			"duration": 1,
 			"start": 1
 		},
@@ -9,7 +9,7 @@
 			"caption": "Period 1",
 			"duration": 8,
 			"start": -1,
-			"daylabels": [-1, 1, 4, 7],
+			"daylabels": [-1, "1-4", 7],
 			"dayshading": [1],
 			"intervals": [
 				{
@@ -66,7 +66,7 @@
 			"caption": "Period 2",
 			"duration": 12,
 			"start": 8,
-			"daylabels": [8, 11, "12-15", 18, 19],
+			"daylabels": ["8-15", 18, 19],
 			"dayshading": [8, 15],
 			"intervals": [
 				{

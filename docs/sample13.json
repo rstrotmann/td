@@ -29,6 +29,17 @@
                             "text": "Before discharge"
                         }
                     ]
+                },
+                {
+                    "caption": "vital signs",
+                    "days": [-1, 5, 7],
+                    "footnotes": [
+                        {
+                            "day": 5,
+                            "symbol": "a",
+                            "text": ""
+                        }
+                    ]
                 }
             ]
         }

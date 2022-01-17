@@ -1,6 +1,7 @@
 #!/opt/homebrew/bin/python3
 
 from opcode import haslocal
+from tempfile import template
 from textwrap import TextWrapper
 import click
 import pathlib
@@ -78,6 +79,19 @@ def item_names(trial, item_class):
 	return(out)
 
 
+def item_names_periods(periods, item_class):
+	"""return list of interval/administration/procedure names for trial"""
+	out = []
+	# unit = "cycles" if "cycles" in trial.keys() else "periods"
+	for p in periods:
+		if item_class in p.keys():
+			for proc in p[item_class]:
+				temp = proc['caption']
+				if not temp in out:
+					out.append(temp)
+	return(out)
+
+
 def extract_procedure(period, caption):
 	"""get specified administration/procedure as list of tuples (day, [times], relative) for individual days"""
 	out = []
@@ -135,6 +149,20 @@ def extract_footnotes(period, caption):
 							s[i] += str(f['symbol'])
 							t.append([f['symbol'], f['text']])
 	return([d, s, t])
+
+
+def footnote_list(periods):
+	cpt = []
+	for n in ['intervals', 'administrations', 'procedures']:
+		cpt += item_names_periods(periods, n)
+	fn = []
+	for c in cpt:
+		for p in periods:
+			f = extract_footnotes(p, c)[2]
+			for ff in f:
+				if not ff[0] in [i[0] for i in fn] and ff[1] != "":
+					fn.append(ff)
+	return(sorted(fn))
 
 
 def extract_start_end(daylist):
@@ -970,21 +998,13 @@ def main(file, debug, fontsize, output, font, condensed, autocompress, timescale
 
 	# make footnote list
 	max_footnote_width = 0
-	if footnotes:
-		cpt = []
-		for n in ['intervals', 'administrations', 'procedures']:
-			cpt += item_names(td, n)
-		fn = []
-		for c in cpt:
-			for p in periods:
-				f = extract_footnotes(p, c)[2]
-				for ff in f:
-					fn.append(ff)
-		if fn:
-			out[1] += ypadding * 4
-			for ff in sorted(fn):
-				out = add_output(out, render_footnote_text(ff, xoffset, out[1], lineheight, metrics, style))
-			max_footnote_width = max([textwidth_function(make_footnote_text(ff)) for ff in fn])
+	fn = footnote_list(periods)
+
+	if footnotes and fn:
+		out[1] += ypadding * 4
+		for ff in fn:
+			out = add_output(out, render_footnote_text(ff, xoffset, out[1], lineheight, metrics, style))
+		max_footnote_width = max([textwidth_function(make_footnote_text(ff)) for ff in fn])
 
 	# re-calculate overall output dimensions, finalize svg
 	viewport_width = max(xoffset + sum([period_width(i, daywidth_function) for i in periods]) + (len(periods)) * periodspacing, xoffset + max_footnote_width)

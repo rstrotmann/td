@@ -79,8 +79,6 @@
 							"symbol": "1",
 							"text": "sample footnote"
 						}
-						
-
 					]
 				}
 			],
@@ -104,6 +102,11 @@
 							"day": 1,
 							"symbol": "c",
 							"text": "text c"
+						},
+						{
+							"day": 3,
+							"symbol": "1",
+							"text": "sample footnote"
 						}
 					]
 				}
@@ -132,7 +135,14 @@
 				{
 					"caption": "evobrutinib BID (12 h apart)",
 					"days": [1],
-					"freq": "BID"
+					"freq": "BID", 
+					"footnotes": [
+						{
+							"day": 1,
+							"symbol": "a",
+							"text": ""
+						}
+					]
 				}
 			],
 			"procedures": [
