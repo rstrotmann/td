@@ -307,7 +307,7 @@ In some cases, the dose for an IMP changes over time in a scheduled way, e.g. to
     }
 ]
 ```
-As detailed under ["use"](use.md#dose-graph), a dose graph can then be displayed in the output to indicate the dose over time.
+As detailed on the [Use](use.md#dose-graph) page, a dose graph can then be displayed in the output to indicate the dose over time using the "--graph" (or "-g") option.
 
 ### Other procedure symbols
 

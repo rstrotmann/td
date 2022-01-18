@@ -128,6 +128,10 @@
               <ul class="nav flex-column">
               </ul>
             </li>
+            <li class="nav-item" data-level="3"><a href="#footnotes" class="nav-link">Footnotes</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
               </ul>
             </li>
               </ul>
@@ -385,7 +389,7 @@
     }
 ]
 </code></pre>
-<p>As detailed under <a href="../use/#dose-graph">"use"</a>, a dose graph can then be displayed in the output to indicate the dose over time.</p>
+<p>As detailed on the <a href="../use/#dose-graph">Use</a> page, a dose graph can then be displayed in the output to indicate the dose over time using the "--graph" (or "-g") option.</p>
 <h3 id="other-procedure-symbols">Other procedure symbols</h3>
 <p>In cases where prodecure symbols should indicate different conditions (e.g., fasted vs. fed), a <em>value</em> field can be included in the procedure element. Procedures with a <em>value</em> field are not shown as diamonds but as hollow circles if the value is zero, and filled circles for any value other than zero:</p>
 <pre><code class="language-json">{
@@ -485,7 +489,52 @@
     ]
 }
 </code></pre>
-<p><img alt="" src="../sample12.svg" /></p></div>
+<p><img alt="" src="../sample12.svg" /></p>
+<h3 id="footnotes">Footnotes</h3>
+<p>Footnotes can be added to any <em>interval</em>, <em>administration</em> or <em>procedure</em> field, defining an entry <em>footnotes</em> that has a list as its value. The elements of that list need to have <em>day</em>, <em>symbol</em> and <em>text</em> entires that define the day to be annotated, the footnote symbol to be rendered above it, and the full text that is rendered at the bottom of the figure.</p>
+<p>Footnote symbols can be re-used in other procedures. the <em>text</em> field in further copies is expected to be an empty string (i.e., "").</p>
+<p>Note that in the output, footnotes are only rendered if specified explicitly with the "--footnote" (or "-n") option (see <a href="../use/#footnotes">Use</a>). The below figure was created by invoking <code>python td.py -n sample.jpg</code>:</p>
+<pre><code class="language-json">{
+    &quot;periods&quot;: [
+        {
+            &quot;caption&quot;: &quot;Periods 1-3&quot;,
+            &quot;start&quot;: -1,
+            &quot;duration&quot;: 8,
+            &quot;daylabels&quot;: [-1, &quot;1-7&quot;],
+            &quot;procedures&quot;: [
+                {
+                    &quot;caption&quot;: &quot;ECG&quot;,
+                    &quot;days&quot;: [ 1, 2, 3, 7],
+                    &quot;footnotes&quot;: [
+                        {
+                            &quot;day&quot;: 2,
+                            &quot;symbol&quot;: &quot;a&quot;,
+                            &quot;text&quot;: &quot;Period 1 only&quot;
+                        },
+                        {
+                            &quot;day&quot;: 7,
+                            &quot;symbol&quot;: &quot;b&quot;,
+                            &quot;text&quot;: &quot;Before discharge&quot;
+                        }
+                    ]
+                },
+                {
+                    &quot;caption&quot;: &quot;vital signs&quot;,
+                    &quot;days&quot;: [-1, 5, 7],
+                    &quot;footnotes&quot;: [
+                        {
+                            &quot;day&quot;: 5,
+                            &quot;symbol&quot;: &quot;a&quot;,
+                            &quot;text&quot;: &quot;&quot;
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
+</code></pre>
+<p><img alt="" src="../sample13.svg" /></p></div>
             </div>
         </div>
 

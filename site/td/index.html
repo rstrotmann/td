@@ -102,6 +102,10 @@
               <ul class="nav flex-column">
               </ul>
             </li>
+            <li class="nav-item" data-level="2"><a href="#td.extract_footnotes" class="nav-link">extract_footnotes()</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
             <li class="nav-item" data-level="2"><a href="#td.extract_labels" class="nav-link">extract_labels()</a>
               <ul class="nav flex-column">
               </ul>
@@ -119,6 +123,10 @@
               </ul>
             </li>
             <li class="nav-item" data-level="2"><a href="#td.item_names" class="nav-link">item_names()</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#td.item_names_periods" class="nav-link">item_names_periods()</a>
               <ul class="nav flex-column">
               </ul>
             </li>
@@ -243,7 +251,6 @@
 					temp.remove(0)
 				out += extract_start_end(temp)
 	out.sort()
-	# out = list(dict.fromkeys(out))
 	temp = [False] * period['duration']
 	for i in list(dict.fromkeys(out)):
 		temp[day_index(period, i)] = True
@@ -373,6 +380,48 @@
 
 
 
+  <div class="doc doc-object doc-function">
+
+
+
+<h2 id="td.extract_footnotes" class="doc doc-heading">
+<code class="highlight language-python">extract_footnotes(period, caption)</code>
+
+
+</h2>
+
+    <div class="doc doc-contents ">
+
+      <p>extract footnotes for procedures by day, if applicable</p>
+
+        <details class="quote">
+          <summary>Source code in <code>trialdesign/td.py</code></summary>
+          <pre class="highlight"><code class="language-python">def extract_footnotes(period, caption):
+	"""extract footnotes for procedures by day, if applicable"""
+	d = [False] * period['duration']
+	s = [''] * period['duration']
+	t = []
+	for x in ['intervals', 'administrations', 'procedures']:
+		if x in period.keys():
+			for proc in period[x]:
+				if proc['caption'] == caption:
+					if 'footnotes' in proc.keys():
+						for f in proc["footnotes"]:
+							i = day_index(period, f['day'])
+							d[i] = True
+							if s[i]:
+								s[i] += ","
+							s[i] += str(f['symbol'])
+							t.append([f['symbol'], f['text']])
+	return([d, s, t])
+</code></pre>
+        </details>
+    </div>
+
+  </div>
+
+
+
 
   <div class="doc doc-object doc-function">
 
@@ -392,13 +441,13 @@
           <summary>Source code in <code>trialdesign/td.py</code></summary>
           <pre class="highlight"><code class="language-python">def extract_labels(period, caption):
 	"""extract labels for procedures by day, if applicable"""
-	out = []
+	out = [""] * period['duration']
+	# out = []
 	for x in ['intervals', 'administrations', 'procedures']:
 		if x in period.keys():
 			for proc in period[x]:
 				if proc['caption'] == caption:
 					if 'labels' in proc.keys():
-						out = [""] * period['duration']
 						if 'days' in proc.keys():
 							for d,l in zip(decode_daylist(proc['days']), proc['labels']):
 								out[day_index(period, d)] = l
@@ -498,6 +547,7 @@
 
 
 
+
   <div class="doc doc-object doc-function">
 
 
@@ -565,6 +615,42 @@
     </div>
 
   </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h2 id="td.item_names_periods" class="doc doc-heading">
+<code class="highlight language-python">item_names_periods(periods, item_class)</code>
+
+
+</h2>
+
+    <div class="doc doc-contents ">
+
+      <p>return list of interval/administration/procedure names for trial</p>
+
+        <details class="quote">
+          <summary>Source code in <code>trialdesign/td.py</code></summary>
+          <pre class="highlight"><code class="language-python">def item_names_periods(periods, item_class):
+	"""return list of interval/administration/procedure names for trial"""
+	out = []
+	# unit = "cycles" if "cycles" in trial.keys() else "periods"
+	for p in periods:
+		if item_class in p.keys():
+			for proc in p[item_class]:
+				temp = proc['caption']
+				if not temp in out:
+					out.append(temp)
+	return(out)
+</code></pre>
+        </details>
+    </div>
+
+  </div>
+
 
 
 
@@ -826,6 +912,7 @@
 
 
 
+
   <div class="doc doc-object doc-function">
 
 
@@ -867,7 +954,6 @@
 				if "start" in intv.keys() and "duration" in intv.keys():
 					start_list, duration_list = [intv['start']], [intv['duration']]
 				elif "days" in intv.keys() and isinstance(intv["days"], list):
-					# start_list, duration_list = intv["days"], [1 for i in intv["days"]]
 					start_list = decode_daylist(intv["days"])
 					duration_list = [1 for i in decode_daylist(intv["days"])]
 				else:
@@ -937,7 +1023,7 @@
 
 
 <h2 id="td.render_periods" class="doc doc-heading">
-<code class="highlight language-python">render_periods(periods, x, y, caption, height, render_function, metrics, style, dashes=False, **kwargs)</code>
+<code class="highlight language-python">render_periods(periods, x, y, caption, height, render_function, metrics, style, dashes=False, footnotes=False, **kwargs)</code>
 
 
 </h2>
@@ -948,7 +1034,7 @@
 
         <details class="quote">
           <summary>Source code in <code>trialdesign/td.py</code></summary>
-          <pre class="highlight"><code class="language-python">def render_periods(periods, x, y, caption, height, render_function, metrics, style, dashes=False, **kwargs):
+          <pre class="highlight"><code class="language-python">def render_periods(periods, x, y, caption, height, render_function, metrics, style, dashes=False, footnotes=False, **kwargs):
 	"""applies rendering function to all periods"""
 	daywidth_function= metrics[0]
 	(periodspacing, lineheight, ypadding, lwd, ellipsis, debug) = style
@@ -960,11 +1046,15 @@
 	out = ""
 
 	# render labels, if applicable
-	has_labels = [i for ii in [extract_labels(p, caption) for p in periods] for i in ii]
-	if has_labels:
+	has_labels = len([i for ii in [extract_labels(p, caption) for p in periods] for i in ii if i != '']) != 0
+	has_footnotes = True in [i for ii in [extract_footnotes(p, caption)[0] for p in periods] for i in ii]
+	if not footnotes:
+		has_footnotes = False
+
+	if has_labels or has_footnotes:
 		xx = x
 		for p in periods:
-			[svg_out, y_out] = render_labels(p, caption, xx, y, height, metrics, style)
+			[svg_out, y_out] = render_labels_footnotes(p, caption, xx, y, height, metrics, style, footnotes=footnotes)
 			out += svg_out
 			xx += period_width(p, daywidth_function) + periodspacing
 		h += lineheight
@@ -1094,11 +1184,17 @@
 		## curly brackets
 		if debug:
 			out += render_dummy(period, xoffset, y, bracketheight, metrics)
+
 		for ts_d in ts_days:
 			times = unnormalize_procedure([i for i in proc if i[2]==ts_d])[0][1]
 			startx = period_day_starts(period, xoffset, daywidth_function)[day_index(period, min([i for (i, t, rel) in proc if rel==ts_d]))]
 			endx = period_day_ends(period, xoffset, daywidth_function)[day_index(period, max([i for (i, t, rel) in proc if rel==ts_d]))]
-			out += svg_curly_up(startx, endx, y, radius=bracketheight/2, lwd=lwd)			
+			radius = bracketheight/2
+			if radius * 4 &gt; endx-startx:
+				startx -= radius/2
+				endx += radius/2
+				radius = (endx-startx)/5
+			out += svg_curly_up(startx, endx, y, radius=radius, lwd=lwd)			
 		y += bracketheight + ypadding*1.5
 
 		## timescales

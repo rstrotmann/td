@@ -116,6 +116,10 @@
               <ul class="nav flex-column">
               </ul>
             </li>
+            <li class="nav-item" data-level="3"><a href="#footnotes" class="nav-link">Footnotes</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
               </ul>
             </li>
               </ul>
@@ -194,6 +198,11 @@
 <td>Reduce symbols in condensed output</td>
 </tr>
 <tr>
+<td>--footnotes</td>
+<td>-n</td>
+<td>Show footnotes</td>
+</tr>
+<tr>
 <td>--all</td>
 <td>-A</td>
 <td>All options, equivalent to -ctge</td>
@@ -234,9 +243,11 @@
 <p>For visual clarity, display of a timescale should be limited to the last element (the one at the bottom) of a trial design visualization.</p>
 <h3 id="dose-graph">Dose graph</h3>
 <p>In cases where intraindividual dose escalation occurs, e.g., to phase a drug in or out, a dose graph can be shown underneath the administration symbols to indicate dose over time.</p>
-<p>A prerequisite is that the respective dosing information is included per day in the input file (see <a href="../input/#exact-dose-information">"input"</a>).</p>
+<p>A prerequisite is that the respective dosing information is included per day in the input file (see <a href="../input/#exact-dose-information">Input</a>).</p>
 <p>The following output was created using the <code>python td.py --condensed --graph test.json</code> command to include a dose graph for carbamazepine:</p>
-<p><img alt="" src="../graph.svg" /></p></div>
+<p><img alt="" src="../graph.svg" /></p>
+<h3 id="footnotes">Footnotes</h3>
+<p>If footnotes have been defined in the input file (see <a href="../input/#footnotes">Input</a>), they can be rendered in the output using the "--footnotes" (or "-n") option.</p></div>
             </div>
         </div>
 
