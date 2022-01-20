@@ -1,13 +1,9 @@
 #!/opt/homebrew/bin/python3
 
-from opcode import haslocal
-from tempfile import template
-from textwrap import TextWrapper
 import click
 import pathlib
 import cairo
 import json
-import math
 import re
 import sys
 
@@ -66,23 +62,9 @@ def decode_daylist(daylist):
 	return(days)
 
 
-def item_names(trial, item_class):
+def item_names(periods, item_class):
 	"""return list of interval/administration/procedure names for trial"""
 	out = []
-	unit = "cycles" if "cycles" in trial.keys() else "periods"
-	for p in trial[unit]:
-		if item_class in p.keys():
-			for proc in p[item_class]:
-				temp = proc['caption']
-				if not temp in out:
-					out.append(temp)
-	return(out)
-
-
-def item_names_periods(periods, item_class):
-	"""return list of interval/administration/procedure names for trial"""
-	out = []
-	# unit = "cycles" if "cycles" in trial.keys() else "periods"
 	for p in periods:
 		if item_class in p.keys():
 			for proc in p[item_class]:
@@ -92,69 +74,67 @@ def item_names_periods(periods, item_class):
 	return(out)
 
 
+def iterate_over_procedures(period, caption, out, function):
+	for x in ['intervals', 'administrations', 'procedures']:
+		if x in period.keys():
+			for proc in period[x]:
+				if proc['caption'] == caption:
+					function(proc, out)
+	return(out)
+
+
 def extract_procedure(period, caption):
 	"""get specified administration/procedure as list of tuples (day, [times], relative) for individual days"""
 	out = []
-	for x in ['procedures', 'administrations']:
-		if x in period.keys():
-			for proc in period[x]:
-				if proc['caption'] == caption:
-					if 'times' in proc.keys():
-						t = proc['times']
-					elif 'freq' in proc.keys() and proc['freq'] == 'rich':
-						t = [0, 0]
-					else: 
-						t = [0]
-					if 'relative' in proc.keys():
-						rel = proc['relative']
-					else:
-						rel = 1
-					out += [(d, t, rel) for d in decode_daylist(proc['days'])]
-	if out:
-		temp = [d for (d, t, rel) in out]
-	return(out)
+	def temp(proc, out):
+		if 'times' in proc.keys():
+			t = proc['times']
+		elif 'freq' in proc.keys() and proc['freq'] == 'rich':
+			t = [0, 0]
+		else: 
+			t = [0]
+		if 'relative' in proc.keys():
+			rel = proc['relative']
+		else:
+			rel = 1
+		out += [(d, t, rel) for d in decode_daylist(proc['days'])]
+		return(out)
+	return(iterate_over_procedures(period, caption, out, temp))
 
 
 def extract_labels(period, caption):
-	"""extract labels for procedures by day, if applicable"""
 	out = [""] * period['duration']
-	# out = []
-	for x in ['intervals', 'administrations', 'procedures']:
-		if x in period.keys():
-			for proc in period[x]:
-				if proc['caption'] == caption:
-					if 'labels' in proc.keys():
-						if 'days' in proc.keys():
-							for d,l in zip(decode_daylist(proc['days']), proc['labels']):
-								out[day_index(period, d)] = l
-						elif 'start' in proc.keys() and 'duration' in proc.keys():
-							out[day_index(period, proc["start"])] = proc['labels'][0]
-	return(out)
+	def temp(proc, out):
+		if 'labels' in proc.keys():
+			if 'days' in proc.keys():
+				for d,l in zip(decode_daylist(proc['days']), proc['labels']):
+					out[day_index(period, d)] = l
+			elif 'start' in proc.keys() and 'duration' in proc.keys():
+				out[day_index(period, proc["start"])] = proc['labels'][0]
+		return(out)
+	return(iterate_over_procedures(period, caption, out, temp))
+
 
 def extract_footnotes(period, caption):
 	"""extract footnotes for procedures by day, if applicable"""
-	d = [False] * period['duration']
-	s = [''] * period['duration']
-	t = []
-	for x in ['intervals', 'administrations', 'procedures']:
-		if x in period.keys():
-			for proc in period[x]:
-				if proc['caption'] == caption:
-					if 'footnotes' in proc.keys():
-						for f in proc["footnotes"]:
-							i = day_index(period, f['day'])
-							d[i] = True
-							if s[i]:
-								s[i] += ","
-							s[i] += str(f['symbol'])
-							t.append([f['symbol'], f['text']])
-	return([d, s, t])
+	out = [[False] * period['duration'], [''] * period['duration'], []]
+	def temp(proc, out):
+		if 'footnotes' in proc.keys():
+			for f in proc["footnotes"]:
+				i = day_index(period, f['day'])
+				out[0][i] = True
+				if out[1][i]:
+					out[1][i] += ","
+				out[1][i] += str(f['symbol'])
+				out[2].append([f['symbol'], f['text']])
+		return(out)
+	return(iterate_over_procedures(period, caption, out, temp))
 
 
 def footnote_list(periods):
 	cpt = []
 	for n in ['intervals', 'administrations', 'procedures']:
-		cpt += item_names_periods(periods, n)
+		cpt += item_names(periods, n)
 	fn = []
 	for c in cpt:
 		for p in periods:
@@ -244,31 +224,23 @@ def unnormalize_procedure(procedure):
 
 def has_timescale(period, caption):
 	"""test if procedure has timescale in the respective period"""
-	temp = False
-	for x in ['procedures', 'administrations']:
-		if x in period.keys():
-			for proc in period[x]:
-				if proc['caption'] == caption:
-					if 'timescale' in proc.keys():
-						if proc['timescale'] == 'show':
-							temp = True
-	return(temp)
+	out = []
+	def temp(proc, out):
+		if 'timescale' in proc.keys():
+			if proc['timescale'] == 'show':
+				out.append(True)
+		return(out)
+	return(True in iterate_over_procedures(period, caption, out, temp))
 
 
 def extract_field(period, caption, field):
-	temp = [""] * period['duration']
-	for x in ['procedures', 'administrations']:
-		if x in period.keys():
-			for proc in period[x]:
-				if proc['caption'] == caption:
-					if field in proc.keys():
-						val = proc[field]
-					else:
-						val = ""
-					dd = [(d, val) for d in decode_daylist(proc['days'])]
-					for (day, val) in dd:
-						temp[day_index(period, day)] = val
-	return(temp)
+	out = [""] * period['duration']
+	def temp(proc, out):
+		val = proc[field] if field in proc.keys() else ""
+		for (day, val) in [(d, val) for d in decode_daylist(proc['days'])]:
+			out[day_index(period, day)] = val
+		return(out)
+	return(iterate_over_procedures(period, caption, out, temp))
 
 
 def extract_interval(period, caption):
@@ -307,8 +279,7 @@ def day_shadings(period):
 	temp = [False] * period['duration']
 	if "dayshading" in period.keys():
 		for i in decode_daylist(period['dayshading']):
-			idx = day_index(period, i)
-			temp[idx] = True
+			temp[day_index(period, i)] = True
 	return(temp)
 
 
@@ -508,7 +479,6 @@ def render_procedure(period, caption, xoffset, yoffset, lineheight, metrics, sty
 
 	for p, w, s, b, e, v in zip(centers, widths, symbols, brackets, ellipses, values):
 		if s:
-			# if e==1 and b=="" and s=="arrow" and ellipsis:
 			if e==1 and b=="" and ellipsis:
 				svg_out += svg_circle(p, y, lineheight/30, fill_color="black")
 			elif v != "":
@@ -830,7 +800,7 @@ def main(file, debug, fontsize, output, font, condensed, autocompress, timescale
 	Generates a 'schedule of assessments' overview for clinical trials, based on a json-formatted input FILE (see examples for guidance). Graphical output is provided in svg vector format that can be rendered by any webbrowser or directly imported into Office applications. Use below OPTIONS to manage the output style.
 	
 
-	Version 2.0, proudly written in functional Python (Rainer Strotmann, Dec-2021)"""
+	Version 2.1, proudly written in functional Python (Rainer Strotmann, Jan-2022)"""
 
 	if all:
 		condensed=True
@@ -928,13 +898,20 @@ def main(file, debug, fontsize, output, font, condensed, autocompress, timescale
 	# make style
 	periodspacing = textwidth_function("XX")
 	lineheight = textheight_function("X") * 2
-	items = item_names(td, 'procedures') + item_names(td, 'intervals') + item_names(td, 'administrations')
+	items = item_names(periods, 'procedures') + item_names(periods, 'intervals') + item_names(periods, 'administrations')
+
 	xoffset = 30
 	if items:
 		xoffset += max([textwidth_function(i) for i in items])
 	yoffset = 10
 	lwd = fontsize/10
 	style = (periodspacing, lineheight, ypadding, lwd, ellipsis, debug)
+
+	###########
+	
+	###########
+
+
 
 	# RENDER SVG OUTPUT
 	out = ["", yoffset]
@@ -948,14 +925,15 @@ def main(file, debug, fontsize, output, font, condensed, autocompress, timescale
 		sys.exit()
 
 	# render intervals
-	for n in item_names(td, 'intervals'):
+	# for n in item_names(td, 'intervals'):
+	for n in item_names(periods, 'intervals'):
 		try:
 			out = add_output(out, render_periods(periods, xoffset, out[1], n, lineheight, render_interval, metrics, style, footnotes=footnotes))
 		except Exception as err:
 			raise IndexError(f'error rendering intervals: {err}')
 
 	# render administrations
-	for n in item_names(td, 'administrations'):
+	for n in item_names(periods, 'administrations'):
 		out = add_output(out, render_periods(periods, xoffset, out[1], n, lineheight, render_procedure, metrics, style, default_symbol="arrow", footnotes=footnotes))
 
 		# render dose graph
@@ -965,7 +943,7 @@ def main(file, debug, fontsize, output, font, condensed, autocompress, timescale
 
 	# render procedures
 	last_proc_has_timescale = False
-	for n in item_names(td, 'procedures'):
+	for n in item_names(periods, 'procedures'):
 		out = add_output(out, render_periods(periods, xoffset, out[1], n, lineheight, render_procedure, metrics, style, default_symbol="diamond", footnotes=footnotes))
 
 		# render timescale
@@ -979,7 +957,7 @@ def main(file, debug, fontsize, output, font, condensed, autocompress, timescale
 				x += period_width(p, daywidth_function)
 				x += periodspacing
 			if ts:
-				if n == item_names(td, 'procedures')[-1]:
+				if n == item_names(periods, 'procedures')[-1]:
 					last_proc_has_timescale = True
 				out = add_output(out, render_times(p, n, x, out[1], lineheight, metrics, style, maxwidth=xoffset + sum([period_width(i, daywidth_function) for i in periods]) + (len(periods)-1) * periodspacing))
 

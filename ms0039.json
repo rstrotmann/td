@@ -57,7 +57,8 @@
 				{
 					"caption": "hospitalization",
 					"start": 5,
-					"duration": 3
+					"duration": 3,
+					"labels": ["V2"]
 				}
 			],
 			"administrations": [
