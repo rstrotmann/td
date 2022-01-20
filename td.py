@@ -168,6 +168,8 @@ def activity_days(period):
 	duration = period["duration"]
 	if start <0 and start+duration >0:
 		duration+=1
+	
+	# start and end of period, start and end of trains of procedure days
 	out = [start, start+duration-1]
 	for x in ["administrations", "procedures"]:
 		if x in period.keys():
@@ -175,6 +177,13 @@ def activity_days(period):
 				if "days" in i.keys():
 					temp = decode_daylist(i["days"])
 					out += extract_start_end(temp)
+
+	# all PK days
+	if "procedures" in period.keys():
+		for i in period["procedures"]:
+			if "times" in i:
+				out += [d for (d, t, r) in normalize_procedure(extract_procedure(period, i["caption"]))]
+
 	if "intervals" in period.keys():
 		for i in period["intervals"]:
 			if "start" in i.keys() and "duration" in i.keys():
@@ -261,7 +270,7 @@ def day_index(period, day):
 	"""convert day to index within daylist"""
 	temp = day - period['start']
 	if period['start'] < 0 and day > 0:
-		temp -= 1
+		temp -= 1 # correct for absent day 0
 	if temp <0 or temp>period["duration"]-1:
 		raise IndexError(f'day index {day} out of range ({period["start"]} to {period["start"]+period["duration"]})')
 	return(temp)
@@ -906,12 +915,6 @@ def main(file, debug, fontsize, output, font, condensed, autocompress, timescale
 	yoffset = 10
 	lwd = fontsize/10
 	style = (periodspacing, lineheight, ypadding, lwd, ellipsis, debug)
-
-	###########
-	
-	###########
-
-
 
 	# RENDER SVG OUTPUT
 	out = ["", yoffset]
