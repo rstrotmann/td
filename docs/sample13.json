@@ -19,12 +19,12 @@
                     ],
                     "footnotes": [
                         {
-                            "day": 2,
+                            "days": [2, 7],
                             "symbol": "a",
                             "text": "Period 1 only"
                         },
                         {
-                            "day": 7,
+                            "days": 7,
                             "symbol": "b",
                             "text": "Before discharge"
                         }
@@ -35,7 +35,7 @@
                     "days": [-1, 5, 7],
                     "footnotes": [
                         {
-                            "day": 5,
+                            "days": 5,
                             "symbol": "a",
                             "text": ""
                         }

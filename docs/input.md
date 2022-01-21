@@ -427,7 +427,7 @@ Note: If the procedure is an interval that is defined using _start_ and _duratio
 
 ### Footnotes
 
-Footnotes can be added to any _interval_, _administration_ or _procedure_ field, defining an entry _footnotes_ that has a list as its value. The elements of that list need to have _day_, _symbol_ and _text_ entires that define the day to be annotated, the footnote symbol to be rendered above it, and the full text that is rendered at the bottom of the figure.
+Footnotes can be added to any _interval_, _administration_ or _procedure_ field, defining an entry _footnotes_ that has a list as its value. The elements of that list need to have _days_, _symbol_ and _text_ entires that define the days to be annotated, the footnote symbol to be rendered above it, and the full text that is rendered at the bottom of the output.
 
 Footnote symbols can be re-used in other procedures. the _text_ field in further copies is expected to be an empty string (i.e., "").
 
@@ -447,12 +447,12 @@ Note that in the output, footnotes are only rendered if specified explicitly wit
                     "days": [ 1, 2, 3, 7],
                     "footnotes": [
                         {
-                            "day": 2,
+                            "days": [2, 7],
                             "symbol": "a",
                             "text": "Period 1 only"
                         },
                         {
-                            "day": 7,
+                            "days": 7,
                             "symbol": "b",
                             "text": "Before discharge"
                         }
@@ -463,7 +463,7 @@ Note that in the output, footnotes are only rendered if specified explicitly wit
                     "days": [-1, 5, 7],
                     "footnotes": [
                         {
-                            "day": 5,
+                            "days": 5,
                             "symbol": "a",
                             "text": ""
                         }
