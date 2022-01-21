@@ -6,7 +6,9 @@ import cairo
 import json
 import re
 import sys
-
+# from rich import pretty
+from rich.console import Console
+# import rich
 
 def assert_period_format(period):
 	try:
@@ -121,12 +123,20 @@ def extract_footnotes(period, caption):
 	def temp(proc, out):
 		if 'footnotes' in proc.keys():
 			for f in proc["footnotes"]:
-				i = day_index(period, f['day'])
-				out[0][i] = True
-				if out[1][i]:
-					out[1][i] += ","
-				out[1][i] += str(f['symbol'])
-				out[2].append([f['symbol'], f['text']])
+				if not "days" in f.keys():
+					raise KeyError(f'no "days" in footnote "{f["text"]}"')
+				else:
+					if not isinstance(f["days"], list):
+						daylist = [f["days"]]
+					else:
+						daylist = f["days"]
+					for d in decode_daylist(daylist):
+						i = day_index(period, d)
+						out[0][i] = True
+						if out[1][i]:
+							out[1][i] += ","
+						out[1][i] += str(f['symbol'])
+						out[2].append([f['symbol'], f['text']])
 		return(out)
 	return(iterate_over_procedures(period, caption, out, temp))
 
@@ -524,7 +534,6 @@ def render_labels_footnotes(period, caption, xoffset, yoffset, linheight, metric
 
 		centers = period_day_centers(period, xoffset, daywidth_function)
 		widths = daywidth_function(period)
-
 		for l, c, w, fd, fs in zip(lbl, centers, widths, fnt_days, fnt_symbols):
 			temp = str(l)
 			if fd and footnotes:
@@ -809,7 +818,11 @@ def main(file, debug, fontsize, output, font, condensed, autocompress, timescale
 	Generates a 'schedule of assessments' overview for clinical trials, based on a json-formatted input FILE (see examples for guidance). Graphical output is provided in svg vector format that can be rendered by any webbrowser or directly imported into Office applications. Use below OPTIONS to manage the output style.
 	
 
-	Version 2.1, proudly written in functional Python (Rainer Strotmann, Jan-2022)"""
+	Version 2.1, proudly written in functional Python (Rainer Strotmann, Jan-2022)
+	"""
+
+	console = Console()
+	# console.print("Test for [bold]pretty[/bold] printing")
 
 	if all:
 		condensed=True
