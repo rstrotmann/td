@@ -1,14 +1,18 @@
 #!/opt/homebrew/bin/python3
 
+from tokenize import Double
 import click
 import pathlib
 import cairo
 import json
 import re
 import sys
-# from rich import pretty
 from rich.console import Console
-# import rich
+
+### GLOBAL VARIABLES
+program_version="2.1"
+program_date="Jan-2022"
+
 
 def assert_period_format(period):
 	try:
@@ -791,68 +795,10 @@ def render_periods(periods, x, y, caption, height, render_function, metrics, sty
 	return(add_output(["", h], [out, y_out]))
 
 
-########################################
-########################################
-########################################
-
-CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
-
-@click.command(context_settings=CONTEXT_SETTINGS)
-@click.argument("file")
-@click.option("--output", "-o", type=str, default="", help='Output file name. Default: INPUT.svg')
-@click.option("--fontsize", "-s", type=int, default=14, help='Output font size (default 11)')
-@click.option("--font", "-f", type=str, default="Arial", help='Output font type (default: Arial)')
-@click.option("--padding", "-p", type=float, default=1, help='Y-axis padding factor (default 1)')
-@click.option("--condensed", "-c", is_flag=True, help='Show condensed daygrid')
-@click.option("--autocompress", "-a", is_flag=True, help='Automatic compression of daygrid')
-
-@click.option("--timescale", "-t", is_flag=True, help='Show time scale')
-@click.option("--graph", "-g", is_flag=True, help='Show dose graph')
-@click.option("--ellipsis", "-e", is_flag=True, help='Reduce symbols in condensed output')
-@click.option("--footnotes", "-n", is_flag=True, help='Show footnotes')
-@click.option("--all", "-A", is_flag=True, help='All options, equivalent to -ctgen')
-@click.option("--debug", "-d", is_flag=True, help='Debug output')
-def main(file, debug, fontsize, output, font, condensed, autocompress, timescale, padding, ellipsis, footnotes, graph, all):
-	"""Clinical trial design visualization
-
-
-	Generates a 'schedule of assessments' overview for clinical trials, based on a json-formatted input FILE (see examples for guidance). Graphical output is provided in svg vector format that can be rendered by any webbrowser or directly imported into Office applications. Use below OPTIONS to manage the output style.
+def render_td(td, title="", debug=False, fontsize=11, font="Arial", condensed=False, autocompress=False, timescale=False, padding=1, ellipsis=False, footnotes=False, graph=False):
+	# VALIDATE INPUT
 	
-
-	Version 2.1, proudly written in functional Python (Rainer Strotmann, Jan-2022)
-	"""
-
-	console = Console()
-	# console.print("Test for [bold]pretty[/bold] printing")
-
-	if all:
-		condensed=True
-		timescale=True
-		graph=True
-		ellipsis=True
-		footnotes=True
-
-	ypadding = fontsize/1.8 * padding
-
-	# read input file
-	infile = pathlib.Path(file)
-	inpath = pathlib.Path(file).resolve().parent
-	if output:
-		outfile = inpath.joinpath(output)
-	else:
-		outfile = inpath.joinpath(infile.stem + ".svg")
-	try:
-		with open(infile) as f:
-			td = json.load(f)
-	except json.decoder.JSONDecodeError as err:
-		print(f'Json syntax error in input file {infile}:\n{err}')
-		sys.exit()
-	except:
-		print("Error loading input file")
-		sys.exit()
-
-	# parse input file
-	## read periods
+	# parse periods
 	periods = []
 	try:
 		for period_class in ["periods", "cycles"]:
@@ -865,8 +811,7 @@ def main(file, debug, fontsize, output, font, condensed, autocompress, timescale
 		if not len(periods):
 			raise KeyError("no period or cycle found in trial design")
 	except Exception as err:
-		print(err)
-		sys.exit()
+		return([False, "", err])
 
 	## parse procedures
 	try:
@@ -876,12 +821,13 @@ def main(file, debug, fontsize, output, font, condensed, autocompress, timescale
 					for i in p[n]:
 						assert_func(i)
 	except Exception as err:
-		print(err)
-		sys.exit()
+		return([False, "", err])
 
-	# make metrics
+	ypadding = fontsize/1.8 * padding
+
+	# MAKE METRICS
 	canvas = cairo.Context(cairo.SVGSurface("temp.svg", 10, 10))
-	canvas.select_font_face("Arial", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
+	canvas.select_font_face(font, cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
 	canvas.set_font_size(fontsize)
 
 	def make_textwidth(canvas):
@@ -918,7 +864,7 @@ def main(file, debug, fontsize, output, font, condensed, autocompress, timescale
 	daywidth_function = make_daywidth_function(textwidth_function, condensed)
 	metrics = (daywidth_function, textwidth_function, textheight_function)
 
-	# make style
+	# MAKE STYLE
 	periodspacing = textwidth_function("XX")
 	lineheight = textheight_function("X") * 2
 	items = item_names(periods, 'procedures') + item_names(periods, 'intervals') + item_names(periods, 'administrations')
@@ -938,16 +884,17 @@ def main(file, debug, fontsize, output, font, condensed, autocompress, timescale
 	try:
 		out = add_output(out, render_periods(periods, xoffset, out[1], "", lineheight, render_daygrid, metrics, style, dashes=True))
 	except Exception as err:
-		print(f'error rendering daygrid: {err}')
-		sys.exit()
+		# print(f'error rendering daygrid: {err}')
+		# sys.exit()
+		return([False, "", ], f'error rendering daygrid: {err}')
 
 	# render intervals
-	# for n in item_names(td, 'intervals'):
 	for n in item_names(periods, 'intervals'):
 		try:
 			out = add_output(out, render_periods(periods, xoffset, out[1], n, lineheight, render_interval, metrics, style, footnotes=footnotes))
 		except Exception as err:
-			raise IndexError(f'error rendering intervals: {err}')
+			# raise IndexError(f'error rendering intervals: {err}')
+			return([False, "", ], f'error rendering intervals: {err}')
 
 	# render administrations
 	for n in item_names(periods, 'administrations'):
@@ -1009,16 +956,72 @@ def main(file, debug, fontsize, output, font, condensed, autocompress, timescale
 	viewport_width = max(xoffset + sum([period_width(i, daywidth_function) for i in periods]) + (len(periods)) * periodspacing, xoffset + max_footnote_width)
 	viewport_height = out[1]
 
-	svg_out = f'<svg width="{viewport_width}" height="{viewport_height}" xmlns="http://www.w3.org/2000/svg">\n<style>text {{font-family: {font}; font-size: {fontsize}px ;}}</style>\n<desc>Trial design autogenerated by td.py V2.0 (Jan-2022), author: Rainer Strotmann</desc><title>{infile.stem}</title>' + out[0]
+	svg_out = f'<svg width="{viewport_width}" height="{viewport_height}" xmlns="http://www.w3.org/2000/svg">\n<style>text {{font-family: {font}; font-size: {fontsize}px ;}}</style>\n<desc>Trial design autogenerated by td.py version {program_version} ({program_date}), author: Rainer Strotmann</desc><title>{title}</title>' + out[0]
 	
-	# svg_out = f'<svg width="{viewport_width}" height="{viewport_height}" xmlns="http://www.w3.org/2000/svg">\n<style>text {{font-family: {font}; font-size: {fontsize}px ;}} .footnote {{font-size: {fontsize*0.9}px;}}</style>\n<desc>Trial design autogenerated by td.py V2.0 (Jan-2022), author: Rainer Strotmann</desc><title>{infile.stem}</title>' + out[0]
-
 	svg_out += f'</svg>'
+	return(True, svg_out, "")
 
-	# write to disk
-	with open(outfile, "w") as f:
-		f.write(svg_out)
+
+########################################
+
+CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
+
+@click.command(context_settings=CONTEXT_SETTINGS)
+@click.argument("file")
+@click.option("--output", "-o", type=str, default="", help='Output file name. Default: INPUT.svg')
+@click.option("--fontsize", "-s", type=int, default=14, help='Output font size (default 11)')
+@click.option("--font", "-f", type=str, default="Arial", help='Output font type (default: Arial)')
+@click.option("--padding", "-p", type=float, default=1, help='Y-axis padding factor (default 1)')
+@click.option("--condensed", "-c", is_flag=True, help='Show condensed daygrid')
+@click.option("--autocompress", "-a", is_flag=True, help='Automatic compression of daygrid')
+
+@click.option("--timescale", "-t", is_flag=True, help='Show time scale')
+@click.option("--graph", "-g", is_flag=True, help='Show dose graph')
+@click.option("--ellipsis", "-e", is_flag=True, help='Reduce symbols in condensed output')
+@click.option("--footnotes", "-n", is_flag=True, help='Show footnotes')
+@click.option("--all", "-A", is_flag=True, help='All options, equivalent to -ctgen')
+@click.option("--debug", "-d", is_flag=True, help='Debug output')
+def main(file, debug, fontsize, output, font, condensed, autocompress, timescale, padding, ellipsis, footnotes, graph, all):
+	"""Clinical trial design visualization
+
+
+	Generates a 'schedule of assessments' overview for clinical trials, based on a json-formatted input FILE (see examples for guidance). Graphical output is provided in svg vector format that can be rendered by any webbrowser or directly imported into Office applications. Use below OPTIONS to manage the output style.
+	
+
+	Version 2.1, proudly written in functional Python (Rainer Strotmann, Jan-2022)
+	"""
+	if all:
+		condensed=True
+		timescale=True
+		graph=True
+		ellipsis=True
+		footnotes=True
+
+	# read input file
+	infile = pathlib.Path(file)
+	inpath = pathlib.Path(file).resolve().parent
+	if output:
+		outfile = inpath.joinpath(output)
+	else:
+		outfile = inpath.joinpath(infile.stem + ".svg")
+	try:
+		with open(infile) as f:
+			td = json.load(f)
+	except json.decoder.JSONDecodeError as err:
+		sys.exit(f'Json syntax error in input file {infile}:\n{err}')
+	except:
+		sys.exit("Error loading input file")
+
+	render_result = render_td(td, title=infile.stem, debug=debug, fontsize=fontsize, font=font, condensed=condensed, autocompress=autocompress, timescale=timescale, padding=padding, ellipsis=ellipsis, footnotes=footnotes, graph=graph)
+
+	if not render_result[0]:
+		sys.exit(f'rendering failed ({render_result[2]})')
+	else:
+		with open(outfile, "w") as f:
+			f.write(render_result[1])
 	return
+
+
 
 
 if __name__ == "__main__":
