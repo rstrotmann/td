@@ -11,6 +11,7 @@ theme:
   navigation_depth: 3
 
 plugins:
+  - search
   - mkdocstrings:
 
 markdown_extensions:

@@ -38,7 +38,7 @@ def assert_interval_format(interval):
 		raise TypeError(f'Interval error in {interval}: Minimum required fields are "caption", and either s"tart" and "duration", or "days"')
 
 
-def decode_daylist(daylist):
+def decode_daylist(daylist: list) -> list:
 	"""convert 'days' field (including day ranges) to list of individual days
 	
 	Arguments:
@@ -137,6 +137,7 @@ def extract_footnotes(period, caption):
 							out[1][i] += ","
 						out[1][i] += str(f['symbol'])
 						out[2].append([f['symbol'], f['text']])
+		# if True in out[0]: print(out)
 		return(out)
 	return(iterate_over_procedures(period, caption, out, temp))
 
