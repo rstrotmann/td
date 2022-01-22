@@ -1,9 +1,9 @@
 {
-	"cycles": [
-		{
-			"name": "MS200095-0022",	
+	"periods": [
+		{	
 			"caption": "S",
 			"duration": 1,
+			"start": 1,
 			"procedures": [
 				{
 					"caption": "RECIST",
@@ -14,6 +14,7 @@
 		{
 			"caption": "Cycle 1",
 			"duration": 21,
+			"start": 1,
 			"daylabels": [1, 21],
 			"dayshading": [1, 8, 15],
 			"administrations": [
@@ -49,6 +50,7 @@
 		{
 			"caption": "Cycle 2",
 			"duration": 21,
+			"start": 1,
 			"daylabels": [1, 21],
 			"dayshading": [1, 8, 15],
 			"administrations": [
@@ -79,6 +81,7 @@
 		{
 			"caption": "Cycles 3, 5, 7, etc.",
 			"duration": 21,
+			"start": 1,
 			"daylabels": [1, 21],
 			"dayshading": [1, 8, 15],
 			"decoration": "bracketed",
@@ -112,8 +115,10 @@
 		{
 			"caption": "Cycles 4, 6, 8, etc.",
 			"duration": 21,
+			"start": 1,
 			"daylabels": [1, 21],
 			"dayshading": [1, 8, 15],
+			"decoration": "bracketed",
 			"administrations": [
 				{
 					"caption": "tepotinib",
@@ -136,6 +141,7 @@
 		{
 			"caption": "EOT",
 			"duration": 1,
+			"start": 1,
 			"procedures": [
 				{
 					"caption": "RECIST",

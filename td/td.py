@@ -7,7 +7,7 @@ import cairo
 import json
 import re
 import sys
-from rich.console import Console
+
 
 ### GLOBAL VARIABLES
 program_version="2.1"
@@ -15,38 +15,47 @@ program_date="Jan-2022"
 
 
 def assert_period_format(period):
+	"""assert minimum required fields are present in period
+	"""
 	try:
 		assert "caption" in period.keys()
 		assert "duration" in period.keys() and type(period["duration"])==int
-	except:
-		raise TypeError(f'Period/cycle format error: Minimum required fields: Caption and duration')
-	try:
-		assert period["duration"] >= 1
-	except:
-		raise TypeError(f'duration must be at least 1 day')
+	except AssertionError as err:
+		raise AssertionError(f'missing required fields (caption and duration) in period {period}')
+	return
 
 
 def assert_procedure_format(procedure):
+	"""assert minimum required fields are present in procedure
+	"""
 	try:
 		assert "caption" in procedure.keys()
 		assert "days" in procedure.keys()
 	except:
-		raise TypeError(f'Procedure error in {procedure}: Minimum required fields are caption and days')
+		raise AssertionError(f'missing required fields (caption and days) in procedure {procedure}')
+	return
 
 
 def assert_interval_format(interval):
-	assert "caption" in interval.keys()
-	if ("start" in interval.keys() and "duration" in interval.keys()) or "days" in interval.keys():
-		return
-	else:
-		raise TypeError(f'Interval error in {interval}: Minimum required fields are "caption", and either s"tart" and "duration", or "days"')
+	"""assert minimum required fields are present in interval
+	"""
+	try:
+		assert "caption" in interval.keys()
+		assert ("start" in interval.keys() and "duration" in interval.keys()) or "days" in interval.keys()
+	except AssertionError as err:
+		raise AssertionError(f'missing required fields (caption", and either start and duration, or days) in interval {interval}')
+	return
 
 
 def decode_daylist(daylist: list) -> list:
 	"""convert 'days' field (including day ranges) to list of individual days
+
+	Convert list of period days given in a flxible format into a well-formed into a list of days. The input can contain either days in numerical format (e.g., -1, 1, 2), or as strings that may represent single days (e.g., "-1", "1") or day ranges (e.g., "1-3") . Day ranges can also include multiple segments (e.g., "1-3, 5-7", "1-3, 4, 5").
 	
-	Arguments:
-		daylist: list of period days, either in numerical format (e.g., -1, 1, 2), or as strings that may represent single days (e.g., "-1", "1") or day ranges (e.g., "1-3"). Day ranges can also include multiple segments (e.g., "1-3, 5-7", "1-3, 4, 5")
+	:param daylist: input list of numbers and/or strings representing individual days or day ranges (see above)
+	:type daylist:	list
+	:rtype:			list
+	:return:		list of days in strict numerical form
 	"""
 	days = []
 	if not isinstance(daylist, list):
@@ -69,18 +78,40 @@ def decode_daylist(daylist: list) -> list:
 
 
 def item_names(periods, item_class):
-	"""return list of interval/administration/procedure names for trial"""
+	"""return a list of interval/administration/procedure names included in a list of periods
+	
+	:param periods: 	periods to search
+	:type periods: 		list of period dictionaries
+	:param item_class:	class of items to include, can be 'intervals', 'administrations' or 'procedures'
+	:type item_class:	string
+	:rtype:				list
+	:return:			names of items of the respective type included in the list periods
+	"""
 	out = []
 	for p in periods:
 		if item_class in p.keys():
 			for proc in p[item_class]:
-				temp = proc['caption']
-				if not temp in out:
-					out.append(temp)
+				try:
+					temp = proc['caption']
+					if not temp in out:
+						out.append(temp)
+				except:
+					raise KeyError(f'no caption field in item {proc}')
 	return(out)
 
 
 def iterate_over_procedures(period, caption, out, function):
+	"""apply a reduce function to all procedures with a given caption
+	
+	:param period:	period
+	:type period: 	dictionary
+	:param caption:	procedure caption to select
+	:type caption:	string
+	:param out:		accumulator start value, mostly a list with length of the period
+	:type out:		flexible
+	:rtype:			flexible
+	:return: 		accumulator out
+	"""
 	for x in ['intervals', 'administrations', 'procedures']:
 		if x in period.keys():
 			for proc in period[x]:
@@ -90,7 +121,8 @@ def iterate_over_procedures(period, caption, out, function):
 
 
 def extract_procedure(period, caption):
-	"""get specified administration/procedure as list of tuples (day, [times], relative) for individual days"""
+	"""get specified administration/procedure as list of tuples (day, [times], relative) for individual days
+	"""
 	out = []
 	def temp(proc, out):
 		if 'times' in proc.keys():
@@ -141,7 +173,6 @@ def extract_footnotes(period, caption):
 							out[1][i] += ","
 						out[1][i] += str(f['symbol'])
 						out[2].append([f['symbol'], f['text']])
-		# if True in out[0]: print(out)
 		return(out)
 	return(iterate_over_procedures(period, caption, out, temp))
 
@@ -324,7 +355,6 @@ def svg_circle(x, y, r, lwd=1.2, fill_color="none", line_color="black"):
 
 def svg_text(x, y, text, css_class=""):
 	if css_class:
-		# return(f'<text x="{x}" y="{y}" font-size="{fontsize}">{text}</text>\n')
 		return(f'<text x="{x}" y="{y}" class="{css_class}">{text}</text>\n')
 	else:
 		return(f'<text x="{x}" y="{y}">{text}</text>\n')
@@ -395,6 +425,7 @@ def svg_curly_up(xstart, xend, y, radius=8, lwd=1.2):
 
 def procedure_symbols(period, caption, default="diamond"):
 	out = [""] * (period['duration']+1)
+	# out = period_dummy(period, "") + [""]
 	for (d, t, rel) in normalize_procedure(extract_procedure(period, caption)):
 		if len(t) > 1:
 			symbol = "block"
@@ -811,21 +842,17 @@ def render_td(td, title="", debug=False, fontsize=11, font="Arial", condensed=Fa
 		if not len(periods):
 			raise KeyError("no period or cycle found in trial design")
 	except Exception as err:
-		return([False, "", err])
+		raise RuntimeError(f'error parsing periods: {err}')
 
-	## parse procedures
-	try:
-		for p in periods:
-			for (n, assert_func) in [("intervals", assert_interval_format), ("administrations", assert_procedure_format), ("procedures", assert_procedure_format)]:
-				if n in p.keys():
-					for i in p[n]:
-						assert_func(i)
-	except Exception as err:
-		return([False, "", err])
-
-	ypadding = fontsize/1.8 * padding
+	## assert procedure format
+	for p in periods:
+		for (n, assert_func) in [("intervals", assert_interval_format), ("administrations", assert_procedure_format), ("procedures", assert_procedure_format)]:
+			if n in p.keys():
+				for i in p[n]:
+					assert_func(i)
 
 	# MAKE METRICS
+	ypadding = fontsize/1.8 * padding
 	canvas = cairo.Context(cairo.SVGSurface("temp.svg", 10, 10))
 	canvas.select_font_face(font, cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
 	canvas.set_font_size(fontsize)
@@ -867,14 +894,17 @@ def render_td(td, title="", debug=False, fontsize=11, font="Arial", condensed=Fa
 	# MAKE STYLE
 	periodspacing = textwidth_function("XX")
 	lineheight = textheight_function("X") * 2
-	items = item_names(periods, 'procedures') + item_names(periods, 'intervals') + item_names(periods, 'administrations')
 
-	xoffset = 30
-	if items:
-		xoffset += max([textwidth_function(i) for i in items])
-	yoffset = 10
-	lwd = fontsize/10
-	style = (periodspacing, lineheight, ypadding, lwd, ellipsis, debug)
+	try:
+		xoffset = 30
+		yoffset = 10
+		items = item_names(periods, 'procedures') + item_names(periods, 'intervals') + item_names(periods, 'administrations')
+		if items:
+			xoffset += max([textwidth_function(i) for i in items])
+		lwd = fontsize/10
+		style = (periodspacing, lineheight, ypadding, lwd, ellipsis, debug)
+	except Exception as err:
+		raise RuntimeError(f'error making style: {err}')
 
 	# RENDER SVG OUTPUT
 	out = ["", yoffset]
@@ -884,73 +914,77 @@ def render_td(td, title="", debug=False, fontsize=11, font="Arial", condensed=Fa
 	try:
 		out = add_output(out, render_periods(periods, xoffset, out[1], "", lineheight, render_daygrid, metrics, style, dashes=True))
 	except Exception as err:
-		# print(f'error rendering daygrid: {err}')
-		# sys.exit()
-		return([False, "", ], f'error rendering daygrid: {err}')
+		raise  RuntimeError(f'error rendering period headers: {err}')
 
 	# render intervals
 	for n in item_names(periods, 'intervals'):
 		try:
 			out = add_output(out, render_periods(periods, xoffset, out[1], n, lineheight, render_interval, metrics, style, footnotes=footnotes))
 		except Exception as err:
-			# raise IndexError(f'error rendering intervals: {err}')
-			return([False, "", ], f'error rendering intervals: {err}')
+			raise RuntimeError(f'error rendering intervals: {err}')
 
 	# render administrations
 	for n in item_names(periods, 'administrations'):
-		out = add_output(out, render_periods(periods, xoffset, out[1], n, lineheight, render_procedure, metrics, style, default_symbol="arrow", footnotes=footnotes))
-
-		# render dose graph
-		if graph:
-			if [i for p in periods for i in extract_field(p, n, "dose") if i != ""]:
-				out = add_output(out, render_periods(periods, xoffset, out[1], n, lineheight, render_dose_graph, metrics, style))
+		try:	
+			out = add_output(out, render_periods(periods, xoffset, out[1], n, lineheight, render_procedure, metrics, style, default_symbol="arrow", footnotes=footnotes))
+			if graph:
+				if [i for p in periods for i in extract_field(p, n, "dose") if i != ""]:
+					out = add_output(out, render_periods(periods, xoffset, out[1], n, lineheight, render_dose_graph, metrics, style))
+		except Exception as err:
+			raise RuntimeError(f'error rendering administrations: {err}')
 
 	# render procedures
 	last_proc_has_timescale = False
 	for n in item_names(periods, 'procedures'):
-		out = add_output(out, render_periods(periods, xoffset, out[1], n, lineheight, render_procedure, metrics, style, default_symbol="diamond", footnotes=footnotes))
-
-		# render timescale
-		if timescale:
-			ts = False
-			x = xoffset
-			for p in periods:
-				if has_timescale(p, n):
-					ts = True
-					break
-				x += period_width(p, daywidth_function)
-				x += periodspacing
-			if ts:
-				if n == item_names(periods, 'procedures')[-1]:
-					last_proc_has_timescale = True
-				out = add_output(out, render_times(p, n, x, out[1], lineheight, metrics, style, maxwidth=xoffset + sum([period_width(i, daywidth_function) for i in periods]) + (len(periods)-1) * periodspacing))
+		try:
+			out = add_output(out, render_periods(periods, xoffset, out[1], n, lineheight, render_procedure, metrics, style, default_symbol="diamond", footnotes=footnotes))
+			if timescale:
+				ts = False
+				x = xoffset
+				for p in periods:
+					if has_timescale(p, n):
+						ts = True
+						break
+					x += period_width(p, daywidth_function)
+					x += periodspacing
+				if ts:
+					if n == item_names(periods, 'procedures')[-1]:
+						last_proc_has_timescale = True
+					out = add_output(out, render_times(p, n, x, out[1], lineheight, metrics, style, maxwidth=xoffset + sum([period_width(i, daywidth_function) for i in periods]) + (len(periods)-1) * periodspacing))
+		except Exception as err:
+			raise RuntimeError(f'error rendering procedures: {err}')
 
 	# apply period decorations
-	x = xoffset
-	height = out[1] - yoffset - ypadding/2
-	if last_proc_has_timescale:
-		height -= timescale_height(lineheight, metrics, style)
-
-	if "periods" in td.keys():
-		for p in td["periods"]:
-			if "decoration" in p.keys():
-				if p["decoration"] == "highlighted":
-					out[0] = svg_rect(x-periodspacing/4, yoffset, period_width(p, daywidth_function)+periodspacing/2, height, lwd=0, fill_color="#eee") + out[0]
-				if p["decoration"] == "bracketed":
-					temp = svg_open_bracket(x-periodspacing/4, yoffset+height/2, height, lineheight/4, xpadding=0, radius=lineheight/4, lwd=lwd)
-					temp += svg_close_bracket(x+period_width(p, daywidth_function)+periodspacing/4, yoffset+height/2, height, lineheight/4, xpadding=0, radius=lineheight/4, lwd=lwd)
-					out[0] = temp + out[0]
-			x += period_width(p, daywidth_function) + periodspacing
+	try:
+		x = xoffset
+		height = out[1] - yoffset - ypadding/2
+		if last_proc_has_timescale:
+			height -= timescale_height(lineheight, metrics, style)
+		if "periods" in td.keys():
+			for p in td["periods"]:
+				if "decoration" in p.keys():
+					if p["decoration"] == "highlighted":
+						out[0] = svg_rect(x-periodspacing/4, yoffset, period_width(p, daywidth_function)+periodspacing/2, height, lwd=0, fill_color="#eee") + out[0]
+					if p["decoration"] == "bracketed":
+						temp = svg_open_bracket(x-periodspacing/4, yoffset+height/2, height, lineheight/4, xpadding=0, radius=lineheight/4, lwd=lwd)
+						temp += svg_close_bracket(x+period_width(p, daywidth_function)+periodspacing/4, yoffset+height/2, height, lineheight/4, xpadding=0, radius=lineheight/4, lwd=lwd)
+						out[0] = temp + out[0]
+				x += period_width(p, daywidth_function) + periodspacing
+	except Exception as err:
+		raise RuntimeError(f'error rendering period decorations: {err}')
 
 	# make footnote list
-	max_footnote_width = 0
-	fn = footnote_list(periods)
-
-	if footnotes and fn:
-		out[1] += ypadding * 4
-		for ff in fn:
-			out = add_output(out, render_footnote_text(ff, xoffset, out[1], lineheight, metrics, style))
-		max_footnote_width = max([textwidth_function(make_footnote_text(ff)) for ff in fn])
+	try:
+		max_footnote_width = 0
+		fn = footnote_list(periods)
+		if footnotes and fn:
+			out[1] += ypadding * 4
+			for ff in fn:
+				out = add_output(out, render_footnote_text(ff, xoffset, out[1], lineheight, metrics, style))
+			max_footnote_width = max([textwidth_function(make_footnote_text(ff)) for ff in fn])
+	except Exception as err:
+		# return([False, "", f'error rendering footnote list: {err}'])
+		raise RuntimeError(f'error rendering footnote list: {err}')
 
 	# re-calculate overall output dimensions, finalize svg
 	viewport_width = max(xoffset + sum([period_width(i, daywidth_function) for i in periods]) + (len(periods)) * periodspacing, xoffset + max_footnote_width)
@@ -959,7 +993,8 @@ def render_td(td, title="", debug=False, fontsize=11, font="Arial", condensed=Fa
 	svg_out = f'<svg width="{viewport_width}" height="{viewport_height}" xmlns="http://www.w3.org/2000/svg">\n<style>text {{font-family: {font}; font-size: {fontsize}px ;}}</style>\n<desc>Trial design autogenerated by td.py version {program_version} ({program_date}), author: Rainer Strotmann</desc><title>{title}</title>' + out[0]
 	
 	svg_out += f'</svg>'
-	return(True, svg_out, "")
+	# return([True, svg_out, ""])
+	return(svg_out)
 
 
 ########################################
@@ -1012,13 +1047,13 @@ def main(file, debug, fontsize, output, font, condensed, autocompress, timescale
 	except:
 		sys.exit("Error loading input file")
 
-	render_result = render_td(td, title=infile.stem, debug=debug, fontsize=fontsize, font=font, condensed=condensed, autocompress=autocompress, timescale=timescale, padding=padding, ellipsis=ellipsis, footnotes=footnotes, graph=graph)
+	try:
+		svg_out = render_td(td, title=infile.stem, debug=debug, fontsize=fontsize, font=font, condensed=condensed, autocompress=autocompress, timescale=timescale, padding=padding, ellipsis=ellipsis, footnotes=footnotes, graph=graph)
+	except Exception as err:
+		sys.exit(err)
 
-	if not render_result[0]:
-		sys.exit(f'rendering failed ({render_result[2]})')
-	else:
-		with open(outfile, "w") as f:
-			f.write(render_result[1])
+	with open(outfile, "w") as f:
+		f.write(svg_out)
 	return
 
 
