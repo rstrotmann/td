@@ -1,4 +1,4 @@
-click
+typer
 pathlib
 CairoSVG
 pycairo
