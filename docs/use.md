@@ -6,26 +6,21 @@ This gives an overview on how to run the td tool from the command line.
 
 TD is written in python 3. In order to run the tool on your system, python 3 must be installed. You can find out which version of python is installed (or is the default) on your system with `python --version`.
 
-In addition, td.py makes use of the below libraries:
+## Installation
 
-* click
-* pathlib
-* cairo
-* json
-* math
-* re
-* sys
+TD is provided as a .whl file that can be installed using the python packet manager, pip.
 
-These packages need to be installed with `pip install [library]`.
+To install the package on your system, run `pip install NAME.whl` from the command line where _NAME_ is the exact name of the provided file. The filename starts with _td-..._ but is dependent on the release of the specific version.
+
 
 ## Running TD
 
+TD is a command line script. Open up a terminal window and enter `td [FLAGS] INPUT` where _INPUT_ corresponds to the json-formatted input file (see [Input](input.md) for details). The optional _FLAGS_ can be used to further specify the visual output.
+<!-- Generally, it is assumed that only python 3 is installed on the host system. TD can then be executed from the command line with: `python td.py [FLAGS] [INPUT]` where _INPUT_ is the json-formatted input file (see [Input](input.md) for details). The optional _FLAGS_ can be used to further specify the visual output. -->
 
-Generally, it is assumed that only python 3 is installed on the host system. TD can then be executed from the command line with: `python td.py [FLAGS] [INPUT]` where _INPUT_ is the json-formatted input file (see [Input](input.md) for details). The optional _FLAGS_ can be used to further specify the visual output.
+<!-- In cases where both python 3 and python 2.7 are installed on the host system, it may be necessary to be specific about the python version to be used, this can be achieved using the `python3 td.py [FLAGS] [INPUT]` command. -->
 
-In cases where both python 3 and python 2.7 are installed on the host system, it may be necessary to be specific about the python version to be used, this can be achieved using the `python3 td.py [FLAGS] [INPUT]` command.
-
-The available option flags can be shown with `python3 td.py --help`. In the current version of TD, they include:
+The available option flags can be shown with `td --help`. In the current version of TD, they include:
 
 | Option| Alternative | Description |
 | -- | -- | -- | 
@@ -62,7 +57,7 @@ This option can be used to compress the output horizontally. Days that have no d
 
 ![](normal.svg)
 
-The below version was rendered with the _--condensed_ option (`python td.py --condensed test.json`):
+The below version was rendered with the _--condensed_ option (`td --condensed test.json`):
 
 ![](condensed.svg)
 
@@ -70,7 +65,7 @@ The below version was rendered with the _--condensed_ option (`python td.py --co
 
 In addition to condensed output, daily recurring procedure symbols that visually clutter the output can be reduced using the _--ellipsis_ or _-e_ option. This is only done for days that have no daylabel. 
 
-The below version was rendered using `python td.py -ce test.json` for a combination of condensed and ellipsis output:
+The below version was rendered using `td -ce test.json` for a combination of condensed and ellipsis output:
 
 ![](ellipsis.svg)
 
@@ -92,7 +87,7 @@ In cases where intraindividual dose escalation occurs, e.g., to phase a drug in 
 
 A prerequisite is that the respective dosing information is included per day in the input file (see [Input](input.md#exact-dose-information)).
 
-The following output was created using the `python td.py --condensed --graph test.json` command to include a dose graph for carbamazepine:
+The following output was created using the `td --condensed --graph test.json` command to include a dose graph for carbamazepine:
 
 ![](graph.svg)
 

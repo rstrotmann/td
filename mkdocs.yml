@@ -12,7 +12,7 @@ theme:
 
 plugins:
   - search
-  - mkdocstrings:
+  - mkdocstrings
 
 markdown_extensions:
   - admonition

@@ -13,9 +13,9 @@ The below overview specifies the specific expected format of the json-formatted 
 
 ## Periods
 
-On the highest level, clinical study elements within the input file are expected to be structured in _periods_ or _cycles_. Both options are possible and essentially equivalent.
+On the highest level, clinical study elements within the input file are expected to be structured in _periods_. In oncology studies that are structured in cycles, each cycle can be encoded as a period.
 
-As a minimum, each _period_ or _cycle_ element needs to have _caption_, _start_ and _duration_ fields. A minimum period "Period 1" that includes days 1 through 7 is described like this:
+As a minimum, each _period_ element needs to have _caption_, _start_ and _duration_ fields. A minimum period "Period 1" that includes days 1 through 7 is described like this:
 
 ``` json
 {
@@ -106,9 +106,11 @@ Additional fields can be added to the _period_ elements to specify the visual ou
 
 To every _period_, elements can be appended. There are three classes of elements: _intervals_, _administrations_ and _procedures_. Individual elements of these classes must be given as a list of the respective types (see examples below). This results in a hierarchical structure of the input file where lists can have members that themselves may contain lists of child elements.
 
-To better visualize the hierarchy, successive indentation levels are used in the json blocks shown in this documentation. Note that this is not a strict requirement for the json-formatted input file, however it is considered good practice.
-
 The three element classes have different visual representations and may have different property fields. The following gives an overview on this.
+
+!!! note
+
+    To better visualize their hierarchy, successive indentation levels are used in the json blocks shown in this documentation. Note that this is not a strict requirement for the json-formatted input file, however it is considered good practice.
 
 ### Intervals
 

@@ -1,3 +1,3 @@
 # Functions
 
-::: td
+::: td.td
