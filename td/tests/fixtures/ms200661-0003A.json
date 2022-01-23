@@ -15,7 +15,7 @@
 					"days": [-1],
 					"footnotes": [
 						{
-						"day": -1,
+						"days": -1,
 						"symbol": "b", 
 						"text": "Cohorts 1-3 only, second sample within 5 days."
 						}
@@ -78,7 +78,7 @@
 					"days": [17],
 					"footnotes": [
 						{
-						"day": 17,
+						"days": 17,
 						"symbol": "a", 
 						"text": "Cohorts 4 when treated with 60 mg/kg only"
 						}
@@ -89,7 +89,7 @@
 					"days": [17],
 					"footnotes": [
 						{
-						"day": 17,
+						"days": 17,
 						"symbol": "b", 
 						"text": "Cohorts 1-3 only, second sample within 5 days."
 						}

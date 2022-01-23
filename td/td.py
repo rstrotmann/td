@@ -13,6 +13,7 @@ import sys
 ### GLOBAL VARIABLES
 __version__ = "2.1"
 __date__ = "Jan-2022"
+debug = False
 
 
 def assert_period_format(period):
@@ -1008,24 +1009,24 @@ def version_callback(value: bool):
 @app.command()
 def main(
 	file: str = typer.Argument(...),
-	debug: bool = typer.Option(False, "--debug", "-d", help="Debug output"),
-	fontsize: int = typer.Option(14, "--fontsize", "-s", help="Font size"),
+	#debug: bool = typer.Option(False, "--debug", "-d", help="Debug output"),
 	output: str = typer.Option("", "--output", "-o", help="Output file name"),
 	font: str = typer.Option("Arial", "--font", "-f", help="Font type"),
-	condensed: bool = typer.Option(False, "--condensed", "-c", help="Show condensed daygrid"),
-	autocompress: bool = typer.Option(False, "--autocompress", "-a", help="Automatically compress daygrid"),
-	timescale: bool = typer.Option(False, "--timescale", "-t", help="Show time scale"),
+	fontsize: int = typer.Option(14, "--fontsize", "-s", help="Font size"),
 	padding: float = typer.Option(1, "--padding", "-p", help="Y-axis padding factor"),
+	condensed: bool = typer.Option(False, "--condensed", "-c", help="Show condensed daygrid"),
 	ellipsis: bool = typer.Option(False, "--ellipsis", "-e", help="Reduce symbols in condensed output"),
-	footnotes: bool = typer.Option(False, "--footnotes", "-n", help="Show footnotes"),
+	timescale: bool = typer.Option(False, "--timescale", "-t", help="Show time scale"),
 	graph: bool = typer.Option(False, "--graph", "-g", help="Show dose graph"),
+	footnotes: bool = typer.Option(False, "--footnotes", "-n", help="Show footnotes"),
 	all: bool = typer.Option(False, "--all", "-A", help="All options, equivalent to -ctgen"),
-	version: bool = typer.Option(False, "--version", help="version information", callback=version_callback)
+	autocompress: bool = typer.Option(False, "--autocompress", "-a", help="Automatically compress daygrid"),
+	version: bool = typer.Option(False, "--version", help="Show version and exit", callback=version_callback)
 	):
 	"""Clinical trial design visualization
 
 
-	Generates a 'schedule of assessments' overview for clinical trials, based on a json-formatted input FILE (see examples for guidance). Graphical output is provided in svg vector format that can be rendered by any webbrowser or directly imported into Office applications. Use below OPTIONS to manage the output style.
+	Generates a 'schedule of assessments' overview for clinical trials, based on a json-formatted input FILE. Graphical output is provided in svg vector format that can be rendered by any webbrowser or directly imported into Office applications. Use below OPTIONS to manage the output style.
 	
 
 	Version 2.1, proudly written in functional Python (Rainer Strotmann, Jan-2022)

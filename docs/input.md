@@ -1,6 +1,6 @@
 # Input file format
 
-The td.py tool expects a json-formatted input file (see [Use](use.md)) that specifies the study elements to be rendered.
+The TD tool expects a json-formatted input file (see [Use](use.md)) that specifies the study elements to be rendered.
 
 In general, the [json format](https://en.wikipedia.org/w/index.php?title=JSON&oldid=1065106487) has specific syntactic requirements in order to be read correctly by TD:
 
@@ -284,7 +284,7 @@ Sometimes, it is desirable to print a more detailed timeline for a procedure (e.
 
 ![](sample8.svg)
 
-(Created by invoking: `python td.py -t sample.jpg`)
+(Created by invoking: `td -t sample.jpg`)
 
 ### Exact dose information
 
@@ -433,7 +433,7 @@ Footnotes can be added to any _interval_, _administration_ or _procedure_ field,
 
 Footnote symbols can be re-used in other procedures. the _text_ field in further copies is expected to be an empty string (i.e., "").
 
-Note that in the output, footnotes are only rendered if specified explicitly with the "--footnote" (or "-n") option (see [Use](use.md#footnotes)). The below figure was created by invoking `python td.py -n sample.jpg`:
+Note that in the output, footnotes are only rendered if specified explicitly with the "--footnote" (or "-n") option (see [Use](use.md#footnotes)). The below figure was created by invoking `td -n sample.jpg`:
 
 ``` json
 {

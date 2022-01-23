@@ -10,32 +10,29 @@ TD is written in python 3. In order to run the tool on your system, python 3 mus
 
 TD is provided as a .whl file that can be installed using the python packet manager, pip.
 
-To install the package on your system, run `pip install NAME.whl` from the command line where _NAME_ is the exact name of the provided file. The filename starts with _td-..._ but is dependent on the release of the specific version.
+To install the package on your system, run `pip install NAME.whl` from the command line where _NAME_ is the exact name of the provided file (e.g., "td-2.1-py3-none-any.whl"). The filename begins with _td-..._ but the full name is dependent on the release of the specific version, please check your version.
 
 
 ## Running TD
 
-TD is a command line script. Open up a terminal window and enter `td [FLAGS] INPUT` where _INPUT_ corresponds to the json-formatted input file (see [Input](input.md) for details). The optional _FLAGS_ can be used to further specify the visual output.
-<!-- Generally, it is assumed that only python 3 is installed on the host system. TD can then be executed from the command line with: `python td.py [FLAGS] [INPUT]` where _INPUT_ is the json-formatted input file (see [Input](input.md) for details). The optional _FLAGS_ can be used to further specify the visual output. -->
+TD is a command line script. Open up a terminal window and enter `td [OPTIONS] FILE` where _FILE_ corresponds to the json-formatted input file (see [Input](input.md) for details). The optional _OPTIONS_ can be used to further specify the visual output.
 
-<!-- In cases where both python 3 and python 2.7 are installed on the host system, it may be necessary to be specific about the python version to be used, this can be achieved using the `python3 td.py [FLAGS] [INPUT]` command. -->
-
-The available option flags can be shown with `td --help`. In the current version of TD, they include:
+The available options can be shown with `td --help`. In the current version of TD, they include:
 
 | Option| Alternative | Description |
 | -- | -- | -- | 
-| --output TEXT      | -o | Output file name. Default: INPUT.svg |
-| --fontsize INTEGER | -s | Output font size (default 11) |
-| --font TEXT        | -f | Output font type (default: Arial) |
-| --padding FLOAT    | -p | Y-axis padding factor (default 1) |
-| --condensed        | -c | Show condensed daygrid |
-| --timescale        | -t | Show time scale |
-| --graph            | -g | Show dose graph |
-| --ellipsis         | -e | Reduce symbols in condensed output |
-| --footnotes        | -n | Show footnotes |
+| [--output TEXT](#output-file) | -o | Output file name. Default: INPUT.svg |
+| [--fontsize INTEGER](#font-size-and-family) | -s | Output font size (default 11) |
+| [--font TEXT](#font-size-and-family) | -f | Output font type (default: Arial) |
+| [--padding FLOAT](#padding) | -p | Y-axis padding factor (default 1) |
+| [--condensed](#condensed) | -c | Show condensed daygrid |
+| [--timescale](#timescale) | -t | Show time scale |
+| [--graph](#dose-graph) | -g | Show dose graph |
+| [--ellipsis](#ellipsis) | -e | Reduce symbols in condensed output |
+| [--footnotes](#footnotes) | -n | Show footnotes |
 | --all              | -A | All options, equivalent to -ctge |
-| --debug            | -d | Debug output |
-| --help             | -h | Show this message and exit. |
+| --version          |    | Show version and exit |
+| --help             |    | Show this message and exit. |
 
 ### Output file
 
@@ -53,7 +50,7 @@ The parameter _--padding_ (_-p_) increases or decreases the vertical space betwe
 
 ### Condensed
 
-This option can be used to compress the output horizontally. Days that have no daylabel ([see "period formatting"](input.md#period-formatting)) assigned will be rendered narrower. As an example, the following figure was rendered normally (using `python td.py test.json`):
+This option can be used to compress the output horizontally. Days that have no daylabel ([see "period formatting"](input.md#period-formatting)) assigned will be rendered narrower. As an example, the following figure was rendered normally (using `td test.json`):
 
 ![](normal.svg)
 
@@ -73,7 +70,7 @@ The below version was rendered using `td -ce test.json` for a combination of con
 
 Procedures that have exact time information included in the input file, e.g., PK samplings (see ["exact procedure times"](input.md#exact-procedure-times)), can be displayed with an inset figure underneath that shows the timescale detail.
 
-The following output was generated using the `python td.py --condensed --timescale test.json` command:
+The following output was generated using the `td --condensed --timescale test.json` command:
 
 ![](timescale.svg)
 

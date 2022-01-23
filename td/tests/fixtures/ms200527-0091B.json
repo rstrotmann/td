@@ -60,7 +60,7 @@
 					"labels": ["V3", "V4", "V5"],
 					"footnotes": [
 						{
-							"day":8,
+							"days":8,
 							"symbol": "d",
 							"text": "footnote d"
 						}
@@ -75,7 +75,7 @@
 					"freq": "BID",
 					"footnotes": [
 						{
-							"day": 1,
+							"days": 1,
 							"symbol": "1",
 							"text": "sample footnote"
 						}
@@ -89,22 +89,22 @@
 					"freq": "QD", 
 					"footnotes": [
 						{
-							"day": 1,
+							"days": 1,
 							"symbol": "a",
 							"text": "text a"
 						},
 						{
-							"day": 4,
+							"days": 4,
 							"symbol": "b",
 							"text": "text b"
 						},
 						{
-							"day": 1,
+							"days": 1,
 							"symbol": "c",
 							"text": "text c"
 						},
 						{
-							"day": 3,
+							"days": 3,
 							"symbol": "1",
 							"text": "sample footnote"
 						}
@@ -138,7 +138,7 @@
 					"freq": "BID", 
 					"footnotes": [
 						{
-							"day": 1,
+							"days": 1,
 							"symbol": "a",
 							"text": ""
 						}
