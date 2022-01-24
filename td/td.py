@@ -695,7 +695,13 @@ def render_times(period, caption, xoffset, yoffset, lineheight, metrics, style, 
 			for p in period[x]:
 				if p['caption'] == caption:
 					if "timescale" in p.keys() and p["timescale"]=="show":
-						ts_days.append(p["relative"])
+						if "relative" in p.keys():
+							rel = p["relative"]
+						else:
+							rel = p["days"][0]
+						# ts_days.append(p["relative"])
+						ts_days.append(rel)
+
 	ts_days = set(ts_days)
 
 	y = yoffset
@@ -828,7 +834,7 @@ def render_periods(periods, x, y, caption, height, render_function, metrics, sty
 	return(add_output(["", h], [out, y_out]))
 
 
-def render_td(td, title="", debug=False, fontsize=11, font="Arial", condensed=False, autocompress=False, timescale=False, padding=1, ellipsis=False, footnotes=False, graph=False):
+def render_td(td, title="", debug=False, fontsize=14, font="Arial", condensed=False, autocompress=False, timescale=False, padding=1, ellipsis=False, footnotes=False, graph=False):
 	# VALIDATE INPUT
 	
 	# parse periods
@@ -1045,7 +1051,7 @@ def main(
 	infile = pathlib.Path(file)
 	inpath = pathlib.Path(file).resolve().parent
 	if output:
-		outfile = inpath.joinpath(output)
+		outfile = pathlib.Path.cwd().joinpath(output)
 	else:
 		outfile = inpath.joinpath(infile.stem + ".svg")
 	try:

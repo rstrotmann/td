@@ -43,6 +43,7 @@
 					"caption": "PK sampling",
 					"days": [1],
 					"times": [0, 1.5, 4],
+					"relative": 1,
 					"timescale": "show"
 				}
 			]
@@ -74,6 +75,7 @@
 					"caption": "PK sampling",
 					"days": [1],
 					"times": [0, 1.5, 4],
+					"relative": 1,
 					"timescale": "show"
 				}
 			]
