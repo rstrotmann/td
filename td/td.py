@@ -49,6 +49,29 @@ def assert_interval_format(interval):
 	return
 
 
+def leading_edge(x):
+	"""return leading True values in list of booleans"""
+	out = []
+	status = x[0]
+	for i in x:
+		out.append(i and i!=status)
+		if i != status:
+			status = i
+	return(out)
+
+
+def trailing_edge(x):
+	"""return trailing True values in list of booleans"""
+	out = []
+	status = x[0]
+	for i in x:
+		out.append(not i and i!=status)
+		if i != status:
+			status = i
+	out.append(x[-1])
+	return(out[1:])
+
+
 def decode_daylist(daylist: list) -> list:
 	"""convert 'days' field (including day ranges) to list of individual days
 
@@ -968,15 +991,20 @@ def render_td(td, title="", debug=False, fontsize=14, font="Arial", condensed=Fa
 		height = out[1] - yoffset - ypadding/2
 		if last_proc_has_timescale:
 			height -= timescale_height(lineheight, metrics, style)
+
 		if "periods" in td.keys():
-			for p in td["periods"]:
+			bracketing = [("decoration" in p.keys() and p["decoration"]=="bracketed") for p in td["periods"]]	
+			for p, brak, leading, trailing in zip(td["periods"], bracketing, leading_edge(bracketing), trailing_edge(bracketing)):
 				if "decoration" in p.keys():
 					if p["decoration"] == "highlighted":
 						out[0] = svg_rect(x-periodspacing/4, yoffset, period_width(p, daywidth_function)+periodspacing/2, height, lwd=0, fill_color="#eee") + out[0]
-					if p["decoration"] == "bracketed":
-						temp = svg_open_bracket(x-periodspacing/4, yoffset+height/2, height, lineheight/4, xpadding=0, radius=lineheight/4, lwd=lwd)
-						temp += svg_close_bracket(x+period_width(p, daywidth_function)+periodspacing/4, yoffset+height/2, height, lineheight/4, xpadding=0, radius=lineheight/4, lwd=lwd)
-						out[0] = temp + out[0]
+
+					if brak:
+						if leading:
+							out[0] = svg_open_bracket(x-periodspacing/4, yoffset+height/2, height, lineheight/4, xpadding=0, radius=lineheight/4, lwd=lwd) + out[0]
+						if trailing:
+							out[0] = svg_close_bracket(x+period_width(p, daywidth_function)+periodspacing/4, yoffset+height/2, height, lineheight/4, xpadding=0, radius=lineheight/4, lwd=lwd) + out[0]
+
 				x += period_width(p, daywidth_function) + periodspacing
 	except Exception as err:
 		raise RuntimeError(f'error rendering period decorations: {err}')
