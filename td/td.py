@@ -488,6 +488,17 @@ def period_day_ends(period, xoffset, daywidth_function):
 	return([s+w for s, w in zip(starts, widths)])
 
 
+def ensure_list(period, key):
+	"""ensure to return a list for a key, even if value is not a list or the key is not used"""
+	if key in period.keys():
+		if not isinstance(period[key], list):
+			return([period[key]])
+		else:
+			return(period[key])
+	else:
+		return([])
+
+
 ####### functions that rely on the metrics
 
 def render_dummy(period, xoffset, yoffset, lineheight, metrics):
@@ -993,17 +1004,18 @@ def render_td(td, title="", debug=False, fontsize=14, font="Arial", condensed=Fa
 			height -= timescale_height(lineheight, metrics, style)
 
 		if "periods" in td.keys():
-			bracketing = [("decoration" in p.keys() and p["decoration"]=="bracketed") for p in td["periods"]]	
-			for p, brak, leading, trailing in zip(td["periods"], bracketing, leading_edge(bracketing), trailing_edge(bracketing)):
-				if "decoration" in p.keys():
-					if p["decoration"] == "highlighted":
-						out[0] = svg_rect(x-periodspacing/4, yoffset, period_width(p, daywidth_function)+periodspacing/2, height, lwd=0, fill_color="#eee") + out[0]
+			decorations = [ensure_list(p, "decoration") for p in periods]
+			bracketing = ["bracketed" in i for i in decorations]
+			highlighting = ["highlighted" in i for i in decorations]
 
-					if brak:
-						if leading:
-							out[0] = svg_open_bracket(x-periodspacing/4, yoffset+height/2, height, lineheight/4, xpadding=0, radius=lineheight/4, lwd=lwd) + out[0]
-						if trailing:
-							out[0] = svg_close_bracket(x+period_width(p, daywidth_function)+periodspacing/4, yoffset+height/2, height, lineheight/4, xpadding=0, radius=lineheight/4, lwd=lwd) + out[0]
+			for p, bracketed, b_leading, b_trailing, highlighted in zip(td["periods"], bracketing, leading_edge(bracketing), trailing_edge(bracketing), highlighting):
+				if highlighted:
+					out[0] = svg_rect(x-periodspacing/4, yoffset, period_width(p, daywidth_function)+periodspacing/2, height, lwd=0, fill_color="#eee") + out[0]
+				if bracketed:
+					if b_leading:
+						out[0] = svg_open_bracket(x-periodspacing/4, yoffset+height/2, height, lineheight/4, xpadding=0, radius=lineheight/4, lwd=lwd) + out[0]
+					if b_trailing:
+						out[0] = svg_close_bracket(x+period_width(p, daywidth_function)+periodspacing/4, yoffset+height/2, height, lineheight/4, xpadding=0, radius=lineheight/4, lwd=lwd) + out[0]
 
 				x += period_width(p, daywidth_function) + periodspacing
 	except Exception as err:

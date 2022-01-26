@@ -120,7 +120,7 @@
 			"start": 1,
 			"daylabels": [1, 21],
 			"dayshading": [1, 8, 15],
-			"decoration": "bracketed",
+			"decoration": ["bracketed", "highlighted"],
 			"administrations": [
 				{
 					"caption": "tepotinib",

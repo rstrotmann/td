@@ -4,13 +4,13 @@ import pathlib
 from td.td import *
 
 
-def test_render_td():
-    test_files = [i for i in pathlib.Path(r'./td/tests/fixtures').glob('*.json')]
-    for tf in test_files:
-        print(tf.stem)
-        with open(tf) as f:
-            td_dict = json.load(f)
-        assert(render_td(td_dict))
+# def test_render_td():
+#     test_files = [i for i in pathlib.Path(r'./td/tests/fixtures').glob('*.json')]
+#     for tf in test_files:
+#         print(tf.stem)
+#         with open(tf) as f:
+#             td_dict = json.load(f)
+#         assert(render_td(td_dict))
 
 
 def _make_svg(infile, outfile, *, condensed=False, autocompress=False, ellipsis=False, footnotes=False, graph=False, timescale=False):
@@ -27,6 +27,6 @@ def test_svg_output():
     outpath = pathlib.Path(r'./td/tests/output')
     test_files = [i for i in inpath.glob('*.json')]
     for infile in test_files:
-        print(infile.stem)
+        print(infile)
         outfile = outpath.joinpath(infile.stem + ".svg")
         _make_svg(infile, outfile, condensed=True, ellipsis=True, footnotes=True, graph=True, timescale=True)
