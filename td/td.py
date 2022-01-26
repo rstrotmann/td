@@ -52,7 +52,8 @@ def assert_interval_format(interval):
 def leading_edge(x):
 	"""return leading True values in list of booleans"""
 	out = []
-	status = x[0]
+	# status = x[0]
+	status = False
 	for i in x:
 		out.append(i and i!=status)
 		if i != status:

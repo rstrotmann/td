@@ -344,7 +344,9 @@ In cases where prodecure symbols should indicate different conditions (e.g., fas
 
 ### Period highlighting
 
-To visually make a period stand out, the _period_ element can include a _decoration_ field. Possible values are "highlighted" for a shaded background or "bracketed" to indicate, e.g., optional periods. Setting the value to "none" removes the effect, this can be used for quick testing purposes.
+To visually make a period stand out, the _period_ element can include a _decoration_ field. Possible values are "highlighted" for a shaded background or "bracketed" to indicate, e.g., optional periods. The _decoration_ field may have a single value or a combination of multiple values. In the latter case, the values must be provided as a list, see, e.g., Period 4 in the below example.
+
+Two adjacent periods that are both bracketed will not be rendered as individually bracketed but enclosed together in brackets, see, e.g., Periods 3 and 4 in the below example.
 
 ```json
 {
@@ -354,7 +356,7 @@ To visually make a period stand out, the _period_ element can include a _decorat
             "start": -1,
             "duration": 5,
             "daylabels": [-1, "1-4"],
-            "decoration": "highlighted",
+            "decoration": "bracketed",
             "procedures": [
                 {
                     "caption": "massage",
@@ -367,6 +369,7 @@ To visually make a period stand out, the _period_ element can include a _decorat
             "start": 1,
             "duration": 4,
             "daylabels": ["1-4"],
+            "decoration": "highlighted",
             "procedures": [
                 {
                     "caption": "massage",
@@ -383,7 +386,20 @@ To visually make a period stand out, the _period_ element can include a _decorat
             "procedures": [
                 {
                     "caption": "massage",
-                    "days": [ "1-2"]
+                    "days": ["1-2"]
+                }
+            ]
+        },
+        {
+            "caption": "Period 4",
+            "start": 1,
+            "duration": 4,
+            "daylabels": ["1-4"],
+            "decoration": ["bracketed", "highlighted"],
+            "procedures": [
+                {
+                    "caption": "massage",
+                    "days": ["1-2"]
                 }
             ]
         }
@@ -391,7 +407,7 @@ To visually make a period stand out, the _period_ element can include a _decorat
 }
 ```
 
-![](sample11.svg)
+![](sample11A.svg)
 
 ### Procedure labels
 
