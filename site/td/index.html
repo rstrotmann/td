@@ -16,7 +16,7 @@
 <script defer="" src="../js/bootstrap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
 <script>hljs.initHighlightingOnLoad();</script>
-<link href="td.pdf" rel="alternate" title="PDF Export" type="application/pdf"/></head>
+<link href="../pdf/document.pdf" rel="alternate" title="PDF" type="application/pdf"/></head>
 <body>
 <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
 <div class="container">
@@ -77,95 +77,131 @@
 <ul class="nav flex-column">
 <li class="nav-item" data-level="1"><a class="nav-link" href="#functions">Functions</a>
 <ul class="nav flex-column">
-<li class="nav-item" data-level="2"><a class="nav-link" href="#td">td</a>
+<li class="nav-item" data-level="2"><a class="nav-link" href="#td.td">td.td</a>
 <ul class="nav flex-column">
 </ul>
 </li>
-<li class="nav-item" data-level="2"><a class="nav-link" href="#td.activity_days">activity_days()</a>
+<li class="nav-item" data-level="2"><a class="nav-link" href="#td.td.activity_days">activity_days()</a>
 <ul class="nav flex-column">
 </ul>
 </li>
-<li class="nav-item" data-level="2"><a class="nav-link" href="#td.add_output">add_output()</a>
+<li class="nav-item" data-level="2"><a class="nav-link" href="#td.td.add_output">add_output()</a>
 <ul class="nav flex-column">
 </ul>
 </li>
-<li class="nav-item" data-level="2"><a class="nav-link" href="#td.day_index">day_index()</a>
+<li class="nav-item" data-level="2"><a class="nav-link" href="#td.td.assert_interval_format">assert_interval_format()</a>
 <ul class="nav flex-column">
 </ul>
 </li>
-<li class="nav-item" data-level="2"><a class="nav-link" href="#td.decode_daylist">decode_daylist()</a>
+<li class="nav-item" data-level="2"><a class="nav-link" href="#td.td.assert_period_format">assert_period_format()</a>
 <ul class="nav flex-column">
 </ul>
 </li>
-<li class="nav-item" data-level="2"><a class="nav-link" href="#td.extract_footnotes">extract_footnotes()</a>
+<li class="nav-item" data-level="2"><a class="nav-link" href="#td.td.assert_procedure_format">assert_procedure_format()</a>
 <ul class="nav flex-column">
 </ul>
 </li>
-<li class="nav-item" data-level="2"><a class="nav-link" href="#td.extract_procedure">extract_procedure()</a>
+<li class="nav-item" data-level="2"><a class="nav-link" href="#td.td.day_index">day_index()</a>
 <ul class="nav flex-column">
 </ul>
 </li>
-<li class="nav-item" data-level="2"><a class="nav-link" href="#td.extract_start_end">extract_start_end()</a>
+<li class="nav-item" data-level="2"><a class="nav-link" href="#td.td.decode_daylist">decode_daylist()</a>
 <ul class="nav flex-column">
 </ul>
 </li>
-<li class="nav-item" data-level="2"><a class="nav-link" href="#td.has_timescale">has_timescale()</a>
+<li class="nav-item" data-level="2"><a class="nav-link" href="#td.td.ensure_list">ensure_list()</a>
 <ul class="nav flex-column">
 </ul>
 </li>
-<li class="nav-item" data-level="2"><a class="nav-link" href="#td.item_names">item_names()</a>
+<li class="nav-item" data-level="2"><a class="nav-link" href="#td.td.extract_footnotes">extract_footnotes()</a>
 <ul class="nav flex-column">
 </ul>
 </li>
-<li class="nav-item" data-level="2"><a class="nav-link" href="#td.normalize_procedure">normalize_procedure()</a>
+<li class="nav-item" data-level="2"><a class="nav-link" href="#td.td.extract_procedure">extract_procedure()</a>
 <ul class="nav flex-column">
 </ul>
 </li>
-<li class="nav-item" data-level="2"><a class="nav-link" href="#td.period_day_centers">period_day_centers()</a>
+<li class="nav-item" data-level="2"><a class="nav-link" href="#td.td.extract_start_end">extract_start_end()</a>
 <ul class="nav flex-column">
 </ul>
 </li>
-<li class="nav-item" data-level="2"><a class="nav-link" href="#td.period_day_ends">period_day_ends()</a>
+<li class="nav-item" data-level="2"><a class="nav-link" href="#td.td.has_timescale">has_timescale()</a>
 <ul class="nav flex-column">
 </ul>
 </li>
-<li class="nav-item" data-level="2"><a class="nav-link" href="#td.period_day_starts">period_day_starts()</a>
+<li class="nav-item" data-level="2"><a class="nav-link" href="#td.td.item_names">item_names()</a>
 <ul class="nav flex-column">
 </ul>
 </li>
-<li class="nav-item" data-level="2"><a class="nav-link" href="#td.render_daygrid">render_daygrid()</a>
+<li class="nav-item" data-level="2"><a class="nav-link" href="#td.td.iterate_over_procedures">iterate_over_procedures()</a>
 <ul class="nav flex-column">
 </ul>
 </li>
-<li class="nav-item" data-level="2"><a class="nav-link" href="#td.render_dose_graph">render_dose_graph()</a>
+<li class="nav-item" data-level="2"><a class="nav-link" href="#td.td.leading_edge">leading_edge()</a>
 <ul class="nav flex-column">
 </ul>
 </li>
-<li class="nav-item" data-level="2"><a class="nav-link" href="#td.render_dummy">render_dummy()</a>
+<li class="nav-item" data-level="2"><a class="nav-link" href="#td.td.main">main()</a>
 <ul class="nav flex-column">
 </ul>
 </li>
-<li class="nav-item" data-level="2"><a class="nav-link" href="#td.render_interval">render_interval()</a>
+<li class="nav-item" data-level="2"><a class="nav-link" href="#td.td.make_dayrange">make_dayrange()</a>
 <ul class="nav flex-column">
 </ul>
 </li>
-<li class="nav-item" data-level="2"><a class="nav-link" href="#td.render_periodcaption">render_periodcaption()</a>
+<li class="nav-item" data-level="2"><a class="nav-link" href="#td.td.normalize_procedure">normalize_procedure()</a>
 <ul class="nav flex-column">
 </ul>
 </li>
-<li class="nav-item" data-level="2"><a class="nav-link" href="#td.render_periods">render_periods()</a>
+<li class="nav-item" data-level="2"><a class="nav-link" href="#td.td.period_day_centers">period_day_centers()</a>
 <ul class="nav flex-column">
 </ul>
 </li>
-<li class="nav-item" data-level="2"><a class="nav-link" href="#td.render_procedure">render_procedure()</a>
+<li class="nav-item" data-level="2"><a class="nav-link" href="#td.td.period_day_ends">period_day_ends()</a>
 <ul class="nav flex-column">
 </ul>
 </li>
-<li class="nav-item" data-level="2"><a class="nav-link" href="#td.render_times">render_times()</a>
+<li class="nav-item" data-level="2"><a class="nav-link" href="#td.td.period_day_starts">period_day_starts()</a>
 <ul class="nav flex-column">
 </ul>
 </li>
-<li class="nav-item" data-level="2"><a class="nav-link" href="#td.unnormalize_procedure">unnormalize_procedure()</a>
+<li class="nav-item" data-level="2"><a class="nav-link" href="#td.td.render_daygrid">render_daygrid()</a>
+<ul class="nav flex-column">
+</ul>
+</li>
+<li class="nav-item" data-level="2"><a class="nav-link" href="#td.td.render_dose_graph">render_dose_graph()</a>
+<ul class="nav flex-column">
+</ul>
+</li>
+<li class="nav-item" data-level="2"><a class="nav-link" href="#td.td.render_dummy">render_dummy()</a>
+<ul class="nav flex-column">
+</ul>
+</li>
+<li class="nav-item" data-level="2"><a class="nav-link" href="#td.td.render_interval">render_interval()</a>
+<ul class="nav flex-column">
+</ul>
+</li>
+<li class="nav-item" data-level="2"><a class="nav-link" href="#td.td.render_periodcaption">render_periodcaption()</a>
+<ul class="nav flex-column">
+</ul>
+</li>
+<li class="nav-item" data-level="2"><a class="nav-link" href="#td.td.render_periods">render_periods()</a>
+<ul class="nav flex-column">
+</ul>
+</li>
+<li class="nav-item" data-level="2"><a class="nav-link" href="#td.td.render_procedure">render_procedure()</a>
+<ul class="nav flex-column">
+</ul>
+</li>
+<li class="nav-item" data-level="2"><a class="nav-link" href="#td.td.render_times">render_times()</a>
+<ul class="nav flex-column">
+</ul>
+</li>
+<li class="nav-item" data-level="2"><a class="nav-link" href="#td.td.trailing_edge">trailing_edge()</a>
+<ul class="nav flex-column">
+</ul>
+</li>
+<li class="nav-item" data-level="2"><a class="nav-link" href="#td.td.unnormalize_procedure">unnormalize_procedure()</a>
 <ul class="nav flex-column">
 </ul>
 </li>
@@ -177,17 +213,17 @@
 <div class="col-md-9" role="main">
 <h1 id="functions">Functions</h1>
 <div class="doc doc-object doc-module">
-<a id="td"></a>
+<a id="td.td"></a>
 <div class="doc doc-contents first">
 <div class="doc doc-children">
 <div class="doc doc-object doc-function">
-<h2 class="doc doc-heading" id="td.activity_days">
+<h2 class="doc doc-heading" id="td.td.activity_days">
 <code class="highlight language-python"><span class="n">activity_days</span><span class="p">(</span><span class="n">period</span><span class="p">)</span></code>
 </h2>
 <div class="doc doc-contents">
 <p>returns a list of boolean values per day to indicate whether there are procedures on the day</p>
 <details class="quote">
-<summary>Source code in <code>trialdesign/td.py</code></summary>
+<summary>Source code in <code>td/td.py</code></summary>
 <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">activity_days</span><span class="p">(</span><span class="n">period</span><span class="p">):</span>
 	<span class="sd">"""returns a list of boolean values per day to indicate whether there are procedures on the day"""</span>
 	<span class="n">start</span> <span class="o">=</span> <span class="n">period</span><span class="p">[</span><span class="s2">"start"</span><span class="p">]</span>
@@ -215,12 +251,9 @@
 			<span class="k">if</span> <span class="s2">"start"</span> <span class="ow">in</span> <span class="n">i</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">and</span> <span class="s2">"duration"</span> <span class="ow">in</span> <span class="n">i</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
 				<span class="n">start</span> <span class="o">=</span> <span class="n">i</span><span class="p">[</span><span class="s2">"start"</span><span class="p">]</span>
 				<span class="n">duration</span> <span class="o">=</span> <span class="n">i</span><span class="p">[</span><span class="s2">"duration"</span><span class="p">]</span>
-				<span class="k">if</span> <span class="n">start</span> <span class="o">&lt;</span><span class="mi">0</span> <span class="ow">and</span> <span class="n">start</span><span class="o">+</span><span class="n">duration</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
+				<span class="k">if</span> <span class="n">start</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">start</span> <span class="o">+</span> <span class="n">duration</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
 					<span class="n">duration</span> <span class="o">+=</span> <span class="mi">1</span>
-				<span class="n">temp</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">start</span><span class="o">+</span><span class="n">duration</span><span class="p">))</span>
-				<span class="k">if</span> <span class="mi">0</span> <span class="ow">in</span> <span class="n">temp</span><span class="p">:</span>
-					<span class="n">temp</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-				<span class="n">out</span> <span class="o">+=</span> <span class="n">extract_start_end</span><span class="p">(</span><span class="n">temp</span><span class="p">)</span>
+				<span class="n">out</span> <span class="o">+=</span> <span class="n">extract_start_end</span><span class="p">(</span><span class="n">make_dayrange</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">duration</span><span class="p">))</span>
 	<span class="n">out</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
 	<span class="n">temp</span> <span class="o">=</span> <span class="p">[</span><span class="kc">False</span><span class="p">]</span> <span class="o">*</span> <span class="n">period</span><span class="p">[</span><span class="s1">'duration'</span><span class="p">]</span>
 	<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="n">out</span><span class="p">)):</span>
@@ -231,13 +264,13 @@
 </div>
 </div>
 <div class="doc doc-object doc-function">
-<h2 class="doc doc-heading" id="td.add_output">
+<h2 class="doc doc-heading" id="td.td.add_output">
 <code class="highlight language-python"><span class="n">add_output</span><span class="p">(</span><span class="n">old</span><span class="p">,</span> <span class="n">new</span><span class="p">)</span></code>
 </h2>
 <div class="doc doc-contents">
 <p>add output of render functions</p>
 <details class="quote">
-<summary>Source code in <code>trialdesign/td.py</code></summary>
+<summary>Source code in <code>td/td.py</code></summary>
 <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">add_output</span><span class="p">(</span><span class="n">old</span><span class="p">,</span> <span class="n">new</span><span class="p">):</span>
 	<span class="sd">"""add output of render functions"""</span>
 	<span class="k">return</span><span class="p">([</span><span class="n">o</span><span class="o">+</span><span class="n">n</span> <span class="k">for</span> <span class="n">o</span><span class="p">,</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">old</span><span class="p">,</span> <span class="n">new</span><span class="p">)])</span>
@@ -246,13 +279,76 @@
 </div>
 </div>
 <div class="doc doc-object doc-function">
-<h2 class="doc doc-heading" id="td.day_index">
+<h2 class="doc doc-heading" id="td.td.assert_interval_format">
+<code class="highlight language-python"><span class="n">assert_interval_format</span><span class="p">(</span><span class="n">interval</span><span class="p">)</span></code>
+</h2>
+<div class="doc doc-contents">
+<p>assert minimum required fields are present in interval</p>
+<details class="quote">
+<summary>Source code in <code>td/td.py</code></summary>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">assert_interval_format</span><span class="p">(</span><span class="n">interval</span><span class="p">):</span>
+	<span class="sd">"""assert minimum required fields are present in interval</span>
+<span class="sd">	"""</span>
+	<span class="k">try</span><span class="p">:</span>
+		<span class="k">assert</span> <span class="s2">"caption"</span> <span class="ow">in</span> <span class="n">interval</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+		<span class="k">assert</span> <span class="p">(</span><span class="s2">"start"</span> <span class="ow">in</span> <span class="n">interval</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">and</span> <span class="s2">"duration"</span> <span class="ow">in</span> <span class="n">interval</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="ow">or</span> <span class="s2">"days"</span> <span class="ow">in</span> <span class="n">interval</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+	<span class="k">except</span> <span class="ne">AssertionError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+		<span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'missing required fields (caption", and either start and duration, or days) in interval </span><span class="si">{</span><span class="n">interval</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+	<span class="k">return</span>
+</code></pre></div>
+</details>
+</div>
+</div>
+<div class="doc doc-object doc-function">
+<h2 class="doc doc-heading" id="td.td.assert_period_format">
+<code class="highlight language-python"><span class="n">assert_period_format</span><span class="p">(</span><span class="n">period</span><span class="p">)</span></code>
+</h2>
+<div class="doc doc-contents">
+<p>assert minimum required fields are present in period</p>
+<details class="quote">
+<summary>Source code in <code>td/td.py</code></summary>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">assert_period_format</span><span class="p">(</span><span class="n">period</span><span class="p">):</span>
+	<span class="sd">"""assert minimum required fields are present in period</span>
+<span class="sd">	"""</span>
+	<span class="k">try</span><span class="p">:</span>
+		<span class="k">assert</span> <span class="s2">"caption"</span> <span class="ow">in</span> <span class="n">period</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+		<span class="k">assert</span> <span class="s2">"duration"</span> <span class="ow">in</span> <span class="n">period</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">period</span><span class="p">[</span><span class="s2">"duration"</span><span class="p">])</span><span class="o">==</span><span class="nb">int</span>
+	<span class="k">except</span> <span class="ne">AssertionError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+		<span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'missing required fields (caption and duration) in period </span><span class="si">{</span><span class="n">period</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+	<span class="k">return</span>
+</code></pre></div>
+</details>
+</div>
+</div>
+<div class="doc doc-object doc-function">
+<h2 class="doc doc-heading" id="td.td.assert_procedure_format">
+<code class="highlight language-python"><span class="n">assert_procedure_format</span><span class="p">(</span><span class="n">procedure</span><span class="p">)</span></code>
+</h2>
+<div class="doc doc-contents">
+<p>assert minimum required fields are present in procedure</p>
+<details class="quote">
+<summary>Source code in <code>td/td.py</code></summary>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">assert_procedure_format</span><span class="p">(</span><span class="n">procedure</span><span class="p">):</span>
+	<span class="sd">"""assert minimum required fields are present in procedure</span>
+<span class="sd">	"""</span>
+	<span class="k">try</span><span class="p">:</span>
+		<span class="k">assert</span> <span class="s2">"caption"</span> <span class="ow">in</span> <span class="n">procedure</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+		<span class="k">assert</span> <span class="s2">"days"</span> <span class="ow">in</span> <span class="n">procedure</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+	<span class="k">except</span><span class="p">:</span>
+		<span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'missing required fields (caption and days) in procedure </span><span class="si">{</span><span class="n">procedure</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+	<span class="k">return</span>
+</code></pre></div>
+</details>
+</div>
+</div>
+<div class="doc doc-object doc-function">
+<h2 class="doc doc-heading" id="td.td.day_index">
 <code class="highlight language-python"><span class="n">day_index</span><span class="p">(</span><span class="n">period</span><span class="p">,</span> <span class="n">day</span><span class="p">)</span></code>
 </h2>
 <div class="doc doc-contents">
 <p>convert day to index within daylist</p>
 <details class="quote">
-<summary>Source code in <code>trialdesign/td.py</code></summary>
+<summary>Source code in <code>td/td.py</code></summary>
 <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">day_index</span><span class="p">(</span><span class="n">period</span><span class="p">,</span> <span class="n">day</span><span class="p">):</span>
 	<span class="sd">"""convert day to index within daylist"""</span>
 	<span class="n">temp</span> <span class="o">=</span> <span class="n">day</span> <span class="o">-</span> <span class="n">period</span><span class="p">[</span><span class="s1">'start'</span><span class="p">]</span>
@@ -266,22 +362,27 @@
 </div>
 </div>
 <div class="doc doc-object doc-function">
-<h2 class="doc doc-heading" id="td.decode_daylist">
+<h2 class="doc doc-heading" id="td.td.decode_daylist">
 <code class="highlight language-python"><span class="n">decode_daylist</span><span class="p">(</span><span class="n">daylist</span><span class="p">)</span></code>
 </h2>
 <div class="doc doc-contents">
 <p>convert 'days' field (including day ranges) to list of individual days</p>
-<dl>
-<dt>Parameters:</dt>
-<dd><p><strong>daylist:</strong> list of period days, either in numerical format (e.g., -1, 1, 2), or as strings that may represent single days (e.g., "-1", "1") or day ranges (e.g., "1-3"). Day ranges can also include multiple segments (e.g., "1-3, 5-7", "1-3, 4, 5")</p></dd>
-</dl>
+<p>Convert list of period days given in a flxible format into a well-formed into a list of days. The input can contain either days in numerical format (e.g., -1, 1, 2), or as strings that may represent single days (e.g., "-1", "1") or day ranges (e.g., "1-3") . Day ranges can also include multiple segments (e.g., "1-3, 5-7", "1-3, 4, 5").</p>
+<p>:param daylist: input list of numbers and/or strings representing individual days or day ranges (see above)
+:type daylist:  list
+:rtype:                 list
+:return:                list of days in strict numerical form</p>
 <details class="quote">
-<summary>Source code in <code>trialdesign/td.py</code></summary>
-<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">decode_daylist</span><span class="p">(</span><span class="n">daylist</span><span class="p">):</span>
+<summary>Source code in <code>td/td.py</code></summary>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">decode_daylist</span><span class="p">(</span><span class="n">daylist</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
 	<span class="sd">"""convert 'days' field (including day ranges) to list of individual days</span>
 
-<span class="sd">	Arguments:</span>
-<span class="sd">		daylist: list of period days, either in numerical format (e.g., -1, 1, 2), or as strings that may represent single days (e.g., "-1", "1") or day ranges (e.g., "1-3"). Day ranges can also include multiple segments (e.g., "1-3, 5-7", "1-3, 4, 5")</span>
+<span class="sd">	Convert list of period days given in a flxible format into a well-formed into a list of days. The input can contain either days in numerical format (e.g., -1, 1, 2), or as strings that may represent single days (e.g., "-1", "1") or day ranges (e.g., "1-3") . Day ranges can also include multiple segments (e.g., "1-3, 5-7", "1-3, 4, 5").</span>
+
+<span class="sd">	:param daylist: input list of numbers and/or strings representing individual days or day ranges (see above)</span>
+<span class="sd">	:type daylist:	list</span>
+<span class="sd">	:rtype:			list</span>
+<span class="sd">	:return:		list of days in strict numerical form</span>
 <span class="sd">	"""</span>
 	<span class="n">days</span> <span class="o">=</span> <span class="p">[]</span>
 	<span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">daylist</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
@@ -306,13 +407,34 @@
 </div>
 </div>
 <div class="doc doc-object doc-function">
-<h2 class="doc doc-heading" id="td.extract_footnotes">
+<h2 class="doc doc-heading" id="td.td.ensure_list">
+<code class="highlight language-python"><span class="n">ensure_list</span><span class="p">(</span><span class="n">period</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span></code>
+</h2>
+<div class="doc doc-contents">
+<p>ensure to return a list for a key, even if value is not a list or the key is not used</p>
+<details class="quote">
+<summary>Source code in <code>td/td.py</code></summary>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">ensure_list</span><span class="p">(</span><span class="n">period</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+	<span class="sd">"""ensure to return a list for a key, even if value is not a list or the key is not used"""</span>
+	<span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">period</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+		<span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">period</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="nb">list</span><span class="p">):</span>
+			<span class="k">return</span><span class="p">([</span><span class="n">period</span><span class="p">[</span><span class="n">key</span><span class="p">]])</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="k">return</span><span class="p">(</span><span class="n">period</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+	<span class="k">else</span><span class="p">:</span>
+		<span class="k">return</span><span class="p">([])</span>
+</code></pre></div>
+</details>
+</div>
+</div>
+<div class="doc doc-object doc-function">
+<h2 class="doc doc-heading" id="td.td.extract_footnotes">
 <code class="highlight language-python"><span class="n">extract_footnotes</span><span class="p">(</span><span class="n">period</span><span class="p">,</span> <span class="n">caption</span><span class="p">)</span></code>
 </h2>
 <div class="doc doc-contents">
 <p>extract footnotes for procedures by day, if applicable</p>
 <details class="quote">
-<summary>Source code in <code>trialdesign/td.py</code></summary>
+<summary>Source code in <code>td/td.py</code></summary>
 <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">extract_footnotes</span><span class="p">(</span><span class="n">period</span><span class="p">,</span> <span class="n">caption</span><span class="p">):</span>
 	<span class="sd">"""extract footnotes for procedures by day, if applicable"""</span>
 	<span class="n">out</span> <span class="o">=</span> <span class="p">[[</span><span class="kc">False</span><span class="p">]</span> <span class="o">*</span> <span class="n">period</span><span class="p">[</span><span class="s1">'duration'</span><span class="p">],</span> <span class="p">[</span><span class="s1">''</span><span class="p">]</span> <span class="o">*</span> <span class="n">period</span><span class="p">[</span><span class="s1">'duration'</span><span class="p">],</span> <span class="p">[]]</span>
@@ -340,15 +462,16 @@
 </div>
 </div>
 <div class="doc doc-object doc-function">
-<h2 class="doc doc-heading" id="td.extract_procedure">
+<h2 class="doc doc-heading" id="td.td.extract_procedure">
 <code class="highlight language-python"><span class="n">extract_procedure</span><span class="p">(</span><span class="n">period</span><span class="p">,</span> <span class="n">caption</span><span class="p">)</span></code>
 </h2>
 <div class="doc doc-contents">
 <p>get specified administration/procedure as list of tuples (day, [times], relative) for individual days</p>
 <details class="quote">
-<summary>Source code in <code>trialdesign/td.py</code></summary>
+<summary>Source code in <code>td/td.py</code></summary>
 <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">extract_procedure</span><span class="p">(</span><span class="n">period</span><span class="p">,</span> <span class="n">caption</span><span class="p">):</span>
-	<span class="sd">"""get specified administration/procedure as list of tuples (day, [times], relative) for individual days"""</span>
+	<span class="sd">"""get specified administration/procedure as list of tuples (day, [times], relative) for individual days</span>
+<span class="sd">	"""</span>
 	<span class="n">out</span> <span class="o">=</span> <span class="p">[]</span>
 	<span class="k">def</span> <span class="nf">temp</span><span class="p">(</span><span class="n">proc</span><span class="p">,</span> <span class="n">out</span><span class="p">):</span>
 		<span class="k">if</span> <span class="s1">'times'</span> <span class="ow">in</span> <span class="n">proc</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
@@ -369,13 +492,13 @@
 </div>
 </div>
 <div class="doc doc-object doc-function">
-<h2 class="doc doc-heading" id="td.extract_start_end">
+<h2 class="doc doc-heading" id="td.td.extract_start_end">
 <code class="highlight language-python"><span class="n">extract_start_end</span><span class="p">(</span><span class="n">daylist</span><span class="p">)</span></code>
 </h2>
 <div class="doc doc-contents">
 <p>from day list, extract start and end days of trains of days</p>
 <details class="quote">
-<summary>Source code in <code>trialdesign/td.py</code></summary>
+<summary>Source code in <code>td/td.py</code></summary>
 <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">extract_start_end</span><span class="p">(</span><span class="n">daylist</span><span class="p">):</span>
 	<span class="sd">"""from day list, extract start and end days of trains of days"""</span>
 	<span class="n">last_day</span> <span class="o">=</span> <span class="mi">0</span>
@@ -396,13 +519,13 @@
 </div>
 </div>
 <div class="doc doc-object doc-function">
-<h2 class="doc doc-heading" id="td.has_timescale">
+<h2 class="doc doc-heading" id="td.td.has_timescale">
 <code class="highlight language-python"><span class="n">has_timescale</span><span class="p">(</span><span class="n">period</span><span class="p">,</span> <span class="n">caption</span><span class="p">)</span></code>
 </h2>
 <div class="doc doc-contents">
 <p>test if procedure has timescale in the respective period</p>
 <details class="quote">
-<summary>Source code in <code>trialdesign/td.py</code></summary>
+<summary>Source code in <code>td/td.py</code></summary>
 <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">has_timescale</span><span class="p">(</span><span class="n">period</span><span class="p">,</span> <span class="n">caption</span><span class="p">):</span>
 	<span class="sd">"""test if procedure has timescale in the respective period"""</span>
 	<span class="n">out</span> <span class="o">=</span> <span class="p">[]</span>
@@ -417,35 +540,201 @@
 </div>
 </div>
 <div class="doc doc-object doc-function">
-<h2 class="doc doc-heading" id="td.item_names">
+<h2 class="doc doc-heading" id="td.td.item_names">
 <code class="highlight language-python"><span class="n">item_names</span><span class="p">(</span><span class="n">periods</span><span class="p">,</span> <span class="n">item_class</span><span class="p">)</span></code>
 </h2>
 <div class="doc doc-contents">
-<p>return list of interval/administration/procedure names for trial</p>
+<p>return a list of interval/administration/procedure names included in a list of periods</p>
+<p>:param periods:         periods to search
+:type periods:          list of period dictionaries
+:param item_class:      class of items to include, can be 'intervals', 'administrations' or 'procedures'
+:type item_class:       string
+:rtype:                         list
+:return:                        names of items of the respective type included in the list periods</p>
 <details class="quote">
-<summary>Source code in <code>trialdesign/td.py</code></summary>
+<summary>Source code in <code>td/td.py</code></summary>
 <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">item_names</span><span class="p">(</span><span class="n">periods</span><span class="p">,</span> <span class="n">item_class</span><span class="p">):</span>
-	<span class="sd">"""return list of interval/administration/procedure names for trial"""</span>
+	<span class="sd">"""return a list of interval/administration/procedure names included in a list of periods</span>
+
+<span class="sd">	:param periods: 	periods to search</span>
+<span class="sd">	:type periods: 		list of period dictionaries</span>
+<span class="sd">	:param item_class:	class of items to include, can be 'intervals', 'administrations' or 'procedures'</span>
+<span class="sd">	:type item_class:	string</span>
+<span class="sd">	:rtype:				list</span>
+<span class="sd">	:return:			names of items of the respective type included in the list periods</span>
+<span class="sd">	"""</span>
 	<span class="n">out</span> <span class="o">=</span> <span class="p">[]</span>
 	<span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">periods</span><span class="p">:</span>
 		<span class="k">if</span> <span class="n">item_class</span> <span class="ow">in</span> <span class="n">p</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
 			<span class="k">for</span> <span class="n">proc</span> <span class="ow">in</span> <span class="n">p</span><span class="p">[</span><span class="n">item_class</span><span class="p">]:</span>
-				<span class="n">temp</span> <span class="o">=</span> <span class="n">proc</span><span class="p">[</span><span class="s1">'caption'</span><span class="p">]</span>
-				<span class="k">if</span> <span class="ow">not</span> <span class="n">temp</span> <span class="ow">in</span> <span class="n">out</span><span class="p">:</span>
-					<span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">temp</span><span class="p">)</span>
+				<span class="k">try</span><span class="p">:</span>
+					<span class="n">temp</span> <span class="o">=</span> <span class="n">proc</span><span class="p">[</span><span class="s1">'caption'</span><span class="p">]</span>
+					<span class="k">if</span> <span class="ow">not</span> <span class="n">temp</span> <span class="ow">in</span> <span class="n">out</span><span class="p">:</span>
+						<span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">temp</span><span class="p">)</span>
+				<span class="k">except</span><span class="p">:</span>
+					<span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'no caption field in item </span><span class="si">{</span><span class="n">proc</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
 	<span class="k">return</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
 </code></pre></div>
 </details>
 </div>
 </div>
 <div class="doc doc-object doc-function">
-<h2 class="doc doc-heading" id="td.normalize_procedure">
+<h2 class="doc doc-heading" id="td.td.iterate_over_procedures">
+<code class="highlight language-python"><span class="n">iterate_over_procedures</span><span class="p">(</span><span class="n">period</span><span class="p">,</span> <span class="n">caption</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">function</span><span class="p">)</span></code>
+</h2>
+<div class="doc doc-contents">
+<p>apply a reduce function to all procedures with a given caption</p>
+<p>:param period:  period
+:type period:   dictionary
+:param caption: procedure caption to select
+:type caption:  string
+:param out:             accumulator start value, mostly a list with length of the period
+:type out:              flexible
+:rtype:                 flexible
+:return:                accumulator out</p>
+<details class="quote">
+<summary>Source code in <code>td/td.py</code></summary>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">iterate_over_procedures</span><span class="p">(</span><span class="n">period</span><span class="p">,</span> <span class="n">caption</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">function</span><span class="p">):</span>
+	<span class="sd">"""apply a reduce function to all procedures with a given caption</span>
+
+<span class="sd">	:param period:	period</span>
+<span class="sd">	:type period: 	dictionary</span>
+<span class="sd">	:param caption:	procedure caption to select</span>
+<span class="sd">	:type caption:	string</span>
+<span class="sd">	:param out:		accumulator start value, mostly a list with length of the period</span>
+<span class="sd">	:type out:		flexible</span>
+<span class="sd">	:rtype:			flexible</span>
+<span class="sd">	:return: 		accumulator out</span>
+<span class="sd">	"""</span>
+	<span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">'intervals'</span><span class="p">,</span> <span class="s1">'administrations'</span><span class="p">,</span> <span class="s1">'procedures'</span><span class="p">]:</span>
+		<span class="k">if</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">period</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+			<span class="k">for</span> <span class="n">proc</span> <span class="ow">in</span> <span class="n">period</span><span class="p">[</span><span class="n">x</span><span class="p">]:</span>
+				<span class="k">if</span> <span class="n">proc</span><span class="p">[</span><span class="s1">'caption'</span><span class="p">]</span> <span class="o">==</span> <span class="n">caption</span><span class="p">:</span>
+					<span class="n">function</span><span class="p">(</span><span class="n">proc</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span>
+	<span class="k">return</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+</code></pre></div>
+</details>
+</div>
+</div>
+<div class="doc doc-object doc-function">
+<h2 class="doc doc-heading" id="td.td.leading_edge">
+<code class="highlight language-python"><span class="n">leading_edge</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></code>
+</h2>
+<div class="doc doc-contents">
+<p>return leading True values in list of booleans</p>
+<details class="quote">
+<summary>Source code in <code>td/td.py</code></summary>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">leading_edge</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+	<span class="sd">"""return leading True values in list of booleans"""</span>
+	<span class="n">out</span> <span class="o">=</span> <span class="p">[]</span>
+	<span class="n">status</span> <span class="o">=</span> <span class="kc">False</span>
+	<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">x</span><span class="p">:</span>
+		<span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span> <span class="ow">and</span> <span class="n">i</span><span class="o">!=</span><span class="n">status</span><span class="p">)</span>
+		<span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="n">status</span><span class="p">:</span>
+			<span class="n">status</span> <span class="o">=</span> <span class="n">i</span>
+	<span class="k">return</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+</code></pre></div>
+</details>
+</div>
+</div>
+<div class="doc doc-object doc-function">
+<h2 class="doc doc-heading" id="td.td.main">
+<code class="highlight language-python"><span class="n">main</span><span class="p">(</span><span class="n">file</span><span class="o">=&lt;</span><span class="n">typer</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">ArgumentInfo</span> <span class="nb">object</span> <span class="n">at</span> <span class="mh">0x1038c10a0</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">output</span><span class="o">=&lt;</span><span class="n">typer</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">OptionInfo</span> <span class="nb">object</span> <span class="n">at</span> <span class="mh">0x1038c10d0</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">font</span><span class="o">=&lt;</span><span class="n">typer</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">OptionInfo</span> <span class="nb">object</span> <span class="n">at</span> <span class="mh">0x1038c1100</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=&lt;</span><span class="n">typer</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">OptionInfo</span> <span class="nb">object</span> <span class="n">at</span> <span class="mh">0x1038c1130</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">padding</span><span class="o">=&lt;</span><span class="n">typer</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">OptionInfo</span> <span class="nb">object</span> <span class="n">at</span> <span class="mh">0x1038c1160</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">condensed</span><span class="o">=&lt;</span><span class="n">typer</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">OptionInfo</span> <span class="nb">object</span> <span class="n">at</span> <span class="mh">0x1038c1190</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">ellipsis</span><span class="o">=&lt;</span><span class="n">typer</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">OptionInfo</span> <span class="nb">object</span> <span class="n">at</span> <span class="mh">0x1038c11c0</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">timescale</span><span class="o">=&lt;</span><span class="n">typer</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">OptionInfo</span> <span class="nb">object</span> <span class="n">at</span> <span class="mh">0x1038c11f0</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">graph</span><span class="o">=&lt;</span><span class="n">typer</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">OptionInfo</span> <span class="nb">object</span> <span class="n">at</span> <span class="mh">0x1038c1220</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">footnotes</span><span class="o">=&lt;</span><span class="n">typer</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">OptionInfo</span> <span class="nb">object</span> <span class="n">at</span> <span class="mh">0x1038c1250</span><span class="o">&gt;</span><span class="p">,</span> <span class="nb">all</span><span class="o">=&lt;</span><span class="n">typer</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">OptionInfo</span> <span class="nb">object</span> <span class="n">at</span> <span class="mh">0x1038c1280</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">autocompress</span><span class="o">=&lt;</span><span class="n">typer</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">OptionInfo</span> <span class="nb">object</span> <span class="n">at</span> <span class="mh">0x1038c12b0</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">version</span><span class="o">=&lt;</span><span class="n">typer</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">OptionInfo</span> <span class="nb">object</span> <span class="n">at</span> <span class="mh">0x1038c12e0</span><span class="o">&gt;</span><span class="p">)</span></code>
+</h2>
+<div class="doc doc-contents">
+<p>Clinical trial design visualization</p>
+<p>Generates a 'schedule of assessments' overview for clinical trials, based on a json-formatted input FILE. Graphical output is provided in svg vector format that can be rendered by any webbrowser or directly imported into Office applications. Use below OPTIONS to manage the output style.</p>
+<p>Version 2.1, proudly written in functional Python (Rainer Strotmann, Jan-2022)</p>
+<details class="quote">
+<summary>Source code in <code>td/td.py</code></summary>
+<div class="highlight"><pre><span></span><code><span class="nd">@app</span><span class="o">.</span><span class="n">command</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">main</span><span class="p">(</span>
+	<span class="n">file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">typer</span><span class="o">.</span><span class="n">Argument</span><span class="p">(</span><span class="o">...</span><span class="p">),</span>
+	<span class="c1">#debug: bool = typer.Option(False, "--debug", "-d", help="Debug output"),</span>
+	<span class="n">output</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">typer</span><span class="o">.</span><span class="n">Option</span><span class="p">(</span><span class="s2">""</span><span class="p">,</span> <span class="s2">"--output"</span><span class="p">,</span> <span class="s2">"-o"</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"Output file name"</span><span class="p">),</span>
+	<span class="n">font</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">typer</span><span class="o">.</span><span class="n">Option</span><span class="p">(</span><span class="s2">"Arial"</span><span class="p">,</span> <span class="s2">"--font"</span><span class="p">,</span> <span class="s2">"-f"</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"Font type"</span><span class="p">),</span>
+	<span class="n">fontsize</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">typer</span><span class="o">.</span><span class="n">Option</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="s2">"--fontsize"</span><span class="p">,</span> <span class="s2">"-s"</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"Font size"</span><span class="p">),</span>
+	<span class="n">padding</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">typer</span><span class="o">.</span><span class="n">Option</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s2">"--padding"</span><span class="p">,</span> <span class="s2">"-p"</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"Y-axis padding factor"</span><span class="p">),</span>
+	<span class="n">condensed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">typer</span><span class="o">.</span><span class="n">Option</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="s2">"--condensed"</span><span class="p">,</span> <span class="s2">"-c"</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"Show condensed daygrid"</span><span class="p">),</span>
+	<span class="n">ellipsis</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">typer</span><span class="o">.</span><span class="n">Option</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="s2">"--ellipsis"</span><span class="p">,</span> <span class="s2">"-e"</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"Reduce symbols in condensed output"</span><span class="p">),</span>
+	<span class="n">timescale</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">typer</span><span class="o">.</span><span class="n">Option</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="s2">"--timescale"</span><span class="p">,</span> <span class="s2">"-t"</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"Show time scale"</span><span class="p">),</span>
+	<span class="n">graph</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">typer</span><span class="o">.</span><span class="n">Option</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="s2">"--graph"</span><span class="p">,</span> <span class="s2">"-g"</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"Show dose graph"</span><span class="p">),</span>
+	<span class="n">footnotes</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">typer</span><span class="o">.</span><span class="n">Option</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="s2">"--footnotes"</span><span class="p">,</span> <span class="s2">"-n"</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"Show footnotes"</span><span class="p">),</span>
+	<span class="nb">all</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">typer</span><span class="o">.</span><span class="n">Option</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="s2">"--all"</span><span class="p">,</span> <span class="s2">"-A"</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"All options, equivalent to -ctgen"</span><span class="p">),</span>
+	<span class="n">autocompress</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">typer</span><span class="o">.</span><span class="n">Option</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="s2">"--autocompress"</span><span class="p">,</span> <span class="s2">"-a"</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"Automatically compress daygrid"</span><span class="p">),</span>
+	<span class="n">version</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">typer</span><span class="o">.</span><span class="n">Option</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="s2">"--version"</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"Show version and exit"</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="n">version_callback</span><span class="p">)</span>
+	<span class="p">):</span>
+	<span class="sd">"""Clinical trial design visualization</span>
+
+
+<span class="sd">	Generates a 'schedule of assessments' overview for clinical trials, based on a json-formatted input FILE. Graphical output is provided in svg vector format that can be rendered by any webbrowser or directly imported into Office applications. Use below OPTIONS to manage the output style.</span>
+
+
+<span class="sd">	Version 2.1, proudly written in functional Python (Rainer Strotmann, Jan-2022)</span>
+<span class="sd">	"""</span>
+	<span class="k">if</span> <span class="n">version</span><span class="p">:</span>
+		<span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="n">__version__</span><span class="p">)</span>
+
+	<span class="k">if</span> <span class="nb">all</span><span class="p">:</span>
+		<span class="n">condensed</span><span class="o">=</span><span class="kc">True</span>
+		<span class="n">timescale</span><span class="o">=</span><span class="kc">True</span>
+		<span class="n">graph</span><span class="o">=</span><span class="kc">True</span>
+		<span class="n">ellipsis</span><span class="o">=</span><span class="kc">True</span>
+		<span class="n">footnotes</span><span class="o">=</span><span class="kc">True</span>
+
+	<span class="c1"># read input file</span>
+	<span class="n">infile</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+	<span class="n">inpath</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">file</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="o">.</span><span class="n">parent</span>
+	<span class="k">if</span> <span class="n">output</span><span class="p">:</span>
+		<span class="n">outfile</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+	<span class="k">else</span><span class="p">:</span>
+		<span class="n">outfile</span> <span class="o">=</span> <span class="n">inpath</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="n">infile</span><span class="o">.</span><span class="n">stem</span> <span class="o">+</span> <span class="s2">".svg"</span><span class="p">)</span>
+	<span class="k">try</span><span class="p">:</span>
+		<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">infile</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+			<span class="n">td</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+	<span class="k">except</span> <span class="n">json</span><span class="o">.</span><span class="n">decoder</span><span class="o">.</span><span class="n">JSONDecodeError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+		<span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Json syntax error in input file </span><span class="si">{</span><span class="n">infile</span><span class="si">}</span><span class="s1">:</span><span class="se">\n</span><span class="si">{</span><span class="n">err</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+	<span class="k">except</span><span class="p">:</span>
+		<span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s2">"Error loading input file"</span><span class="p">)</span>
+
+	<span class="k">try</span><span class="p">:</span>
+		<span class="n">svg_out</span> <span class="o">=</span> <span class="n">render_td</span><span class="p">(</span><span class="n">td</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="n">infile</span><span class="o">.</span><span class="n">stem</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="n">debug</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">fontsize</span><span class="p">,</span> <span class="n">font</span><span class="o">=</span><span class="n">font</span><span class="p">,</span> <span class="n">condensed</span><span class="o">=</span><span class="n">condensed</span><span class="p">,</span> <span class="n">autocompress</span><span class="o">=</span><span class="n">autocompress</span><span class="p">,</span> <span class="n">timescale</span><span class="o">=</span><span class="n">timescale</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="n">padding</span><span class="p">,</span> <span class="n">ellipsis</span><span class="o">=</span><span class="n">ellipsis</span><span class="p">,</span> <span class="n">footnotes</span><span class="o">=</span><span class="n">footnotes</span><span class="p">,</span> <span class="n">graph</span><span class="o">=</span><span class="n">graph</span><span class="p">)</span>
+	<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+		<span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+
+	<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="s2">"w"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+		<span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">svg_out</span><span class="p">)</span>
+	<span class="k">return</span>
+</code></pre></div>
+</details>
+</div>
+</div>
+<div class="doc doc-object doc-function">
+<h2 class="doc doc-heading" id="td.td.make_dayrange">
+<code class="highlight language-python"><span class="n">make_dayrange</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">duration</span><span class="p">)</span></code>
+</h2>
+<div class="doc doc-contents">
+<p>return a range of days defined by start and duration. Day 0 does not exist and is deleted, if necessary</p>
+<details class="quote">
+<summary>Source code in <code>td/td.py</code></summary>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">make_dayrange</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">duration</span><span class="p">):</span>
+	<span class="sd">"""return a range of days defined by start and duration. Day 0 does not exist and is deleted, if necessary"""</span>
+	<span class="n">out</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">start</span> <span class="o">+</span> <span class="n">duration</span><span class="p">))</span>
+	<span class="k">if</span> <span class="mi">0</span> <span class="ow">in</span> <span class="n">out</span><span class="p">:</span>
+		<span class="n">out</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+	<span class="k">return</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+</code></pre></div>
+</details>
+</div>
+</div>
+<div class="doc doc-object doc-function">
+<h2 class="doc doc-heading" id="td.td.normalize_procedure">
 <code class="highlight language-python"><span class="n">normalize_procedure</span><span class="p">(</span><span class="n">procedure</span><span class="p">)</span></code>
 </h2>
 <div class="doc doc-contents">
 <p>break down procedure times to subsequent days, if longer than 24 h</p>
 <details class="quote">
-<summary>Source code in <code>trialdesign/td.py</code></summary>
+<summary>Source code in <code>td/td.py</code></summary>
 <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">normalize_procedure</span><span class="p">(</span><span class="n">procedure</span><span class="p">):</span>
 	<span class="sd">"""break down procedure times to subsequent days, if longer than 24 h"""</span>
 	<span class="n">out</span> <span class="o">=</span> <span class="p">[]</span>
@@ -463,13 +752,13 @@
 </div>
 </div>
 <div class="doc doc-object doc-function">
-<h2 class="doc doc-heading" id="td.period_day_centers">
+<h2 class="doc doc-heading" id="td.td.period_day_centers">
 <code class="highlight language-python"><span class="n">period_day_centers</span><span class="p">(</span><span class="n">period</span><span class="p">,</span> <span class="n">xoffset</span><span class="p">,</span> <span class="n">daywidth_function</span><span class="p">)</span></code>
 </h2>
 <div class="doc doc-contents">
 <p>return list of x-coordinates for day centers</p>
 <details class="quote">
-<summary>Source code in <code>trialdesign/td.py</code></summary>
+<summary>Source code in <code>td/td.py</code></summary>
 <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">period_day_centers</span><span class="p">(</span><span class="n">period</span><span class="p">,</span> <span class="n">xoffset</span><span class="p">,</span> <span class="n">daywidth_function</span><span class="p">):</span>
 	<span class="sd">"""return list of x-coordinates for day centers"""</span>
 	<span class="k">return</span><span class="p">([</span><span class="n">start</span> <span class="o">+</span> <span class="n">width</span> <span class="o">/</span> <span class="mi">2</span> <span class="k">for</span> <span class="n">start</span><span class="p">,</span> <span class="n">width</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">period_day_starts</span><span class="p">(</span><span class="n">period</span><span class="p">,</span> <span class="n">xoffset</span><span class="p">,</span> <span class="n">daywidth_function</span><span class="p">),</span> <span class="n">daywidth_function</span><span class="p">(</span><span class="n">period</span><span class="p">))])</span>
@@ -478,13 +767,13 @@
 </div>
 </div>
 <div class="doc doc-object doc-function">
-<h2 class="doc doc-heading" id="td.period_day_ends">
+<h2 class="doc doc-heading" id="td.td.period_day_ends">
 <code class="highlight language-python"><span class="n">period_day_ends</span><span class="p">(</span><span class="n">period</span><span class="p">,</span> <span class="n">xoffset</span><span class="p">,</span> <span class="n">daywidth_function</span><span class="p">)</span></code>
 </h2>
 <div class="doc doc-contents">
 <p>return list of x-coordinates for day ends</p>
 <details class="quote">
-<summary>Source code in <code>trialdesign/td.py</code></summary>
+<summary>Source code in <code>td/td.py</code></summary>
 <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">period_day_ends</span><span class="p">(</span><span class="n">period</span><span class="p">,</span> <span class="n">xoffset</span><span class="p">,</span> <span class="n">daywidth_function</span><span class="p">):</span>
 	<span class="sd">"""return list of x-coordinates for day ends"""</span>
 	<span class="n">starts</span> <span class="o">=</span> <span class="n">period_day_starts</span><span class="p">(</span><span class="n">period</span><span class="p">,</span> <span class="n">xoffset</span><span class="p">,</span> <span class="n">daywidth_function</span><span class="p">)</span>
@@ -495,13 +784,13 @@
 </div>
 </div>
 <div class="doc doc-object doc-function">
-<h2 class="doc doc-heading" id="td.period_day_starts">
+<h2 class="doc doc-heading" id="td.td.period_day_starts">
 <code class="highlight language-python"><span class="n">period_day_starts</span><span class="p">(</span><span class="n">period</span><span class="p">,</span> <span class="n">xoffset</span><span class="p">,</span> <span class="n">daywidth_function</span><span class="p">)</span></code>
 </h2>
 <div class="doc doc-contents">
 <p>return list of x-coordinates for day starts</p>
 <details class="quote">
-<summary>Source code in <code>trialdesign/td.py</code></summary>
+<summary>Source code in <code>td/td.py</code></summary>
 <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">period_day_starts</span><span class="p">(</span><span class="n">period</span><span class="p">,</span> <span class="n">xoffset</span><span class="p">,</span> <span class="n">daywidth_function</span><span class="p">):</span>
 	<span class="sd">"""return list of x-coordinates for day starts"""</span>
 	<span class="n">out</span><span class="o">=</span><span class="p">[</span><span class="n">xoffset</span><span class="p">]</span>
@@ -515,13 +804,13 @@
 </div>
 </div>
 <div class="doc doc-object doc-function">
-<h2 class="doc doc-heading" id="td.render_daygrid">
+<h2 class="doc doc-heading" id="td.td.render_daygrid">
 <code class="highlight language-python"><span class="n">render_daygrid</span><span class="p">(</span><span class="n">period</span><span class="p">,</span> <span class="n">caption</span><span class="p">,</span> <span class="n">xoffset</span><span class="p">,</span> <span class="n">yoffset</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">metrics</span><span class="p">,</span> <span class="n">style</span><span class="p">,</span> <span class="n">first_pass</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></code>
 </h2>
 <div class="doc doc-contents">
 <p>render svg output for the day grid for a period. Output is [svg_output, height]</p>
 <details class="quote">
-<summary>Source code in <code>trialdesign/td.py</code></summary>
+<summary>Source code in <code>td/td.py</code></summary>
 <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">render_daygrid</span><span class="p">(</span><span class="n">period</span><span class="p">,</span> <span class="n">caption</span><span class="p">,</span> <span class="n">xoffset</span><span class="p">,</span> <span class="n">yoffset</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">metrics</span><span class="p">,</span> <span class="n">style</span><span class="p">,</span> <span class="n">first_pass</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 	<span class="sd">"""render svg output for the day grid for a period. Output is [svg_output, height]"""</span>
 	<span class="p">(</span><span class="n">daywidth_function</span><span class="p">,</span> <span class="n">textwidth_function</span><span class="p">,</span> <span class="n">textheight_function</span><span class="p">)</span> <span class="o">=</span> <span class="n">metrics</span>
@@ -551,13 +840,13 @@
 </div>
 </div>
 <div class="doc doc-object doc-function">
-<h2 class="doc doc-heading" id="td.render_dose_graph">
+<h2 class="doc doc-heading" id="td.td.render_dose_graph">
 <code class="highlight language-python"><span class="n">render_dose_graph</span><span class="p">(</span><span class="n">period</span><span class="p">,</span> <span class="n">caption</span><span class="p">,</span> <span class="n">xoffset</span><span class="p">,</span> <span class="n">yoffset</span><span class="p">,</span> <span class="n">lineheight</span><span class="p">,</span> <span class="n">metrics</span><span class="p">,</span> <span class="n">style</span><span class="p">,</span> <span class="n">first_pass</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></code>
 </h2>
 <div class="doc doc-contents">
 <p>render dose over time for administration. Output is [svg_output, height]</p>
 <details class="quote">
-<summary>Source code in <code>trialdesign/td.py</code></summary>
+<summary>Source code in <code>td/td.py</code></summary>
 <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">render_dose_graph</span><span class="p">(</span><span class="n">period</span><span class="p">,</span> <span class="n">caption</span><span class="p">,</span> <span class="n">xoffset</span><span class="p">,</span> <span class="n">yoffset</span><span class="p">,</span> <span class="n">lineheight</span><span class="p">,</span> <span class="n">metrics</span><span class="p">,</span> <span class="n">style</span><span class="p">,</span> <span class="n">first_pass</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 	<span class="sd">"""render dose over time for administration. Output is [svg_output, height]"""</span>
 	<span class="p">(</span><span class="n">daywidth_function</span><span class="p">,</span> <span class="n">textwidth_function</span><span class="p">,</span> <span class="n">textheight_function</span><span class="p">)</span> <span class="o">=</span> <span class="n">metrics</span>
@@ -595,13 +884,13 @@
 </div>
 </div>
 <div class="doc doc-object doc-function">
-<h2 class="doc doc-heading" id="td.render_dummy">
+<h2 class="doc doc-heading" id="td.td.render_dummy">
 <code class="highlight language-python"><span class="n">render_dummy</span><span class="p">(</span><span class="n">period</span><span class="p">,</span> <span class="n">xoffset</span><span class="p">,</span> <span class="n">yoffset</span><span class="p">,</span> <span class="n">lineheight</span><span class="p">,</span> <span class="n">metrics</span><span class="p">)</span></code>
 </h2>
 <div class="doc doc-contents">
 <p>render bounding box for visual debugging purposes. Output is svg code only.</p>
 <details class="quote">
-<summary>Source code in <code>trialdesign/td.py</code></summary>
+<summary>Source code in <code>td/td.py</code></summary>
 <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">render_dummy</span><span class="p">(</span><span class="n">period</span><span class="p">,</span> <span class="n">xoffset</span><span class="p">,</span> <span class="n">yoffset</span><span class="p">,</span> <span class="n">lineheight</span><span class="p">,</span> <span class="n">metrics</span><span class="p">):</span>
 	<span class="sd">"""render bounding box for visual debugging purposes. Output is svg code only."""</span>
 	<span class="n">daywidth_function</span> <span class="o">=</span> <span class="n">metrics</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -611,13 +900,13 @@
 </div>
 </div>
 <div class="doc doc-object doc-function">
-<h2 class="doc doc-heading" id="td.render_interval">
+<h2 class="doc doc-heading" id="td.td.render_interval">
 <code class="highlight language-python"><span class="n">render_interval</span><span class="p">(</span><span class="n">period</span><span class="p">,</span> <span class="n">caption</span><span class="p">,</span> <span class="n">xoffset</span><span class="p">,</span> <span class="n">yoffset</span><span class="p">,</span> <span class="n">lineheight</span><span class="p">,</span> <span class="n">metrics</span><span class="p">,</span> <span class="n">style</span><span class="p">,</span> <span class="n">first_pass</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></code>
 </h2>
 <div class="doc doc-contents">
 <p>render interval for procedure. Output is [svg_output, height]</p>
 <details class="quote">
-<summary>Source code in <code>trialdesign/td.py</code></summary>
+<summary>Source code in <code>td/td.py</code></summary>
 <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">render_interval</span><span class="p">(</span><span class="n">period</span><span class="p">,</span> <span class="n">caption</span><span class="p">,</span> <span class="n">xoffset</span><span class="p">,</span> <span class="n">yoffset</span><span class="p">,</span> <span class="n">lineheight</span><span class="p">,</span> <span class="n">metrics</span><span class="p">,</span> <span class="n">style</span><span class="p">,</span> <span class="n">first_pass</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 	<span class="sd">"""render interval for procedure. Output is [svg_output, height]"""</span>
 	<span class="p">(</span><span class="n">daywidth_function</span><span class="p">,</span> <span class="n">textwidth_function</span><span class="p">,</span> <span class="n">textheight_function</span><span class="p">)</span> <span class="o">=</span> <span class="n">metrics</span>
@@ -668,13 +957,13 @@
 </div>
 </div>
 <div class="doc doc-object doc-function">
-<h2 class="doc doc-heading" id="td.render_periodcaption">
+<h2 class="doc doc-heading" id="td.td.render_periodcaption">
 <code class="highlight language-python"><span class="n">render_periodcaption</span><span class="p">(</span><span class="n">period</span><span class="p">,</span> <span class="n">caption</span><span class="p">,</span> <span class="n">xoffset</span><span class="p">,</span> <span class="n">yoffset</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">metrics</span><span class="p">,</span> <span class="n">style</span><span class="p">,</span> <span class="n">first_pass</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></code>
 </h2>
 <div class="doc doc-contents">
 <p>render caption for period. The 'caption' input is ignored and the caption field of the input period is used. Output is [svg_output, height]</p>
 <details class="quote">
-<summary>Source code in <code>trialdesign/td.py</code></summary>
+<summary>Source code in <code>td/td.py</code></summary>
 <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">render_periodcaption</span><span class="p">(</span><span class="n">period</span><span class="p">,</span> <span class="n">caption</span><span class="p">,</span> <span class="n">xoffset</span><span class="p">,</span> <span class="n">yoffset</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">metrics</span><span class="p">,</span> <span class="n">style</span><span class="p">,</span> <span class="n">first_pass</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 	<span class="sd">"""render caption for period. The 'caption' input is ignored and the caption field of the input period is used. Output is [svg_output, height]"""</span>
 	<span class="p">(</span><span class="n">daywidth_function</span><span class="p">,</span> <span class="n">textwidth_function</span><span class="p">,</span> <span class="n">textheight_function</span><span class="p">)</span> <span class="o">=</span> <span class="n">metrics</span>
@@ -691,13 +980,13 @@
 </div>
 </div>
 <div class="doc doc-object doc-function">
-<h2 class="doc doc-heading" id="td.render_periods">
+<h2 class="doc doc-heading" id="td.td.render_periods">
 <code class="highlight language-python"><span class="n">render_periods</span><span class="p">(</span><span class="n">periods</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">caption</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">render_function</span><span class="p">,</span> <span class="n">metrics</span><span class="p">,</span> <span class="n">style</span><span class="p">,</span> <span class="n">dashes</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">footnotes</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
 </h2>
 <div class="doc doc-contents">
 <p>applies rendering function to all periods</p>
 <details class="quote">
-<summary>Source code in <code>trialdesign/td.py</code></summary>
+<summary>Source code in <code>td/td.py</code></summary>
 <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">render_periods</span><span class="p">(</span><span class="n">periods</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">caption</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">render_function</span><span class="p">,</span> <span class="n">metrics</span><span class="p">,</span> <span class="n">style</span><span class="p">,</span> <span class="n">dashes</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">footnotes</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 	<span class="sd">"""applies rendering function to all periods"""</span>
 	<span class="n">daywidth_function</span><span class="o">=</span> <span class="n">metrics</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -742,13 +1031,13 @@
 </div>
 </div>
 <div class="doc doc-object doc-function">
-<h2 class="doc doc-heading" id="td.render_procedure">
+<h2 class="doc doc-heading" id="td.td.render_procedure">
 <code class="highlight language-python"><span class="n">render_procedure</span><span class="p">(</span><span class="n">period</span><span class="p">,</span> <span class="n">caption</span><span class="p">,</span> <span class="n">xoffset</span><span class="p">,</span> <span class="n">yoffset</span><span class="p">,</span> <span class="n">lineheight</span><span class="p">,</span> <span class="n">metrics</span><span class="p">,</span> <span class="n">style</span><span class="p">,</span> <span class="n">default_symbol</span><span class="o">=</span><span class="s1">'diamond'</span><span class="p">,</span> <span class="n">first_pass</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></code>
 </h2>
 <div class="doc doc-contents">
 <p>render procedure. Output is [svg_output, height]</p>
 <details class="quote">
-<summary>Source code in <code>trialdesign/td.py</code></summary>
+<summary>Source code in <code>td/td.py</code></summary>
 <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">render_procedure</span><span class="p">(</span><span class="n">period</span><span class="p">,</span> <span class="n">caption</span><span class="p">,</span> <span class="n">xoffset</span><span class="p">,</span> <span class="n">yoffset</span><span class="p">,</span> <span class="n">lineheight</span><span class="p">,</span> <span class="n">metrics</span><span class="p">,</span> <span class="n">style</span><span class="p">,</span> <span class="n">default_symbol</span><span class="o">=</span><span class="s2">"diamond"</span><span class="p">,</span> <span class="n">first_pass</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 	<span class="sd">"""render procedure. Output is [svg_output, height]"""</span>
 	<span class="p">(</span><span class="n">daywidth_function</span><span class="p">,</span> <span class="n">textwidth_function</span><span class="p">,</span> <span class="n">textheight_function</span><span class="p">)</span> <span class="o">=</span> <span class="n">metrics</span>
@@ -791,13 +1080,13 @@
 </div>
 </div>
 <div class="doc doc-object doc-function">
-<h2 class="doc doc-heading" id="td.render_times">
+<h2 class="doc doc-heading" id="td.td.render_times">
 <code class="highlight language-python"><span class="n">render_times</span><span class="p">(</span><span class="n">period</span><span class="p">,</span> <span class="n">caption</span><span class="p">,</span> <span class="n">xoffset</span><span class="p">,</span> <span class="n">yoffset</span><span class="p">,</span> <span class="n">lineheight</span><span class="p">,</span> <span class="n">metrics</span><span class="p">,</span> <span class="n">style</span><span class="p">,</span> <span class="n">maxwidth</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span></code>
 </h2>
 <div class="doc doc-contents">
 <p>render timescale for procedure. Output is [svg_output, height]</p>
 <details class="quote">
-<summary>Source code in <code>trialdesign/td.py</code></summary>
+<summary>Source code in <code>td/td.py</code></summary>
 <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">render_times</span><span class="p">(</span><span class="n">period</span><span class="p">,</span> <span class="n">caption</span><span class="p">,</span> <span class="n">xoffset</span><span class="p">,</span> <span class="n">yoffset</span><span class="p">,</span> <span class="n">lineheight</span><span class="p">,</span> <span class="n">metrics</span><span class="p">,</span> <span class="n">style</span><span class="p">,</span> <span class="n">maxwidth</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
 	<span class="sd">"""render timescale for procedure. Output is [svg_output, height]"""</span>
 	<span class="p">(</span><span class="n">daywidth_function</span><span class="p">,</span> <span class="n">textwidth_function</span><span class="p">,</span> <span class="n">textheight_function</span><span class="p">)</span> <span class="o">=</span> <span class="n">metrics</span>
@@ -812,7 +1101,13 @@
 			<span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">period</span><span class="p">[</span><span class="n">x</span><span class="p">]:</span>
 				<span class="k">if</span> <span class="n">p</span><span class="p">[</span><span class="s1">'caption'</span><span class="p">]</span> <span class="o">==</span> <span class="n">caption</span><span class="p">:</span>
 					<span class="k">if</span> <span class="s2">"timescale"</span> <span class="ow">in</span> <span class="n">p</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">and</span> <span class="n">p</span><span class="p">[</span><span class="s2">"timescale"</span><span class="p">]</span><span class="o">==</span><span class="s2">"show"</span><span class="p">:</span>
-						<span class="n">ts_days</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="s2">"relative"</span><span class="p">])</span>
+						<span class="k">if</span> <span class="s2">"relative"</span> <span class="ow">in</span> <span class="n">p</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+							<span class="n">rel</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="s2">"relative"</span><span class="p">]</span>
+						<span class="k">else</span><span class="p">:</span>
+							<span class="n">rel</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="s2">"days"</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+						<span class="c1"># ts_days.append(p["relative"])</span>
+						<span class="n">ts_days</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rel</span><span class="p">)</span>
+
 	<span class="n">ts_days</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">ts_days</span><span class="p">)</span>
 
 	<span class="n">y</span> <span class="o">=</span> <span class="n">yoffset</span>
@@ -902,13 +1197,35 @@
 </div>
 </div>
 <div class="doc doc-object doc-function">
-<h2 class="doc doc-heading" id="td.unnormalize_procedure">
+<h2 class="doc doc-heading" id="td.td.trailing_edge">
+<code class="highlight language-python"><span class="n">trailing_edge</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></code>
+</h2>
+<div class="doc doc-contents">
+<p>return trailing True values in list of booleans</p>
+<details class="quote">
+<summary>Source code in <code>td/td.py</code></summary>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">trailing_edge</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+	<span class="sd">"""return trailing True values in list of booleans"""</span>
+	<span class="n">out</span> <span class="o">=</span> <span class="p">[]</span>
+	<span class="n">status</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+	<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">x</span><span class="p">:</span>
+		<span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="ow">not</span> <span class="n">i</span> <span class="ow">and</span> <span class="n">i</span><span class="o">!=</span><span class="n">status</span><span class="p">)</span>
+		<span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="n">status</span><span class="p">:</span>
+			<span class="n">status</span> <span class="o">=</span> <span class="n">i</span>
+	<span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+	<span class="k">return</span><span class="p">(</span><span class="n">out</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+</code></pre></div>
+</details>
+</div>
+</div>
+<div class="doc doc-object doc-function">
+<h2 class="doc doc-heading" id="td.td.unnormalize_procedure">
 <code class="highlight language-python"><span class="n">unnormalize_procedure</span><span class="p">(</span><span class="n">procedure</span><span class="p">)</span></code>
 </h2>
 <div class="doc doc-contents">
 <p>collate procedure times into single day, if relative to the same day</p>
 <details class="quote">
-<summary>Source code in <code>trialdesign/td.py</code></summary>
+<summary>Source code in <code>td/td.py</code></summary>
 <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">unnormalize_procedure</span><span class="p">(</span><span class="n">procedure</span><span class="p">):</span>
 	<span class="sd">""" collate procedure times into single day, if relative to the same day"""</span>
 	<span class="n">out</span> <span class="o">=</span> <span class="p">[]</span>
