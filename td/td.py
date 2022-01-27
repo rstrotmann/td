@@ -52,7 +52,6 @@ def assert_interval_format(interval):
 def leading_edge(x):
 	"""return leading True values in list of booleans"""
 	out = []
-	# status = x[0]
 	status = False
 	for i in x:
 		out.append(i and i!=status)
@@ -261,12 +260,9 @@ def activity_days(period):
 			if "start" in i.keys() and "duration" in i.keys():
 				start = i["start"]
 				duration = i["duration"]
-				if start <0 and start+duration>0:
+				if start < 0 and start + duration > 0:
 					duration += 1
-				temp = list(range(start, start+duration))
-				if 0 in temp:
-					temp.remove(0)
-				out += extract_start_end(temp)
+				out += extract_start_end(make_dayrange(start, duration))
 	out.sort()
 	temp = [False] * period['duration']
 	for i in list(dict.fromkeys(out)):
@@ -869,6 +865,14 @@ def render_periods(periods, x, y, caption, height, render_function, metrics, sty
 	return(add_output(["", h], [out, y_out]))
 
 
+def make_dayrange(start, duration):
+	"""return a range of days defined by start and duration. Day 0 does not exist and is deleted, if necessary"""
+	out = list(range(start, start + duration))
+	if 0 in out:
+		out.remove(0)
+	return(out)
+
+
 def render_td(td, title="", debug=False, fontsize=14, font="Arial", condensed=False, autocompress=False, timescale=False, padding=1, ellipsis=False, footnotes=False, graph=False):
 	# VALIDATE INPUT
 	
@@ -882,6 +886,9 @@ def render_td(td, title="", debug=False, fontsize=14, font="Arial", condensed=Fa
 						p["start"] = 1
 					assert_period_format(p)
 					periods.append(p)
+					if not "daylabels" in p.keys():
+						p["daylabels"] = make_dayrange(p["start"], p["duration"])
+
 		if not len(periods):
 			raise KeyError("no period or cycle found in trial design")
 	except Exception as err:
@@ -993,7 +1000,7 @@ def render_td(td, title="", debug=False, fontsize=14, font="Arial", condensed=Fa
 				if ts:
 					if n == item_names(periods, 'procedures')[-1]:
 						last_proc_has_timescale = True
-					out = add_output(out, render_times(p, n, x, out[1], lineheight, metrics, style, maxwidth=xoffset + sum([period_width(i, daywidth_function) for i in periods]) + (len(periods)-1) * periodspacing))
+					out = add_output(out, render_times(p, n, x, out[1], lineheight, metrics, style, maxwidth=xoffset + sum([period_width(i, daywidth_function) for i in periods]) + (len(periods)-1) * periodspacing - textwidth_function(" h")))
 		except Exception as err:
 			raise RuntimeError(f'error rendering procedures: {err}')
 

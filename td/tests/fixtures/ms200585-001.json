@@ -1,0 +1,59 @@
+{
+	"periods": [
+		{
+			"caption": "S",
+			"duration": 1,
+			"start": 1,
+			"procedures": [
+				{
+					"caption": "Safety ECG",
+					"days": [1]
+				}
+			]
+		},
+		{
+			"caption": "Periods 1-4",
+			"duration": 3,
+			"start": -1,
+			"daylabels": [-1, 1, 2],
+			"dayshading": [1],
+			"intervals": [
+				{
+				"caption": "hospitalization",
+				"start": -1,
+				"duration": 3
+				}
+			],
+			"administrations": [
+				{
+					"caption": "IMP administration",
+					"days": [1]
+				}
+			],
+			"procedures": [
+				{
+					"caption": "Safety ECG",
+					"days": [1, 2]
+				},
+				{
+					"caption": "PK sampling",
+					"days": [1],
+					"times": [0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6, 8, 12, 16, 24],
+					"relative": 1,
+					"timescale": "show"
+				}
+			]
+		},
+		{
+			"caption": "EoT",
+			"start": 1,
+			"duration": 1,
+			"procedures": [
+				{
+					"caption": "Safety ECG",
+					"days": [1]
+				}
+			]
+		}
+	]
+}

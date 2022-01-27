@@ -45,7 +45,7 @@ The respective output is:
 
 ![](sample1.svg)
 
-Further periods can be added as more members to _periods_, e.g.:
+Further periods can be added as more members to the _periods_ list, e.g.:
 
 ``` json
 {
@@ -67,9 +67,11 @@ Further periods can be added as more members to _periods_, e.g.:
 
 ### Period formatting
 
-Additional fields can be added to the _period_ elements to specify the visual output. Each _period_ can have the following fields:
+Additional fields can be added to the _period_ elements to specify their visual appearance. Each _period_ can have the following fields:
 
-* _daylabels_, a list of days for which daynumbers will be printed.
+* _daylabels_, a list of days for which daynumbers will be printed. This can be used to precisely control the visual appearance of the period. Days that have no daylabel are visually compressed when the `td -c` option is used for the rendering. This can help focusing the figure on relevant days by omitting unnecessary detail. See [Condensed](use.md#condensed) in the [Use](use.md) section for details on this.
+If _daylabels_ is not specified, all day numbers are printed.
+
 * _dayshading_, a list of days for which the day box will have a grey background. This can be used to highlight relevant days, e.g., weekend days.
 
 ``` json
@@ -96,7 +98,7 @@ Additional fields can be added to the _period_ elements to specify the visual ou
     [-1, 1, 2, 3, 5, 7]
     ```
 
-    If subsequent days are to be specified, it may be more convenient to use a range format. Note that ranges need to be provided with enclosing double quotes. Individual days and ranges can be combined:
+    If subsequent days are to be specified, it may be more convenient to use a range format (e.g, _"1-3"_). Note that ranges need to be provided with enclosing double quotes. Individual days and ranges can be combined:
 
     ```
     [-1, "1-3", 5, 7]
@@ -104,7 +106,7 @@ Additional fields can be added to the _period_ elements to specify the visual ou
 
 ## Period elements
 
-To every _period_, elements can be appended. There are three classes of elements: _intervals_, _administrations_ and _procedures_. Individual elements of these classes must be given as a list of the respective types (see examples below). This results in a hierarchical structure of the input file where lists can have members that themselves may contain lists of child elements.
+To every _period_, trial procedure elements can be appended. There are three classes of elements: _intervals_, _administrations_ and _procedures_. Individual elements of these classes must be given as a list of the respective types (see examples below). This results in a hierarchical structure of the input file.
 
 The three element classes have different visual representations and may have different property fields. The following gives an overview on this.
 
@@ -151,7 +153,7 @@ A valid example may look like this:
 
 ### Administrations
 
-IMP administrations are shown in the output using arrow symbols. The minimally required fields are _caption_ and _days_. As mentioned [above](#specifying-days), _days_ is expected to be a list of numbers or double-quoted day ranges. Both are used in the below example:
+IMP administrations are shown in the output using arrow symbols. The minimally required fields are _caption_ and _days_. As mentioned [above](#specifying-days), _days_ is expected to be a list of numbers or (double-quoted) day ranges. Both are used in the below example:
 
 ``` json
 {
@@ -168,7 +170,7 @@ IMP administrations are shown in the output using arrow symbols. The minimally r
                 },
                 {
                     "caption": "paracetamole",
-                    "days": [5, 6, 7]
+                    "days": ["5-7"]
                 }
             ]
         },
@@ -194,7 +196,9 @@ IMP administrations are shown in the output using arrow symbols. The minimally r
 
 All other study assessments (e.g., blood sampling, ECG, etc.) are specified as _procedures_.
 
-In general, study procedures may be conducted once per day or multiple times per day. In the graphical representation, the respective symbols are diamonds and boxes. The frequency of a _procedure_ can be specified using the _freq_ field: "QD" indicates once daily, while "rich" indicates multiple daily time points. For "QD", the _freq_ field can also be omitted (e.g., for the ECG on day 5, below).
+In general, study procedures may be conducted once per day or multiple times per day. In the graphical output, the symbols are diamonds and boxes, respectively. The frequency of a _procedure_ can be specified in the input file using the _freq_ field: "QD" indicates once daily, while "rich" indicates multiple daily time points. The _freq_ field can also be omitted to indicate once daily scheduling (e.g., for the ECG on day 5, below).
+
+Alternatively to the _freq_ field, more granular daily schedules can be defined using the _times_ field (see [exact procedure times](#exact-procedure-times), below).
 
 ``` json
 {
