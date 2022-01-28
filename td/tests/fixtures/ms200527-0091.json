@@ -23,11 +23,30 @@
 			"start": -1,
 			"daylabels": [-1, "1-9"],
 			"dayshading": [1, 8],
+			"decoration_": "bracketed",
 			"intervals": [
 				{
 					"caption": "hospitalization",
 					"start": -1,
 					"duration": 10
+				},
+				{
+					"caption": "period",
+					"start": -1,
+					"duration": 4,
+					"labels": [1]
+				},
+				{
+					"caption": "period",
+					"start": 4,
+					"duration": 3,
+					"labels": [2]
+				},
+				{
+					"caption": "period",
+					"start": 7,
+					"duration": 3,
+					"labels": [3]
 				}
 			],
 			"administrations": [

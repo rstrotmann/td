@@ -237,11 +237,11 @@ def activity_days(period):
 	"""returns a list of boolean values per day to indicate whether there are procedures on the day"""
 	start = period["start"]
 	duration = period["duration"]
-	if start <0 and start+duration >0:
-		duration+=1
+	if start < 0 and start + duration > 0:
+		duration += 1
 	
 	# start and end of period, start and end of trains of procedure days
-	out = [start, start+duration-1]
+	out = [start, start + duration - 1]
 	for x in ["administrations", "procedures"]:
 		if x in period.keys():
 			for i in period[x]:
@@ -249,11 +249,11 @@ def activity_days(period):
 					temp = decode_daylist(i["days"])
 					out += extract_start_end(temp)
 
-	# all PK days
-	if "procedures" in period.keys():
-		for i in period["procedures"]:
-			if "times" in i:
-				out += [d for (d, t, r) in normalize_procedure(extract_procedure(period, i["caption"]))]
+	# include ALL PK days
+	# if "procedures" in period.keys():
+	# 	for i in period["procedures"]:
+	# 		if "times" in i:
+	# 			out += [d for (d, t, r) in normalize_procedure(extract_procedure(period, i["caption"]))]
 
 	if "intervals" in period.keys():
 		for i in period["intervals"]:
@@ -263,6 +263,8 @@ def activity_days(period):
 				if start < 0 and start + duration > 0:
 					duration += 1
 				out += extract_start_end(make_dayrange(start, duration))
+			elif "days" in i.keys():
+				out += decode_daylist(i["days"])
 	out.sort()
 	temp = [False] * period['duration']
 	for i in list(dict.fromkeys(out)):
@@ -446,7 +448,8 @@ def svg_curly_up(xstart, xend, y, radius=8, lwd=1.2):
 
 
 def procedure_symbols(period, caption, default="diamond"):
-	out = [""] * (period['duration']+1)
+	# out = [""] * (period['duration']+1)
+	out = [""] * (period['duration'])
 	# out = period_dummy(period, "") + [""]
 	for (d, t, rel) in normalize_procedure(extract_procedure(period, caption)):
 		if len(t) > 1:
@@ -562,12 +565,16 @@ def render_procedure(period, caption, xoffset, yoffset, lineheight, metrics, sty
 	symbols = procedure_symbols(period, caption, default_symbol)
 	dlabels = day_labels(period)
 	values = extract_field(period, caption, "value")
+	ellipses = [True if (s!="" and w < textwidth_function("XX")) else False for (s, l, w) in zip(symbols, dlabels, widths)]
 
-	ellipses = [1 if (s!="" and l == "" and len(symbols)>3) else 0 for (s,l) in zip(symbols, dlabels)]
+	# if "arrow" in symbols:
+	# 	print(f'procedure "{caption}", symbols {symbols}')
+	# 	print(f'procedure "{caption}", widths {widths}')
+	# 	print(f'procedure "{caption}", ellipsis {ellipses}')
 
 	for p, w, s, b, e, v in zip(centers, widths, symbols, brackets, ellipses, values):
 		if s:
-			if e==1 and b=="" and ellipsis:
+			if e and b=="" and ellipsis:
 				svg_out += svg_circle(p, y, lineheight/30, fill_color="black")
 			elif v != "":
 				if v == 0:
@@ -579,6 +586,7 @@ def render_procedure(period, caption, xoffset, yoffset, lineheight, metrics, sty
 				if b=="bracketed":
 					svg_out += svg_open_bracket(p, y, lineheight, w*.8, xpadding=0, radius=lineheight/8, lwd=lwd)
 					svg_out += svg_close_bracket(p, y, lineheight, w*.8, xpadding=0, radius=lineheight/8, lwd=lwd)
+
 	return([svg_out, lineheight+ypadding])
 
 
@@ -931,8 +939,7 @@ def render_td(td, title="", debug=False, fontsize=14, font="Arial", condensed=Fa
 				return(temp)
 		elif autocompress:
 			def daywidth_function(period):
-				temp = [textwidth_function("XX") if i else textwidth_function("XX")/3 for i in activity_days(period)]
-				return(temp)
+				return([textwidth_function("XX") if i else textwidth_function("XX")/3 for i in activity_days(period)])
 		else:
 			def daywidth_function(period):
 				return([textwidth_function("XX")] * period['duration'])
