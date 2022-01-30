@@ -1,0 +1,150 @@
+{
+	"periods": [
+		{
+			"caption": "S",
+			"duration": 1,
+			"start": 1,
+			"daylabels": []
+		},
+		{
+			"caption": "randomized, 3-sequence, 3-period cross-over",
+			"periods": [
+				{
+					"caption": "Treatment A",
+					"duration": 7,
+					"start": 1,
+					"daylabels": [1, 2, 3, 7],
+					"dayshading": [1],
+					"intervals": [
+						{
+							"caption": "hospitalization",
+							"start": 1,
+							"duration": 3
+						}
+					],
+					"administrations": [
+						{
+							"caption": "tepotinib",
+							"days": [1]
+						}
+					],
+					"procedures": [
+						{
+							"caption": "food",
+							"value": 1,
+							"days": [1]
+						},
+						{
+							"caption": "PK sampling",
+							"days": ["1"],
+							"freq": "rich",
+							"times": [0, 0.5, 1, 2, 3, 4, 6, 8],
+							"relative": 1,
+							"timescale": "show"
+						},
+						{
+							"caption": "PK sampling",
+							"days": ["2-7"],
+							"freq": "QD"
+						}
+					]
+				},
+				{
+					"caption": "Treatment B",
+					"duration": 11,
+					"start": 1,
+					"daylabels": [1, 5, 6, 7, 8, 11],
+					"dayshading": [1, 8],
+					"decoration": "none",
+					"intervals": [
+						{
+							"caption": "hospitalization",
+							"start": 5,
+							"duration": 3,
+							"labels": ["V2"]
+						}
+					],
+					"administrations": [
+						{
+							"caption": "tepotinib",
+							"days": [5]
+						},
+						{
+							"caption": "omeprazole",
+							"days": ["1-5"]
+						}
+					],
+					"procedures": [
+						{
+							"caption": "food",
+							"value": 0,
+							"days": [5]
+						},
+						{
+							"caption": "PK sampling",
+							"days": ["5"],
+							"times": [0, 0.5, 1, 2, 3, 4, 6, 8],
+							"relative": 5,
+							"timescale": "show"
+						},
+						{
+							"caption": "PK sampling",
+							"days": ["6-11"],
+							"freq": "QD",
+							"relative": 5
+						}
+					]
+				},
+				{
+					"caption": "Treatment C",
+					"duration": 11,
+					"start": 1,
+					"daylabels": [1, 5, 6, 7, 8, 11],
+					"dayshading": [1, 8],
+					"decoration": "none",
+					"intervals": [
+						{
+							"caption": "hospitalization",
+							"start": 5,
+							"duration": 3
+						}
+					],
+					"administrations": [
+						{
+							"caption": "tepotinib",
+							"days": [5]
+						},
+						{
+							"caption": "omeprazole",
+							"days": ["1,2,3,4,5"]
+						}
+					],
+					"procedures": [
+						{
+							"caption": "food",
+							"value": 1,
+							"days": [5]
+						},
+						{
+							"caption": "PK sampling",
+							"days": [5],
+							"times": [0, 0.5, 1, 2, 3, 4, 6, 8],
+							"relative": 5
+						},
+						{
+							"caption": "PK sampling",
+							"days": ["6-11"],
+							"freq": "QD",
+							"relative": 5	
+						}
+					]
+				}
+			]
+		},
+		{
+			"caption": "EoT",
+			"duration": 1,
+			"start": 1
+		}	
+	]
+}

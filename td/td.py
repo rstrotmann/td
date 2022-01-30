@@ -8,7 +8,7 @@ import cairo
 import json
 import re
 import sys
-
+from itertools import accumulate
 
 ### GLOBAL VARIABLES
 __version__ = "2.1"
@@ -447,6 +447,12 @@ def svg_curly_up(xstart, xend, y, radius=8, lwd=1.2):
 	return(out)
 
 
+def svg_bracket_down(xstart, xend, y, height, lwd=1.2):
+	out = svg_line(xstart, y, xend, y, lwd=lwd)
+	out += svg_line(xstart, y, xstart, y + height, lwd=lwd)
+	out += svg_line(xend, y, xend, y + height, lwd=lwd)
+	return(out)
+
 def procedure_symbols(period, caption, default="diamond"):
 	# out = [""] * (period['duration']+1)
 	out = [""] * (period['duration'])
@@ -566,11 +572,6 @@ def render_procedure(period, caption, xoffset, yoffset, lineheight, metrics, sty
 	dlabels = day_labels(period)
 	values = extract_field(period, caption, "value")
 	ellipses = [True if (s!="" and w < textwidth_function("XX")) else False for (s, l, w) in zip(symbols, dlabels, widths)]
-
-	# if "arrow" in symbols:
-	# 	print(f'procedure "{caption}", symbols {symbols}')
-	# 	print(f'procedure "{caption}", widths {widths}')
-	# 	print(f'procedure "{caption}", ellipsis {ellipses}')
 
 	for p, w, s, b, e, v in zip(centers, widths, symbols, brackets, ellipses, values):
 		if s:
@@ -881,6 +882,69 @@ def make_dayrange(start, duration):
 	return(out)
 
 
+def flatten_periods(x, period_class):
+	"""flatten list of period_class items"""
+	out = []
+	for i in x[period_class]:
+		if "periods" in i:
+			out += flatten_periods(i, period_class)
+		else:
+			out += [i]
+	return(out)
+
+
+def get_period_nesting(x):
+	def _nesting(x, out=[], index=0, caption=""):
+		start_i = index
+		for p in x["periods"]:
+			if "periods" in p.keys():
+				temp = _nesting(p, out=out, index=index, caption=p["caption"])
+				index = temp[0]
+				out = temp[1]
+			else:
+				index += 1
+		out.append(list((start_i, index-1, caption)))
+		return([index, out])
+
+	temp = [i for i in _nesting(x)[1] if i[2] != ""]
+	return(list(reversed(temp)))
+
+
+def render_period_grouping(td, xoffset, yoffset, metrics, style):
+	(daywidth_function, textwidth_function, textheight_function) = metrics
+	(periodspacing, lineheight, ypadding, lwd, ellipsis, debug) = style
+
+	# print(f'debug: {debug}')
+	svg_out = ""
+	nesting = get_period_nesting(td)
+	for period_class in ["periods", "cycles"]:
+		if period_class in td.keys():
+			periods = flatten_periods(td, period_class)
+	## except to go here
+
+	# make metrics
+	w = [period_width(i, daywidth_function) for i in periods]
+	starts = [xoffset]
+	ends = []
+	for i in w:
+		starts.append(starts[-1] + i + periodspacing)
+		ends.append(starts[-1] + i)
+
+	# rendering
+	y = 0
+
+	for n in nesting:
+		s = starts[n[0]]
+		e = ends[n[1]-1]
+		if debug:
+			svg_out += svg_rect(s, yoffset + y, e-s, textheight_function("X") + ypadding + lineheight/2, lwd=0, fill_color="cornsilk")
+		svg_out += svg_text(s+(e-s)/2-textwidth_function(str(n[2]))/2, yoffset + y+textheight_function("X"), str(n[2]))
+		y += textheight_function("X") + ypadding
+		svg_out += svg_bracket_down(s, e, yoffset + y, lineheight/2, lwd=lwd)
+		y += lineheight/2 + ypadding	
+	return([svg_out, y-ypadding])
+
+
 def render_td(td, title="", debug=False, fontsize=14, font="Arial", condensed=False, autocompress=False, timescale=False, padding=1, ellipsis=False, footnotes=False, graph=False):
 	# VALIDATE INPUT
 	
@@ -889,7 +953,8 @@ def render_td(td, title="", debug=False, fontsize=14, font="Arial", condensed=Fa
 	try:
 		for period_class in ["periods", "cycles"]:
 			if period_class in td.keys():
-				for p in td[period_class]:
+				pds = flatten_periods(td, period_class) # flatten if nested
+				for p in pds:
 					if period_class == "cycles" and not "start" in p.keys():
 						p["start"] = 1
 					assert_period_format(p)
@@ -966,6 +1031,11 @@ def render_td(td, title="", debug=False, fontsize=14, font="Arial", condensed=Fa
 	# RENDER SVG OUTPUT
 	out = ["", yoffset]
 
+	# render period grouping
+	out = add_output(out, render_period_grouping(td, xoffset, out[1], metrics, style))
+
+	yheader = out[1]
+
 	# render header
 	out = add_output(out, render_periods(periods, xoffset, out[1], "", lineheight, render_periodcaption, metrics, style))
 	try:
@@ -1014,7 +1084,8 @@ def render_td(td, title="", debug=False, fontsize=14, font="Arial", condensed=Fa
 	# apply period decorations
 	try:
 		x = xoffset
-		height = out[1] - yoffset - ypadding/2
+		# height = out[1] - yoffset - ypadding/2
+		height = out[1] - yheader - ypadding/2
 		if last_proc_has_timescale:
 			height -= timescale_height(lineheight, metrics, style)
 
@@ -1023,14 +1094,16 @@ def render_td(td, title="", debug=False, fontsize=14, font="Arial", condensed=Fa
 			bracketing = ["bracketed" in i for i in decorations]
 			highlighting = ["highlighted" in i for i in decorations]
 
-			for p, bracketed, b_leading, b_trailing, highlighted in zip(td["periods"], bracketing, leading_edge(bracketing), trailing_edge(bracketing), highlighting):
+			for p, bracketed, b_leading, b_trailing, highlighted in zip(periods, bracketing, leading_edge(bracketing), trailing_edge(bracketing), highlighting):
 				if highlighted:
-					out[0] = svg_rect(x-periodspacing/4, yoffset, period_width(p, daywidth_function)+periodspacing/2, height, lwd=0, fill_color="#eee") + out[0]
+					out[0] = svg_rect(x-periodspacing/4, yheader, period_width(p, daywidth_function)+periodspacing/2, height, lwd=0, fill_color="#eee") + out[0]
 				if bracketed:
 					if b_leading:
-						out[0] = svg_open_bracket(x-periodspacing/4, yoffset+height/2, height, lineheight/4, xpadding=0, radius=lineheight/4, lwd=lwd) + out[0]
+						# out[0] = svg_open_bracket(x-periodspacing/4, yoffset+height/2, height, lineheight/4, xpadding=0, radius=lineheight/4, lwd=lwd) + out[0]
+						out[0] = svg_open_bracket(x-periodspacing/4, yheader+height/2, height, lineheight/4, xpadding=0, radius=lineheight/4, lwd=lwd) + out[0]
 					if b_trailing:
-						out[0] = svg_close_bracket(x+period_width(p, daywidth_function)+periodspacing/4, yoffset+height/2, height, lineheight/4, xpadding=0, radius=lineheight/4, lwd=lwd) + out[0]
+						# out[0] = svg_close_bracket(x+period_width(p, daywidth_function)+periodspacing/4, yoffset+height/2, height, lineheight/4, xpadding=0, radius=lineheight/4, lwd=lwd) + out[0]
+						out[0] = svg_close_bracket(x+period_width(p, daywidth_function)+periodspacing/4, yheader+height/2, height, lineheight/4, xpadding=0, radius=lineheight/4, lwd=lwd) + out[0]
 
 				x += period_width(p, daywidth_function) + periodspacing
 	except Exception as err:
@@ -1094,6 +1167,8 @@ def main(
 	"""
 	if version:
 		sys.exit(__version__)
+
+	debug = False
 
 	if all:
 		condensed=True
