@@ -45,12 +45,14 @@
 						{
 							"caption": "Period A",
 							"duration": 3,
-							"start": -1
+							"start": -1,
+					"daylabels": [-1, 1, 2]
 						},
 						{
 							"caption": "Period B",
 							"duration": 3,
-							"start": -1
+							"start": -1,
+					"daylabels": [-1, 1, 2]
 						}
 					]
 				},

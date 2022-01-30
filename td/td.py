@@ -1,14 +1,27 @@
 #!/opt/homebrew/bin/python3
 
-from ensurepip import version
-from tokenize import Double
+# TD: trial design. A command line tool to make Schedule-of-Assessments figures for clinical studies
+# Copyright (C) 2022 Rainer Strotmann (rainer.strotmann@mailbox.org)
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 import typer
 import pathlib
 import cairo
 import json
 import re
 import sys
-from itertools import accumulate
 
 ### GLOBAL VARIABLES
 __version__ = "2.1"
@@ -914,13 +927,11 @@ def render_period_grouping(td, xoffset, yoffset, metrics, style):
 	(daywidth_function, textwidth_function, textheight_function) = metrics
 	(periodspacing, lineheight, ypadding, lwd, ellipsis, debug) = style
 
-	# print(f'debug: {debug}')
 	svg_out = ""
 	nesting = get_period_nesting(td)
 	for period_class in ["periods", "cycles"]:
 		if period_class in td.keys():
 			periods = flatten_periods(td, period_class)
-	## except to go here
 
 	# make metrics
 	w = [period_width(i, daywidth_function) for i in periods]
@@ -932,7 +943,6 @@ def render_period_grouping(td, xoffset, yoffset, metrics, style):
 
 	# rendering
 	y = 0
-
 	for n in nesting:
 		s = starts[n[0]]
 		e = ends[n[1]-1]
@@ -941,13 +951,12 @@ def render_period_grouping(td, xoffset, yoffset, metrics, style):
 		svg_out += svg_text(s+(e-s)/2-textwidth_function(str(n[2]))/2, yoffset + y+textheight_function("X"), str(n[2]))
 		y += textheight_function("X") + ypadding
 		svg_out += svg_bracket_down(s, e, yoffset + y, lineheight/2, lwd=lwd)
-		y += lineheight/2 + ypadding	
-	return([svg_out, y-ypadding])
+		y += lineheight/2	
+	return([svg_out, y])
 
 
 def render_td(td, title="", debug=False, fontsize=14, font="Arial", condensed=False, autocompress=False, timescale=False, padding=1, ellipsis=False, footnotes=False, graph=False):
 	# VALIDATE INPUT
-	
 	# parse periods
 	periods = []
 	try:
@@ -1033,7 +1042,6 @@ def render_td(td, title="", debug=False, fontsize=14, font="Arial", condensed=Fa
 
 	# render period grouping
 	out = add_output(out, render_period_grouping(td, xoffset, out[1], metrics, style))
-
 	yheader = out[1]
 
 	# render header
@@ -1099,10 +1107,8 @@ def render_td(td, title="", debug=False, fontsize=14, font="Arial", condensed=Fa
 					out[0] = svg_rect(x-periodspacing/4, yheader, period_width(p, daywidth_function)+periodspacing/2, height, lwd=0, fill_color="#eee") + out[0]
 				if bracketed:
 					if b_leading:
-						# out[0] = svg_open_bracket(x-periodspacing/4, yoffset+height/2, height, lineheight/4, xpadding=0, radius=lineheight/4, lwd=lwd) + out[0]
 						out[0] = svg_open_bracket(x-periodspacing/4, yheader+height/2, height, lineheight/4, xpadding=0, radius=lineheight/4, lwd=lwd) + out[0]
 					if b_trailing:
-						# out[0] = svg_close_bracket(x+period_width(p, daywidth_function)+periodspacing/4, yoffset+height/2, height, lineheight/4, xpadding=0, radius=lineheight/4, lwd=lwd) + out[0]
 						out[0] = svg_close_bracket(x+period_width(p, daywidth_function)+periodspacing/4, yheader+height/2, height, lineheight/4, xpadding=0, radius=lineheight/4, lwd=lwd) + out[0]
 
 				x += period_width(p, daywidth_function) + periodspacing
@@ -1143,7 +1149,7 @@ def version_callback(value: bool):
 @app.command()
 def main(
 	file: str = typer.Argument(...),
-	#debug: bool = typer.Option(False, "--debug", "-d", help="Debug output"),
+	debug: bool = typer.Option(False, "--debug", "-d", help="Debug output"),
 	output: str = typer.Option("", "--output", "-o", help="Output file name"),
 	font: str = typer.Option("Arial", "--font", "-f", help="Font type"),
 	fontsize: int = typer.Option(14, "--fontsize", "-s", help="Font size"),
@@ -1168,7 +1174,7 @@ def main(
 	if version:
 		sys.exit(__version__)
 
-	debug = False
+	# debug = False
 
 	if all:
 		condensed=True
