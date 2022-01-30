@@ -1146,6 +1146,14 @@ def version_callback(value: bool):
         typer.echo(f'td version {__version__} ({__date__})')
         raise typer.Exit()
 
+def license_callback(value: bool):
+	if value:
+		with open("COPYING") as f:
+			for line in f:
+				typer.echo(line.strip())
+		raise typer.Exit()
+
+
 @app.command()
 def main(
 	file: str = typer.Argument(...),
@@ -1161,15 +1169,19 @@ def main(
 	footnotes: bool = typer.Option(False, "--footnotes", "-n", help="Show footnotes"),
 	all: bool = typer.Option(False, "--all", "-A", help="All options, equivalent to -ctgen"),
 	autocompress: bool = typer.Option(False, "--autocompress", "-a", help="Automatically compress daygrid"),
-	version: bool = typer.Option(False, "--version", help="Show version and exit", callback=version_callback)
+	version: bool = typer.Option(False, "--version", help="Show version and exit", callback=version_callback),
+	license: bool = typer.Option(False, "--license", help="Show license and exit", callback=license_callback)
 	):
 	"""Clinical trial design visualization
 
 
-	Generates a 'schedule of assessments' overview for clinical trials, based on a json-formatted input FILE. Graphical output is provided in svg vector format that can be rendered by any webbrowser or directly imported into Office applications. Use below OPTIONS to manage the output style.
-	
+	Generates a 'Schedule of Assessments' figure for clinical trials, based on a json-formatted input FILE. Graphical output is provided in svg vector format that can be rendered by any webbrowser or directly imported into Office applications. Use below OPTIONS to manage the output style.
 
-	Version 2.1, proudly written in functional Python (Rainer Strotmann, Jan-2022)
+	This program comes with ABSOLUTELY NO WARRANTY.
+	This is free software, and you are welcome to redistribute it
+	under certain conditions; for details type 'td --version'.
+
+	TD Version 2.1, proudly written in functional Python. Copyright (C) Rainer Strotmann, Jan-2022
 	"""
 	if version:
 		sys.exit(__version__)
