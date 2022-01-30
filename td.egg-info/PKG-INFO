@@ -3,8 +3,11 @@ Name: td
 Version: 2.1
 Summary: UNKNOWN
 Home-page: UNKNOWN
-License: UNKNOWN
+Author: Rainer Strotmann
+Author-email: rainer.strotmann@mailbox.org
+License: GPL-3.0-or-later
 Platform: UNKNOWN
+Requires-Python: >=3.7
 License-File: COPYING
 
 UNKNOWN
