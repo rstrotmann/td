@@ -7,7 +7,7 @@
 			"daylabels": []
 		},
 		{
-			"caption": "randomized, 3-sequence, 3-period cross-over",
+			"caption": "randomized, 6-sequence, 3-period cross-over",
 			"periods": [
 				{
 					"caption": "Treatment A",
@@ -60,8 +60,7 @@
 						{
 							"caption": "hospitalization",
 							"start": 5,
-							"duration": 3,
-							"labels": ["V2"]
+							"duration": 3
 						}
 					],
 					"administrations": [

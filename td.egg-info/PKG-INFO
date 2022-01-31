@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: td
-Version: 2.1
+Version: 2.1.3
 Summary: Visualization of clinical study designs
 Author: Rainer Strotmann
 Author-email: rainer.strotmann@mailbox.org
@@ -10,7 +10,17 @@ Classifier: Programming Language :: Python :: 3
 Classifier: Operating System :: OS Independent
 Classifier: License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)
 Requires-Python: >=3.7
+Description-Content-Type: text/markdown
 License-File: COPYING
 
-UNKNOWN
+# TD: Clinical trial design visualization
+
+![](td.svg)
+
+TD is a command line tool to create beautiful Schedule-of-Assessments figures for clinical study designs.
+
+The input describing the study design is expected as a json-formatted text file.
+
+The output is provided in vector graphic form (as a .svg file) that can be easily included in Office documents or websites.
+
 
