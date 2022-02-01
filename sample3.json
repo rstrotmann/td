@@ -1,0 +1,11 @@
+{
+    "periods": [
+        {
+            "caption": "Period 1",
+            "start": -1,
+            "duration": 8,
+            "daylabels": [-1, 1, 2, 3, 6, 7],
+            "dayshading": [1, 7]
+        }
+    ]
+}

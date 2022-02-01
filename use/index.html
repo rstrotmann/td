@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>Use - TD</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/font-awesome.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css">
+        <link href="../assets/_mkdocstrings.css" rel="stylesheet">
+
+        <script src="../js/jquery-1.10.2.min.js" defer></script>
+        <script src="../js/bootstrap.min.js" defer></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="..">TD</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbar-collapse">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="navitem">
+                                <a href=".." class="nav-link">Home</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="../about/" class="nav-link">About</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="../input/" class="nav-link">Input</a>
+                            </li>
+                            <li class="navitem active">
+                                <a href="./" class="nav-link">Use</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="../td/" class="nav-link">Code documentation</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ml-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-toggle="modal" data-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                            <li class="nav-item">
+                                <a rel="prev" href="../input/" class="nav-link">
+                                    <i class="fa fa-arrow-left"></i> Previous
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a rel="next" href="../td/" class="nav-link">
+                                    Next <i class="fa fa-arrow-right"></i>
+                                </a>
+                            </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-light navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-level="1"><a href="#using-td" class="nav-link">Using TD</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-level="2"><a href="#requirements" class="nav-link">Requirements</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#installation" class="nav-link">Installation</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#running-td" class="nav-link">Running TD</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-level="3"><a href="#output-file" class="nav-link">Output file</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="3"><a href="#font-size-and-family" class="nav-link">Font size and family</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="3"><a href="#padding" class="nav-link">Padding</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="3"><a href="#condensed" class="nav-link">Condensed</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="3"><a href="#ellipsis" class="nav-link">Ellipsis</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="3"><a href="#timescale" class="nav-link">Timescale</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="3"><a href="#dose-graph" class="nav-link">Dose graph</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="3"><a href="#footnotes" class="nav-link">Footnotes</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="using-td">Using TD</h1>
+<p>This gives an overview on how to run the td tool from the command line.</p>
+<h2 id="requirements">Requirements</h2>
+<p>TD is written in python 3. In order to run the tool on your system, python 3 must be installed. You can find out which version of python is installed (or is the default) on your system with <code>python --version</code>.</p>
+<h2 id="installation">Installation</h2>
+<p>TD is provided as a .whl file that can be installed using the python packet manager, pip.</p>
+<p>To install the package on your system, run <code>pip install NAME.whl</code> from the command line where <em>NAME</em> is the exact name of the provided file (e.g., "td-2.1-py3-none-any.whl"). The filename begins with <em>td-...</em> but the full name is dependent on the release of the specific version, please check your version.</p>
+<h2 id="running-td">Running TD</h2>
+<p>TD is a command line script. Open up a terminal window and enter the TD command in the form <code>td [OPTIONS] FILE</code> where <em>FILE</em> corresponds to the json-formatted input file (see <a href="../input/">Input</a> for details).</p>
+<p>As a reference example, the following figure (based on <a href="../test.json">this</a> input file) was rendered running the basic command <code>td test.json</code>), i.e., without further OPTIONS:</p>
+<p><a href="../test.json"><img alt="" src="../normal.svg" /></a></p>
+<p>The following section summarizes the available rendering options (<em>OPTIONS</em>) that can be used to further specify the visual output.</p>
+<p>The available options can also be shown with <code>td --help</code>. In the current version of TD, they include:</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Alternative</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="#output-file">--output TEXT</a></td>
+<td>-o</td>
+<td>Output file name. Default: INPUT.svg</td>
+</tr>
+<tr>
+<td><a href="#font-size-and-family">--fontsize INTEGER</a></td>
+<td>-s</td>
+<td>Output font size (default 11)</td>
+</tr>
+<tr>
+<td><a href="#font-size-and-family">--font TEXT</a></td>
+<td>-f</td>
+<td>Output font type (default: Arial)</td>
+</tr>
+<tr>
+<td><a href="#padding">--padding FLOAT</a></td>
+<td>-p</td>
+<td>Y-axis padding factor (default 1)</td>
+</tr>
+<tr>
+<td><a href="#condensed">--condensed</a></td>
+<td>-c</td>
+<td>Show condensed daygrid</td>
+</tr>
+<tr>
+<td><a href="#timescale">--timescale</a></td>
+<td>-t</td>
+<td>Show time scale</td>
+</tr>
+<tr>
+<td><a href="#dose-graph">--graph</a></td>
+<td>-g</td>
+<td>Show dose graph</td>
+</tr>
+<tr>
+<td><a href="#ellipsis">--ellipsis</a></td>
+<td>-e</td>
+<td>Reduce symbols in condensed output</td>
+</tr>
+<tr>
+<td><a href="#footnotes">--footnotes</a></td>
+<td>-n</td>
+<td>Show footnotes</td>
+</tr>
+<tr>
+<td>--all</td>
+<td>-A</td>
+<td>All options, equivalent to -ctge</td>
+</tr>
+<tr>
+<td>--version</td>
+<td></td>
+<td>Show version and exit</td>
+</tr>
+<tr>
+<td>--help</td>
+<td></td>
+<td>Show this message and exit.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="output-file">Output file</h3>
+<p>The default output file name is the input file name (e.g., "test.json") with the .svg extension (i.e., "test.svg"). This can be overridden with the <em>--output</em> or <em>-o</em> option.</p>
+<h3 id="font-size-and-family">Font size and family</h3>
+<p>The default font is Arial 11 point. Both font and size can be overridden using the <em>--font</em> (<em>-f</em>) and <em>--fontsize</em> (<em>-s</em>) options. The available font families depend on the fonts installed on the target system.</p>
+<p>In addition, the generated svg file can be scaled in the target application (e.g., MS PowerPoint), and any element can be reformatted separately.</p>
+<h3 id="padding">Padding</h3>
+<p>The parameter <em>--padding</em> (<em>-p</em>) increases or decreases the vertical space between period elements. The default of 1 should work in most cases.</p>
+<h3 id="condensed">Condensed</h3>
+<p>This option can be used to compress the visual output horizontally. Period days for which no daylabel has been specified in the input file (see <a href="../input/#period-formatting">Period formatting</a> in the <a href="../input/">Input</a> section) will be rendered narrower.</p>
+<p>The below version of the above example was rendered using the same <a href="../test.json">input file</a> but with the <em>--condensed</em> option, i.e., running <code>td --condensed test.json</code> (or, alternatively, <code>td -c test.json</code>):</p>
+<p><img alt="" src="../condensed.svg" /></p>
+<h3 id="ellipsis">Ellipsis</h3>
+<p>In addition to condensed output, daily recurring procedure symbols that visually clutter the output can be reduced using the <em>--ellipsis</em> or <em>-e</em> option.  </p>
+<p>The below version was rendered running <code>td -ce test.json</code> for a combination of condensed and ellipsis output:</p>
+<p><img alt="" src="../ellipsis.svg" /></p>
+<h3 id="timescale">Timescale</h3>
+<p>Procedures that have exact time information included in the input file, e.g., PK samplings (see <a href="../input/#exact-procedure-times">"exact procedure times"</a>), can be displayed with an inset figure underneath that shows the timescale detail.</p>
+<p>The following output was generated using the <code>td --condensed --timescale test.json</code> (or, alternatively, <code>td -ct test.json</code>) command:</p>
+<p><img alt="" src="../timescale.svg" /></p>
+<p>Note that that there must be the <code>"timescale": "show"</code> line included in the json <a href="../test.json">input file</a> for this to take effect on a procedure (see <a href="../input/#exact-procedure-times">"exact procedure times"</a>).</p>
+<p>For visual clarity, it is recommended to limit display of timescales to the last element (the one at the bottom) of a trial design visualization.</p>
+<h3 id="dose-graph">Dose graph</h3>
+<p>In cases where intraindividual dose escalation occurs, e.g., to phase in a drug, a dose graph can be shown underneath the administration symbols to indicate the dose over time.</p>
+<p>A prerequisite is that the respective dosing information is included per day in the input file (see <a href="../input/#exact-dose-information">Exact dose information</a> in the <a href="../input/">Input</a> section).</p>
+<p>The following output was generated running the <code>td --condensed --graph test.json</code> (or, alternatively, <code>td -cg test.json</code>) command to include a dose graph for carbamazepine:</p>
+<p><img alt="" src="../graph.svg" /></p>
+<h3 id="footnotes">Footnotes</h3>
+<p>If footnotes have been defined in the input file (see <a href="../input/#footnotes">Footnotes</a> in the <a href="../input/">Input</a> section), they can be rendered in the output using the "--footnotes" (or "-n") option.</p></div>
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+                <p>Rainer Strotmann, Jan-2022</p>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js" defer></script>
+        <script src="../search/main.js" defer></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

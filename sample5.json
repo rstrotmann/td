@@ -1,0 +1,32 @@
+{
+    "periods": [
+        {
+            "caption": "Period 1",
+            "start": -1,
+            "duration": 10,
+            "daylabels": [-1, "1-9"],
+            "administrations": [
+                {
+                    "caption": "aspirin",
+                    "days": [1]
+                },
+                {
+                    "caption": "paracetamole",
+                    "days": ["5-7"]
+                }
+            ]
+        },
+        {
+            "caption": "Period 2",
+            "start": 10,
+            "duration": 4,
+            "daylabels": ["10-13"],
+            "administrations": [
+                {
+                    "caption": "aspirin",
+                    "days": [11]
+                }
+            ]
+        }
+    ]
+}

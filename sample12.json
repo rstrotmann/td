@@ -1,0 +1,23 @@
+{
+    "periods": [
+        {
+            "caption": "Period 1",
+            "start": -1,
+            "duration": 10,
+            "daylabels": [-1, "1-9"],
+            "intervals": [
+                {
+                    "caption": "hospitalization",
+                    "start": -1,
+                    "duration": 4,
+                    "labels": ["V1"]
+                },
+                {
+                    "caption": "ambulatory visit",
+                    "days": [5, 7, 9],
+                    "labels": ["V2", "V3", "V4"]
+                }
+            ]
+        }
+    ]
+}

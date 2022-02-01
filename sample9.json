@@ -1,0 +1,29 @@
+{
+    "periods": [
+        {
+            "caption": "Period 1",
+            "start": -1,
+            "duration": 8,
+            "daylabels": [
+                -1,
+                "1-7"
+            ],
+            "procedures": [
+                {
+                    "caption": "food",
+                    "days": [
+                        1
+                    ],
+                    "value": 0
+                },
+                {
+                    "caption": "food",
+                    "days": [
+                        5
+                    ],
+                    "value": 1
+                }
+            ]
+        }
+    ]
+}
