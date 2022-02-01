@@ -1,4 +1,4 @@
-# TD: Clinical trial design visualization
+# TD - Trial design
 
 TD is a command line tool to create beautiful Schedule-of-Assessments figures for clinical study designs.
 

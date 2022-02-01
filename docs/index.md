@@ -1,8 +1,8 @@
-# Trial design visualization
+# TD - Trial design
 
 ![](td.svg)
 
-TD is a command line tool written in python to create overview figures for clinical study designs, and to summarize relevant elements of the schedule of assessments.
+TD is a command line tool written in python to create Schedule-of-Assessments figures for clinical study designs.
 
 The input describing the study design is expected as a json-formatted text file.
 
