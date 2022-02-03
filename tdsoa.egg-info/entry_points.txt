@@ -1,0 +1,3 @@
+[console_scripts]
+td = td.td:app
+

@@ -1,0 +1,13 @@
+COPYING
+README.md
+pyproject.toml
+setup.cfg
+setup.py
+td/__init__.py
+td/td.py
+trialdesign.egg-info/PKG-INFO
+trialdesign.egg-info/SOURCES.txt
+trialdesign.egg-info/dependency_links.txt
+trialdesign.egg-info/entry_points.txt
+trialdesign.egg-info/requires.txt
+trialdesign.egg-info/top_level.txt

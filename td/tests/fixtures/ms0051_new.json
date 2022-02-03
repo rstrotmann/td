@@ -27,11 +27,11 @@
 			],
 			"administrations": [
 				{
-					"caption": "tepotinib",
+					"caption": "test drug",
 					"days": [1]
 				},
 				{
-					"caption": "tepotinib",
+					"caption": "test drug",
 					"days": [26]
 				},
 				{
@@ -57,14 +57,14 @@
 					"freq": "QD"
 				},
 				{
-					"caption": "PK sampling tepotinib",
+					"caption": "PK sampling test drug",
 					"days": [1],
 					"times": [0, 1, 1.5, 2, 3, 4, 6, 8, 12, 16, 24, 30, 38, 48, 60, 72, 96, 120, 144, 168],
 					"relative": 1,
 					"timescale": "show"
 				},
 				{
-					"caption": "PK sampling tepotinib",
+					"caption": "PK sampling test drug",
 					"days": [26],
 					"times": [0, 1, 1.5, 2, 3, 4, 6, 8, 12, 16, 24, 30, 38, 48, 60, 72, 96, 120, 144, 168],
 					"relative": 26,

@@ -1,0 +1,13 @@
+COPYING
+README.md
+pyproject.toml
+setup.cfg
+setup.py
+td/__init__.py
+td/td.py
+tdsoa.egg-info/PKG-INFO
+tdsoa.egg-info/SOURCES.txt
+tdsoa.egg-info/dependency_links.txt
+tdsoa.egg-info/entry_points.txt
+tdsoa.egg-info/requires.txt
+tdsoa.egg-info/top_level.txt

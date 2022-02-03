@@ -27,7 +27,7 @@
 			],
 			"administrations": [
 				{
-					"caption": "evobrutinib BID (12 h apart)",
+					"caption": "test drug BID (12 h apart)",
 					"days": [1, 4, 7],
 					"freq": "BID"
 				}
@@ -70,7 +70,7 @@
 			],
 			"administrations": [
 				{
-					"caption": "evobrutinib BID (12 h apart)",
+					"caption": "test drug BID (12 h apart)",
 					"days": [1],
 					"freq": "BID",
 					"footnotes": [
@@ -133,7 +133,7 @@
 			],
 			"administrations": [
 				{
-					"caption": "evobrutinib BID (12 h apart)",
+					"caption": "test drug BID (12 h apart)",
 					"days": [1],
 					"freq": "BID", 
 					"footnotes": [

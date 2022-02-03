@@ -1188,9 +1188,9 @@ def main(
 
 	Generates a 'Schedule of Assessments' figure for clinical trials, based on a json-formatted input FILE. Graphical output is provided in svg vector format that can be rendered by any webbrowser or directly imported into Office applications. Use below OPTIONS to manage the output style.
 
-	This program comes with ABSOLUTELY NO WARRANTY.
-	This is free software, and you are welcome to redistribute it
-	under certain conditions.
+	Full documentation is available at https://rstrotmann.github.io/td/.
+
+	This program comes with ABSOLUTELY NO WARRANTY.	This is free software, and you are welcome to redistribute it under certain conditions.
 
 	TD Version 2.1, proudly written in functional Python. Copyright (C) Rainer Strotmann, Jan-2022
 	"""

@@ -19,7 +19,7 @@
 			"dayshading": [1, 8, 15],
 			"administrations": [
 				{
-					"caption": "tepotinib (+ osimertinib)",
+					"caption": "test drug",
 					"days": ["1-21"]
 				}
 			],
@@ -64,7 +64,7 @@
 			"dayshading": [1, 8, 15],
 			"administrations": [
 				{
-					"caption": "tepotinib (+ osimertinib)",
+					"caption": "test drug",
 					"days": ["1-21"]
 				}
 			],
@@ -90,7 +90,7 @@
 			"decoration": "bracketed",
 			"administrations": [
 				{
-					"caption": "tepotinib (+ osimertinib)",
+					"caption": "test drug",
 					"days": ["1-21"]
 				}
 			],
@@ -118,7 +118,7 @@
 			"dayshading": [1, 8, 15],
 			"administrations": [
 				{
-					"caption": "tepotinib (+ osimertinib)",
+					"caption": "test drug",
 					"days": ["1-21"]
 				}
 			],

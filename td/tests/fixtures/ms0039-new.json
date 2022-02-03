@@ -24,7 +24,7 @@
 					],
 					"administrations": [
 						{
-							"caption": "tepotinib",
+							"caption": "test drug",
 							"days": [1]
 						}
 					],
@@ -65,7 +65,7 @@
 					],
 					"administrations": [
 						{
-							"caption": "tepotinib",
+							"caption": "test drug",
 							"days": [5]
 						},
 						{
@@ -110,7 +110,7 @@
 					],
 					"administrations": [
 						{
-							"caption": "tepotinib",
+							"caption": "test drug",
 							"days": [5]
 						},
 						{

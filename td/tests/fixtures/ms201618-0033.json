@@ -21,16 +21,16 @@
 			],
 			"administrations": [
 				{
-					"caption": "M5717 + pyronaridine",
+					"caption": "test drug",
 					"days": [1]
 				},
 				{
-					"caption": "M5717 + pyronaridine",
+					"caption": "test drug",
 					"days": [2],
 					"decoration": "bracketed"
 				},
 				{
-					"caption": "M5717 + pyronaridine",
+					"caption": "test drug",
 					"days": [3],
 					"decoration": "bracketed"
 				}

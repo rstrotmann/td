@@ -1,0 +1,5 @@
+typer
+pathlib
+CairoSVG
+pycairo
+rich

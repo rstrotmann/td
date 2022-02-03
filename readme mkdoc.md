@@ -4,3 +4,7 @@ run http documentation server on http://127.0.0.1:8000:
 build documentation:
 `mkdocs build`
 
+make and deploy to gh-pages:
+`mkdocs gh-deploy --strict --force`
+see:
+https://rstrotmann.github.io/td

@@ -31,7 +31,7 @@
 			],
 			"administrations": [
 				{
-					"caption": "evobrutinib BID",
+					"caption": "test drug BID",
 					"days": ["4-12"],
 					"freq": "BID"
 				},
@@ -51,7 +51,7 @@
 					"days": [-1, 1, 10]
 				},
 				{
-					"caption": "PK sampling evobrutinib",
+					"caption": "PK sampling test drug",
 					"days": ["10-12"],
 					"times": [0]
 				},

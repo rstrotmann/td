@@ -31,7 +31,7 @@
 			],
 			"administrations": [
 				{
-					"caption": "evobrutinib QD",
+					"caption": "test drug QD",
 					"days": [1, 19],
 					"freq": "QD"
 				},
@@ -89,14 +89,14 @@
 					"relative": 18
 				},
 				{
-					"caption": "PK sampling evobrutinib",
+					"caption": "PK sampling test drug",
 					"days": [1],
 					"times": [0, 0.25, 0.5, 1, 1.5, 2, 2.5, 3, 4, 6, 8, 12, 16, 24],
 					"relative": 1,
 					"timescale": "show"
 				},
 				{
-					"caption": "PK sampling evobrutinib",
+					"caption": "PK sampling test drug",
 					"days": [19],
 					"times": [0, 0.25, 0.5, 1, 1.5, 2, 2.5, 3, 4, 6, 8, 12, 16, 24],
 					"relative": 19,
