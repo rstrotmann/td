@@ -17,14 +17,14 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import typer
-import pathlib
+import pathlib2 as pathlib
 import cairo
 import json
 import re
 import sys
 
 # GLOBAL VARIABLES
-__version__ = "2.1"
+__version__ = "2.1.4"
 __date__ = "Jan-2022"
 debug = False
 

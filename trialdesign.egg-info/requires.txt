@@ -1,5 +1,5 @@
 typer
-pathlib
+pathlib2
 CairoSVG
 pycairo
 rich

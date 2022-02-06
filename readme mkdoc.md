@@ -6,5 +6,7 @@ build documentation:
 
 make and deploy to gh-pages:
 `mkdocs gh-deploy --strict --force`
+`mkdocs gh-deploy -r github`
+
 see:
 https://rstrotmann.github.io/td
