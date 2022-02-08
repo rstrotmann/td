@@ -3,3 +3,4 @@ pathlib2
 CairoSVG
 pycairo
 rich
+PyYAML

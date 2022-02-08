@@ -1,0 +1,91 @@
+---
+periods:
+- caption: S
+  daylabels: []
+  duration: 1
+  start: 1
+- caption: randomized, 6-sequence, 3-period cross-over
+  periods:
+  - administrations:
+    - caption: test drug
+      days: 1
+    caption: Treatment A
+    daylabels: [1, 2, 3, 7]
+    dayshading: 1
+    duration: 7
+    intervals:
+    - caption: hospitalization
+      duration: 3
+      start: 1
+    procedures:
+    - caption: food
+      days: 1
+      value: 1
+    - caption: PK sampling
+      days: 1
+      freq: rich
+      relative: 1
+      times: [0, 0.5, 1, 2, 3, 4, 6, 8]
+      timescale: show
+    - caption: PK sampling
+      days: 2-7
+      freq: QD
+    start: 1
+  - administrations:
+    - caption: test drug
+      days: 5
+    - caption: omeprazole
+      days: 1-5
+    caption: Treatment B
+    daylabels: [1, 5, 6, 7, 8, 11]
+    dayshading: [1, 8]
+    decoration: none
+    duration: 11
+    intervals:
+    - caption: hospitalization
+      duration: 3
+      start: 5
+    procedures:
+    - caption: food
+      days: 5
+      value: 0
+    - caption: PK sampling
+      days: 5
+      relative: 5
+      times: [0, 0.5, 1, 2, 3, 4, 6, 8]
+      timescale: show
+    - caption: PK sampling
+      days: 6-11
+      freq: QD
+      relative: 5
+    start: 1
+  - administrations:
+    - caption: test drug
+      days: 5
+    - caption: omeprazole
+      days: [1,2,3,4,5]
+    caption: Treatment C
+    daylabels: [1, 5, 6, 7, 8, 11]
+    dayshading: [1, 8]
+    decoration: none
+    duration: 11
+    intervals:
+    - caption: hospitalization
+      duration: 3
+      start: 5
+    procedures:
+    - caption: food
+      days: 5
+      value: 1
+    - caption: PK sampling
+      days: 5
+      relative: 5
+      times: [0, 0.5, 1, 2, 3, 4, 6, 8]
+    - caption: PK sampling
+      days: 6-11
+      freq: QD
+      relative: 5
+    start: 1
+- caption: EoT
+  duration: 1
+  start: 1

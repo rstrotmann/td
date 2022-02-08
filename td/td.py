@@ -22,10 +22,11 @@ import cairo
 import json
 import re
 import sys
+import yaml
 
 # GLOBAL VARIABLES
-__version__ = "2.1.4"
-__date__ = "Jan-2022"
+__version__ = "2.1.5"
+__date__ = "Feb-2022"
 debug = False
 
 
@@ -1168,7 +1169,6 @@ def license_callback(value: bool):
 @app.command()
 def main(
 	file: str = typer.Argument(...),
-	debug: bool = typer.Option(False, "--debug", "-d", help="Debug output"),
 	output: str = typer.Option("", "--output", "-o", help="Output file name"),
 	font: str = typer.Option("Arial", "--font", "-f", help="Font type"),
 	fontsize: int = typer.Option(14, "--fontsize", "-s", help="Font size"),
@@ -1180,6 +1180,7 @@ def main(
 	footnotes: bool = typer.Option(False, "--footnotes", "-n", help="Show footnotes"),
 	all: bool = typer.Option(False, "--all", "-A", help="All options, equivalent to -ctgen"),
 	autocompress: bool = typer.Option(False, "--autocompress", "-a", help="Automatically compress daygrid"),
+	debug: bool = typer.Option(False, "--debug", "-D", help="Debug output"),
 	version: bool = typer.Option(False, "--version", help="Show version and exit", callback=version_callback),
 	#license: bool = typer.Option(False, "--license", help="Show license and exit", callback=license_callback)
 	):
@@ -1220,9 +1221,18 @@ def main(
 		with open(infile) as f:
 			td = json.load(f)
 	except json.decoder.JSONDecodeError as err:
-		sys.exit(f'Json syntax error in input file {infile}:\n{err}')
-	except:
-		sys.exit("Error loading input file")
+		try:
+			with open(infile) as f:
+				td = yaml.safe_load(f)
+		except:
+				sys.exit(f'Syntax error in input file {infile}:\n{err}')
+	except FileExistsError:
+		sys.exit("Input file does not exist")
+
+	if debug:
+		print(json.dumps(td, indent=2))
+		print("---")
+		print(yaml.dump(td))
 
 	# render
 	try:
