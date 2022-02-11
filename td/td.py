@@ -374,6 +374,7 @@ def day_index(period, day):
 def day_labels(period):
 	temp = [""] * period['duration']
 	if "daylabels" in period.keys():
+		print(f'key daylabels in period {period["caption"]}: {period["daylabels"]}')
 		for i in decode_daylist(period['daylabels']):
 			temp[day_index(period, i)] = i
 	return(temp)
@@ -550,6 +551,8 @@ def render_daygrid(period, caption, xoffset, yoffset, height, metrics, style, fi
 
 	if debug:
 		svg_out += render_dummy(period, xoffset, yoffset, height, metrics)
+
+	print(day_labels(period))
 
 	for start, width, center, label, shading in zip(period_day_starts(period, xoffset, daywidth_function), daywidth_function(period), period_day_centers(period, xoffset, daywidth_function), day_labels(period), day_shadings(period)):
 		if shading:
@@ -905,6 +908,8 @@ def render_periods(periods, x, y, caption, height, render_function, metrics, sty
 
 def make_dayrange(start, duration):
 	"""return a range of days defined by start and duration. Day 0 does not exist and is deleted, if necessary"""
+	if start < 0 and start + duration > 0:
+		duration += 1
 	out = list(range(start, start + duration))
 	if 0 in out:
 		out.remove(0)
