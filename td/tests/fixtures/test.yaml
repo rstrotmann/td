@@ -1,0 +1,23 @@
+---
+periods:
+- caption: S
+  daylabels: []
+  duration: 1
+  start: 1
+  
+- caption: Period 1
+  start: -1
+  duration: 5
+  intervals:
+    - caption: hospitalization
+      start: -1
+      duration: 5
+  administrations:
+    - caption: dabigatran etexilate
+      days: [1]
+  procedures:
+    - caption: PK sampling dabigatran
+      days: [1]
+      times: [0, 0.25, 0.5, 0.75, 1, 1.5, 2, 3, 4, 6, 8, 12, 24, 36, 48, 72]
+      relative: 1 
+

@@ -3,3 +3,6 @@ build the package:
 
 install the package:
 `pip install --force-reinstall xxx.whl`
+
+upload to PyPI
+`twine upload dist/*`

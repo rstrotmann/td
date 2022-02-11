@@ -16,6 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+from asyncio import start_server
 import typer
 import pathlib2 as pathlib
 import cairo
@@ -25,7 +26,7 @@ import sys
 import yaml
 
 # GLOBAL VARIABLES
-__version__ = "2.1.5"
+__version__ = "2.1"
 __date__ = "Feb-2022"
 debug = False
 
@@ -401,11 +402,14 @@ def svg_circle(x, y, r, lwd=1.2, fill_color="none", line_color="black"):
 	return(f'<circle cx="{x}" cy="{y}" r="{r}" style="stroke:{line_color};  stroke-width:{lwd}; fill:{fill_color};"/>\n')
 
 
-def svg_text(x, y, text, css_class=""):
+def svg_text(x, y, text, css_class="", color=""):
 	if css_class:
 		return(f'<text x="{x}" y="{y}" class="{css_class}">{text}</text>\n')
 	else:
-		return(f'<text x="{x}" y="{y}">{text}</text>\n')
+		if color:
+			return(f'<text x="{x}" y="{y}" fill="{color}">{text}</text>\n')
+		else:
+			return(f'<text x="{x}" y="{y}">{text}</text>\n')
 
 
 def svg_path(x, y, points, lwd=1, size=1, fill=False, dashed=False, fill_color="none", title=""):
@@ -918,6 +922,18 @@ def flatten_periods(x, period_class):
 	return(out)
 
 
+def vertical_marker(x):
+	out = ""
+	if isinstance(x, list):
+		for i in x:
+			out += svg_line(i, 20, i, 2000, color="red")
+			out += svg_text(i, 20, str(int(i)), color="red")
+	else:
+		out += svg_line(x, 20, x, 2000, color="red")
+		out += svg_text(x, 20, str(int(x)), color="red")
+	return(out)
+
+
 def get_period_nesting(x):
 	def _nesting(x, out=[], index=0, caption=""):
 		start_i = index
@@ -949,15 +965,17 @@ def render_period_grouping(td, xoffset, yoffset, metrics, style):
 	w = [period_width(i, daywidth_function) for i in periods]
 	starts = [xoffset]
 	ends = []
-	for i in w:
-		starts.append(starts[-1] + i + periodspacing)
-		ends.append(starts[-1] + i)
+
+	for i, ww in enumerate(w, start=0):
+		starts.append(starts[-1] + ww + periodspacing)
+		ends.append(starts[i] + ww)
 
 	# rendering
 	y = 0
 	for n in nesting:
 		s = starts[n[0]]
-		e = ends[n[1]-1]
+		e = ends[n[1]]
+
 		if debug:
 			svg_out += svg_rect(s, yoffset + y, e-s, textheight_function("X") + ypadding + lineheight/2, lwd=0, fill_color="cornsilk")
 		svg_out += svg_text(s+(e-s)/2-textwidth_function(str(n[2]))/2, yoffset + y+textheight_function("X"), str(n[2]))
@@ -1193,7 +1211,7 @@ def main(
 
 	This program comes with ABSOLUTELY NO WARRANTY.	This is free software, and you are welcome to redistribute it under certain conditions.
 
-	TD Version 2.1, proudly written in functional Python. Copyright (C) Rainer Strotmann, Jan-2022
+	TD is proudly written in functional Python. Copyright (C) Rainer Strotmann 2022. Version information under 'td --version'
 	"""
 	if version:
 		sys.exit(__version__)
@@ -1232,7 +1250,7 @@ def main(
 	if debug:
 		print(json.dumps(td, indent=2))
 		print("---")
-		print(yaml.dump(td))
+		print(yaml.dump(td, default_flow_style=None))
 
 	# render
 	try:

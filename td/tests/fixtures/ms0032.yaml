@@ -1,0 +1,57 @@
+---
+periods:
+- caption: S
+  daylabels: []
+  duration: 1
+  start: 1
+
+- caption: Single-sequence, 2-period treatment
+  periods:
+  - caption: Period 1
+    start: -1
+    duration: 5
+    intervals:
+      - caption: hospitalization
+        start: -1
+        duration: 5
+    administrations:
+      - caption: dabigatran etexilate
+        days: [1]
+    procedures:
+      - caption: PK sampling tepotinib
+        days: []    
+      - caption: PK sampling dabigatran
+        days: [1]
+        times: [0, 0.25, 0.5, 0.75, 1, 1.5, 2, 3, 4, 6, 8, 12, 24, 36, 48, 72]
+        relative: 1
+        timescale: show
+
+  - caption: Period 2
+    start: 1
+    duration: 11
+    intervals:
+      - caption: hospitalization
+        start: 1
+        duration: 11
+    administrations:
+      - caption: tepotinib
+        days: 1-8
+      - caption: dabigatran etexilate
+        days: 8
+    procedures:
+      - caption: PK sampling tepotinib
+        days: [6]
+      - caption: PK sampling tepotinib
+        days: [7]
+        times: [0, 0.25, 0.5, 0.75, 1, 1.5, 2, 3, 4, 6, 8, 12, 2]
+        relative: 7
+        timescale: hide
+      - caption: PK sampling dabigatran
+        days: [8]
+        times: [0, 0.25, 0.5, 0.75, 1, 1.5, 2, 3, 4, 6, 8, 12, 24, 36, 48, 72]
+        relative: 8
+        timescale: hide
+
+- caption: EoT
+  start: 15
+  duration: 1
